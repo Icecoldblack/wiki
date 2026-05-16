@@ -188,6 +188,25 @@
   }
 
   /* ── hero copy ─────────────────────────────────────────────── */
+  .hero-eyebrow-wrap,
+  .hero-headline-wrap,
+  .hero-search-wrap {
+    transition: opacity .6s ease;
+  }
+
+  #constellation-root.graph-focused .hero-eyebrow-wrap,
+  #constellation-root.graph-focused .hero-headline-wrap,
+  #constellation-root.graph-focused .hero-search-wrap {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* '/' key — only search bar peeks back through */
+  #constellation-root.graph-focused.search-open .hero-search-wrap {
+    opacity: 1;
+    pointer-events: all;
+  }
+
   .hero-eyebrow-wrap {
     position: absolute;
     top: 14%;
@@ -626,17 +645,7 @@
     midGlow.scale.setScalar(radius * (isCentral ? 2.8 : 2.2));
     nodeGroup.add(midGlow);
 
-    // Outer bloom — widest halo (like box-shadow 0 0 150px)
-    const glowMat = new THREE.MeshBasicMaterial({
-      color:       n.color,
-      transparent: true,
-      opacity:     isCentral ? 0.07 : 0.05,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
-    });
-    const glow = new THREE.Mesh(sphereGeo, glowMat);
-    glow.scale.setScalar(radius * (isCentral ? 5.0 : 4.0));
-    nodeGroup.add(glow);
+    const glow = midGlow; // alias — outer bloom removed, midGlow is the widest layer
 
     // DOM label — projected manually each frame (central node has no label)
     const wrap = document.createElement("div");
@@ -800,19 +809,12 @@
     const isCentral = "central" in obj.sim && obj.sim.central;
     (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.55 : 0.38;
     (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.22 : 0.15;
-    (obj.glow.material as THREE.MeshBasicMaterial).opacity      = isCentral ? 0.12 : 0.09;
   }
 
   function unhoverNode(obj: NodeObj) {
     const isCentral = "central" in obj.sim && obj.sim.central;
-    const radius    = isCentral ? 22 : 12;
-    obj.mesh.scale.setScalar(radius);
-    obj.innerGlow.scale.setScalar(radius * 1.4);
-    obj.midGlow.scale.setScalar(radius * (isCentral ? 2.8 : 2.2));
-    obj.glow.scale.setScalar(radius * (isCentral ? 5.0 : 4.0));
     (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.35 : 0.22;
     (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.14 : 0.09;
-    (obj.glow.material as THREE.MeshBasicMaterial).opacity      = isCentral ? 0.07 : 0.05;
   }
 
   // ── tick: sync Three.js positions with D3 simulation ──────────
@@ -913,6 +915,8 @@
   }
   animate();
 
+  let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
   // ── inline search ─────────────────────────────────────────────
   const searchBar     = document.getElementById("search-bar")!;
   const searchInput   = document.getElementById("search-input") as HTMLInputElement;
@@ -921,6 +925,8 @@
   const searchableNodes = simNodes.filter(n => n.id !== "wiki");
 
   function openSearch() {
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    root.classList.add("search-open");
     searchBar.classList.add("active");
     searchResults.classList.add("open");
     searchInput.value = "";
@@ -929,6 +935,8 @@
   }
 
   function closeSearch() {
+    root.classList.remove("search-open");
+    root.classList.remove("graph-focused"); // ESC brings all content back
     searchBar.classList.remove("active");
     searchResults.classList.remove("open");
     searchInput.blur();
@@ -1014,14 +1022,43 @@
     }
   });
 
-  // "/" opens search when not already in an input
+  // "/" opens search; Escape outside search resets camera to center
   window.addEventListener("keydown", (e: KeyboardEvent) => {
     const tag = (document.activeElement as HTMLElement)?.tagName;
     if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
       e.preventDefault();
       openSearch();
     }
+    if (e.key === "Escape" && tag !== "INPUT" && tag !== "TEXTAREA") {
+      // Animate camera back to default center position
+      const startCam = camera.position.clone();
+      const startTgt = controls.target.clone();
+      const endCam   = new THREE.Vector3(0, 0, 420);
+      const endTgt   = new THREE.Vector3(0, 0, 0);
+      let t = 0;
+      const dur = 50;
+      function resetFly() {
+        t++;
+        const p = 1 - Math.pow(1 - t / dur, 3);
+        camera.position.lerpVectors(startCam, endCam, p);
+        controls.target.lerpVectors(startTgt, endTgt, p);
+        controls.update();
+        if (t < dur) requestAnimationFrame(resetFly);
+      }
+      resetFly();
+    }
   });
+
+  // ── focus/unfocus hero copy on graph interaction ──────────────
+  function onGraphActivity() {
+    root.classList.add("graph-focused");
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => root.classList.remove("graph-focused"), 10_000);
+  }
+
+  canvas.addEventListener("mousedown", onGraphActivity);
+  canvas.addEventListener("wheel",     onGraphActivity, { passive: true });
+  canvas.addEventListener("touchstart", onGraphActivity, { passive: true });
 
   // ── resize ────────────────────────────────────────────────────
   window.addEventListener("resize", () => {
