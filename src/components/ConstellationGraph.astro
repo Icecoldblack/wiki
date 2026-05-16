@@ -32,18 +32,18 @@
   <div class="hero-headline-wrap">
     <h1 class="hero-headline">the open wiki for<br>breaking into tech.</h1>
     <p class="hero-sub">
-      knowledge from people who landed offers in quant, big tech, research, and beyond.<br>
-      signed, dated, free. take what helps.
+      knowledge from people who landed offers in quant, big tech, research, and beyond. signed, dated, free. take what helps.
     </p>
   </div>
 
-  <!-- Search bar — lower third -->
+  <!-- Search bar — lower third, expands inline on activation -->
   <div class="hero-search-wrap">
-    <div class="search-bar">
+    <div id="search-bar" class="search-bar">
       <div class="search-icon"><div class="search-handle"></div></div>
-      <span class="search-placeholder">search 40 guides, 120 courses</span>
-      <span class="search-kbd">⌘K</span>
+      <input id="search-input" class="search-bar__input" type="text" placeholder="search 40 guides, 120 courses" autocomplete="off" spellcheck="false" />
+      <span id="search-kbd" class="search-kbd">/</span>
     </div>
+    <ul id="search-results" class="search-bar__results"></ul>
     <p class="search-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</p>
   </div>
 
@@ -286,12 +286,18 @@
     border-radius: 1px;
   }
 
-  .search-placeholder {
-    font-size: .7rem;
-    color: rgba(255,255,255,.45);
+  .search-bar__input {
     flex: 1;
+    background: none;
+    border: none;
+    outline: none;
     font-family: 'SF Mono', Menlo, monospace;
+    font-size: .7rem;
+    color: rgba(255,255,255,.9);
+    caret-color: rgba(168,85,247,.9);
+    min-width: 0;
   }
+  .search-bar__input::placeholder { color: rgba(255,255,255,.38); }
 
   .search-kbd {
     font-size: .55rem;
@@ -301,7 +307,32 @@
     border-radius: .2rem;
     letter-spacing: .05em;
     font-family: 'SF Mono', Menlo, monospace;
+    flex-shrink: 0;
+    transition: opacity .15s;
   }
+  .search-bar.active .search-kbd { opacity: 0; pointer-events: none; }
+
+  .search-bar__results {
+    list-style: none;
+    margin: .35rem 0 0;
+    padding: .3rem 0;
+    background: rgba(8,6,20,.95);
+    border: 1px solid rgba(168,85,247,.3);
+    border-radius: .55rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.6), 0 0 24px rgba(168,85,247,.1);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height .2s ease, opacity .15s ease;
+    pointer-events: none;
+  }
+  .search-bar__results.open {
+    max-height: 260px;
+    opacity: 1;
+    pointer-events: all;
+    overflow-y: auto;
+  }
+
 
   .search-proof {
     font-family: 'SF Mono', Menlo, monospace;
@@ -332,6 +363,37 @@
 </style>
 
 <style is:global>
+  /* Search results — dynamically created, must be global */
+  .search-result {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .55rem .9rem;
+    cursor: pointer;
+    transition: background .12s, border-color .12s;
+    border-left: 2px solid transparent;
+    list-style: none;
+  }
+  .search-result:hover { background: rgba(255,255,255,.05); }
+  .search-result.active {
+    background: rgba(255,255,255,.09);
+    border-left: 2px solid rgba(168,85,247,.75);
+    padding-left: calc(.9rem - 2px);
+  }
+  .search-result__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .search-result__label {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: .8rem;
+    color: rgba(255,255,255,.9);
+    flex: 1;
+  }
+
   /* Manually projected node labels — must be global */
   .node-label-wrap {
     position: absolute;
@@ -850,6 +912,116 @@
     }
   }
   animate();
+
+  // ── inline search ─────────────────────────────────────────────
+  const searchBar     = document.getElementById("search-bar")!;
+  const searchInput   = document.getElementById("search-input") as HTMLInputElement;
+  const searchResults = document.getElementById("search-results")!;
+
+  const searchableNodes = simNodes.filter(n => n.id !== "wiki");
+
+  function openSearch() {
+    searchBar.classList.add("active");
+    searchResults.classList.add("open");
+    searchInput.value = "";
+    renderResults("");
+    searchInput.focus();
+  }
+
+  function closeSearch() {
+    searchBar.classList.remove("active");
+    searchResults.classList.remove("open");
+    searchInput.blur();
+  }
+
+  function renderResults(q: string) {
+    const matches = q.trim() === ""
+      ? searchableNodes
+      : searchableNodes.filter(n => n.label.toLowerCase().includes(q.toLowerCase()));
+
+    searchResults.innerHTML = "";
+    matches.forEach((n, i) => {
+      const li = document.createElement("li");
+      li.className = "search-result" + (i === 0 ? " active" : "");
+      li.dataset.id = n.id;
+
+      const dot = document.createElement("div");
+      dot.className = "search-result__dot";
+      const hex = "#" + n.color.toString(16).padStart(6, "0");
+      dot.style.background = hex;
+      dot.style.boxShadow  = `0 0 6px ${hex}`;
+
+      const label = document.createElement("span");
+      label.className = "search-result__label";
+      label.textContent = n.label;
+
+      li.appendChild(dot);
+      li.appendChild(label);
+      li.addEventListener("mousedown", (e) => { e.preventDefault(); zoomToNode(n.id); });
+      searchResults.appendChild(li);
+    });
+  }
+
+  function zoomToNode(id: string) {
+    const obj = nodeObjs.find(o => o.sim.id === id);
+    if (!obj) return;
+    closeSearch();
+
+    const targetPos = obj.mesh.position.clone();
+    const startCam  = camera.position.clone();
+    const startTgt  = controls.target.clone();
+    // Zoom in close to the node — offset along the camera's current forward direction
+    const dir = new THREE.Vector3().subVectors(startCam, startTgt).normalize();
+    const endCam = targetPos.clone().addScaledVector(dir, 120);
+
+    let t = 0;
+    const dur = 55; // frames at 60fps ≈ 0.9s
+    function fly() {
+      t++;
+      const p = 1 - Math.pow(1 - t / dur, 3); // ease-out cubic
+      camera.position.lerpVectors(startCam, endCam, p);
+      controls.target.lerpVectors(startTgt, targetPos, p);
+      controls.update();
+      if (t < dur) requestAnimationFrame(fly);
+    }
+    fly();
+  }
+
+  searchBar.addEventListener("click", () => { if (!searchBar.classList.contains("active")) openSearch(); });
+  searchInput.addEventListener("input", () => renderResults(searchInput.value));
+  searchInput.addEventListener("blur", () => setTimeout(closeSearch, 120));
+
+  searchInput.addEventListener("keydown", (e: KeyboardEvent) => {
+    const items = Array.from(searchResults.querySelectorAll<HTMLLIElement>(".search-result"));
+    const cur   = items.findIndex(el => el.classList.contains("active"));
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = cur === -1 ? 0 : (cur + 1) % items.length;
+      items[cur]?.classList.remove("active");
+      items[next]?.classList.add("active");
+      items[next]?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prev = cur === -1 ? items.length - 1 : (cur - 1 + items.length) % items.length;
+      items[cur]?.classList.remove("active");
+      items[prev]?.classList.add("active");
+      items[prev]?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      const active = items[cur === -1 ? 0 : cur];
+      if (active?.dataset.id) zoomToNode(active.dataset.id);
+    } else if (e.key === "Escape") {
+      closeSearch();
+    }
+  });
+
+  // "/" opens search when not already in an input
+  window.addEventListener("keydown", (e: KeyboardEvent) => {
+    const tag = (document.activeElement as HTMLElement)?.tagName;
+    if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+      e.preventDefault();
+      openSearch();
+    }
+  });
 
   // ── resize ────────────────────────────────────────────────────
   window.addEventListener("resize", () => {
