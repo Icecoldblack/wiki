@@ -1,23 +1,30 @@
 ---
-// D3 force-directed constellation graph — 3D depth edition
+// True 3D constellation graph — Three.js spheres, D3 force layout, CSS2D labels
 ---
 
 <div id="constellation-root">
-  <!-- Parallax star layers — each shifts at different speed on mouse move -->
+  <!-- Parallax star layers (CSS, behind WebGL canvas) -->
   <div class="layer-nebula" id="layer-nebula"></div>
   <div class="layer-stars layer-stars--far"  id="stars-far"></div>
   <div class="layer-stars layer-stars--mid"  id="stars-mid"></div>
   <div class="layer-stars layer-stars--near" id="stars-near"></div>
   <div class="vignette"></div>
 
-  <!-- D3 graph -->
-  <svg id="graph-svg"></svg>
+  <!-- Three.js WebGL canvas -->
+  <canvas id="graph-canvas"></canvas>
 
-  <!-- Tooltip card -->
+  <!-- CSS2DRenderer mounts labels here -->
+  <div id="label-layer"></div>
+
+  <!-- Hover tooltip -->
   <div id="node-tooltip" class="tooltip" aria-hidden="true">
     <span class="tooltip__name"></span>
     <span class="tooltip__desc"></span>
     <span class="tooltip__count"></span>
+  </div>
+
+  <div class="controls-hint">
+    drag · rotate &nbsp;|&nbsp; middle-drag · pan &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; dbl-click · reset
   </div>
 </div>
 
@@ -97,34 +104,69 @@
     z-index: 2;
   }
 
-  #graph-svg {
+  #graph-canvas {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     z-index: 5;
-    cursor: grab;
-    will-change: transform;
   }
-  #graph-svg:active { cursor: grabbing; }
 
-  /* Tooltip card */
+  /* CSS2DRenderer label container */
+  #label-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* Node labels rendered by CSS2DRenderer */
+  :global(.node-label-wrap) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+    user-select: none;
+  }
+  :global(.node-label-name) {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 11px;
+    color: rgba(255,255,255,.9);
+    text-shadow: 0 0 12px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,1);
+    white-space: nowrap;
+  }
+  :global(.node-label-count) {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 8px;
+    letter-spacing: .12em;
+    color: rgba(216,180,254,.6);
+    text-shadow: 0 0 8px rgba(0,0,0,1);
+    white-space: nowrap;
+  }
+  :global(.node-label-name.central) {
+    font-size: 13px;
+    color: #fff;
+  }
+
+  /* Tooltip */
   .tooltip {
     position: fixed;
     padding: .65rem .9rem;
-    background: rgba(6, 6, 18, .88);
+    background: rgba(6,6,18,.9);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(168, 85, 247, .4);
+    border: 1px solid rgba(168,85,247,.4);
     border-radius: .5rem;
     pointer-events: none;
     opacity: 0;
     transition: opacity .15s;
     z-index: 50;
-    white-space: nowrap;
-    box-shadow: 0 0 24px rgba(168, 85, 247, .2), 0 8px 32px rgba(0,0,0,.6);
     display: flex;
     flex-direction: column;
     gap: .2rem;
+    box-shadow: 0 0 24px rgba(168,85,247,.2), 0 8px 32px rgba(0,0,0,.6);
   }
   .tooltip.visible { opacity: 1; }
   .tooltip__name {
@@ -149,27 +191,44 @@
     margin-top: .1rem;
   }
 
+  .controls-hint {
+    position: absolute;
+    bottom: 3.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .38rem;
+    color: rgba(255,255,255,.18);
+    letter-spacing: .2em;
+    z-index: 20;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
   @keyframes driftFar  { from { transform: translate(0,0) }   to { transform: translate(60px,40px) } }
   @keyframes driftMid  { from { transform: translate(0,0) }   to { transform: translate(-80px,50px) } }
   @keyframes driftNear { from { transform: translate(0,0) }   to { transform: translate(100px,-60px) } }
 </style>
 
 <script>
+  import * as THREE from "three";
+  import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
   import * as d3 from "d3";
 
-  // ── data ──────────────────────────────────────────────────────
+  // ── node data ──────────────────────────────────────────────────
   const NODE_DEFS = [
-    { id: "wiki",        label: "progsu / wiki", desc: "",                                         central: true,  guides: 0  },
-    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",    guides: 8,  route: "/guides/foundations" },
-    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy", guides: 12, route: "/guides/career" },
-    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6, route: "/guides/networking", accent: true },
-    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 9, route: "/guides/technical" },
-    { id: "experience",  label: "experience",     desc: "Internships, research, and side projects", guides: 5, route: "/guides/experience" },
-    { id: "resources",   label: "resources",      desc: "Tools, courses, and reading lists",        guides: 7, route: "/guides/resources" },
+    { id: "wiki",        label: "progsu / wiki", desc: "",                                          central: true,  guides: 0,  color: 0xa855f7, emissive: 0x6d28d9 },
+    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 8,  route: "/guides/foundations", color: 0xa855f7, emissive: 0x5b21b6 },
+    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 12, route: "/guides/career",       color: 0xa855f7, emissive: 0x5b21b6 },
+    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6,  route: "/guides/networking",   color: 0x22d3ee, emissive: 0x0e7490, accent: true },
+    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 9,  route: "/guides/technical",    color: 0xa855f7, emissive: 0x5b21b6 },
+    { id: "experience",  label: "experience",     desc: "Internships, research, and side projects", guides: 5,  route: "/guides/experience",   color: 0xa855f7, emissive: 0x5b21b6 },
+    { id: "resources",   label: "resources",      desc: "Tools, courses, and reading lists",        guides: 7,  route: "/guides/resources",    color: 0xa855f7, emissive: 0x5b21b6 },
   ] as const;
 
-  type NodeDef  = typeof NODE_DEFS[number];
-  type NodeDatum = NodeDef & d3.SimulationNodeDatum & { _dist?: number };
+  type NodeDef   = typeof NODE_DEFS[number];
+  type NodeSim   = NodeDef & d3.SimulationNodeDatum & { z: number };
   type LinkDatum = { source: string; target: string };
 
   const links: LinkDatum[] = [
@@ -184,45 +243,11 @@
     { source: "career",      target: "experience" },
   ];
 
-  // ── depth helpers ─────────────────────────────────────────────
-  // Returns 0 (center) → 1 (far) based on distance from canvas center
-  function depthFactor(d: NodeDatum, W: number, H: number): number {
-    const dx = (d.x ?? W/2) - W/2;
-    const dy = (d.y ?? H/2) - H/2;
-    const maxDist = Math.sqrt((W/2)**2 + (H/2)**2);
-    return Math.min(Math.sqrt(dx*dx + dy*dy) / maxDist, 1);
-  }
-
-  function nodeRadius(d: NodeDatum): number {
-    return ("central" in d && d.central) ? 28 : 14;
-  }
-
-  // Depth-aware radius: outer nodes are ~15% smaller
-  function visualRadius(d: NodeDatum, W: number, H: number): number {
-    const base = nodeRadius(d);
-    if ("central" in d && d.central) return base;
-    const df = depthFactor(d, W, H);
-    return base * (1 - df * 0.15);
-  }
-
-  // Depth-aware opacity: outer nodes slightly dimmer
-  function depthOpacity(d: NodeDatum, W: number, H: number): number {
-    if ("central" in d && d.central) return 1;
-    const df = depthFactor(d, W, H);
-    return 1 - df * 0.35;
-  }
-
-  // Parallax shift magnitude for a node — outer nodes move more
-  function parallaxStrength(d: NodeDatum, W: number, H: number): number {
-    if ("central" in d && d.central) return 0.5;
-    const df = depthFactor(d, W, H);
-    return 2 + df * 14;
-  }
-
-  // ── mount ─────────────────────────────────────────────────────
-  const root  = document.getElementById("constellation-root")!;
-  const svgEl = document.getElementById("graph-svg") as unknown as SVGSVGElement;
-  const tip   = document.getElementById("node-tooltip")!;
+  // ── Three.js setup ─────────────────────────────────────────────
+  const root    = document.getElementById("constellation-root")!;
+  const canvas  = document.getElementById("graph-canvas") as HTMLCanvasElement;
+  const labelEl = document.getElementById("label-layer")!;
+  const tip     = document.getElementById("node-tooltip")!;
   const tipName  = tip.querySelector(".tooltip__name")!;
   const tipDesc  = tip.querySelector(".tooltip__desc")!;
   const tipCount = tip.querySelector(".tooltip__count")!;
@@ -230,337 +255,346 @@
   let W = root.clientWidth;
   let H = root.clientHeight;
 
-  const svg = d3.select(svgEl);
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
 
-  // ── defs: filters + gradients ─────────────────────────────────
-  const defs = svg.append("defs");
+  // CSS2D label renderer
+  const labelRenderer = new CSS2DRenderer({ element: labelEl });
+  labelRenderer.setSize(W, H);
 
-  // Glow blur filter
-  const glowFilter = defs.append("filter")
-    .attr("id", "glow")
-    .attr("x", "-60%").attr("y", "-60%")
-    .attr("width", "220%").attr("height", "220%");
-  glowFilter.append("feGaussianBlur").attr("stdDeviation", "5").attr("result", "blur");
-  glowFilter.append("feComposite").attr("in", "SourceGraphic").attr("in2", "blur").attr("operator", "over");
+  // Scene & camera
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 2000);
+  camera.position.set(0, 0, 420);
 
-  // Hover glow (stronger)
-  const hoverFilter = defs.append("filter")
-    .attr("id", "glow-hover")
-    .attr("x", "-80%").attr("y", "-80%")
-    .attr("width", "260%").attr("height", "260%");
-  hoverFilter.append("feGaussianBlur").attr("stdDeviation", "10").attr("result", "blur");
-  hoverFilter.append("feComposite").attr("in", "SourceGraphic").attr("in2", "blur").attr("operator", "over");
+  // Lighting — main light from top-left for sphere shading
+  const ambient = new THREE.AmbientLight(0x1a0a2e, 3);
+  scene.add(ambient);
 
-  // Pulse ring soft blur
-  const pulseFilter = defs.append("filter")
-    .attr("id", "glow-soft")
-    .attr("x", "-100%").attr("y", "-100%")
-    .attr("width", "300%").attr("height", "300%");
-  pulseFilter.append("feGaussianBlur").attr("stdDeviation", "12");
+  const keyLight = new THREE.PointLight(0xffffff, 2.5, 1200);
+  keyLight.position.set(-200, 200, 300);
+  scene.add(keyLight);
 
-  // Per-node radial gradients — 3D sphere shading (highlight top-left)
-  const mutableNodes = NODE_DEFS.map(n => ({ ...n })) as NodeDatum[];
+  const fillLight = new THREE.PointLight(0xa855f7, 1.2, 800);
+  fillLight.position.set(150, -100, 200);
+  scene.add(fillLight);
 
-  mutableNodes.forEach(d => {
-    const grad = defs.append("radialGradient")
-      .attr("id", `grad-${d.id}`)
-      .attr("cx", "32%").attr("cy", "28%").attr("r", "68%");
+  const rimLight = new THREE.PointLight(0x22d3ee, 0.8, 600);
+  rimLight.position.set(0, -200, -100);
+  scene.add(rimLight);
 
-    if ("central" in d && d.central) {
-      // White specular → lavender → purple → deep purple
-      grad.append("stop").attr("offset",  "0%").attr("stop-color", "#ffffff");
-      grad.append("stop").attr("offset", "18%").attr("stop-color", "rgba(232,210,255,1)");
-      grad.append("stop").attr("offset", "50%").attr("stop-color", "rgba(168,85,247,1)");
-      grad.append("stop").attr("offset", "80%").attr("stop-color", "rgba(76,29,149,1)");
-      grad.append("stop").attr("offset","100%").attr("stop-color", "#0f061e");
-    } else if ("accent" in d && (d as any).accent) {
-      // Cyan sphere
-      grad.append("stop").attr("offset",  "0%").attr("stop-color", "#ffffff");
-      grad.append("stop").attr("offset", "25%").attr("stop-color", "rgba(186,230,253,1)");
-      grad.append("stop").attr("offset", "65%").attr("stop-color", "rgba(34,211,238,1)");
-      grad.append("stop").attr("offset","100%").attr("stop-color", "rgba(8,51,68,1)");
+  // OrbitControls — left drag = rotate, middle drag = pan, scroll = zoom
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping    = true;
+  controls.dampingFactor    = 0.08;
+  controls.enablePan        = true;
+  controls.panSpeed         = 0.8;
+  controls.rotateSpeed      = 0.6;
+  controls.zoomSpeed        = 1.0;
+  controls.minDistance      = 80;
+  controls.maxDistance      = 900;
+  controls.mouseButtons     = {
+    LEFT:   THREE.MOUSE.ROTATE,
+    MIDDLE: THREE.MOUSE.PAN,
+    RIGHT:  THREE.MOUSE.PAN,
+  };
+  controls.touches = {
+    ONE: THREE.TOUCH.ROTATE,
+    TWO: THREE.TOUCH.DOLLY_PAN,
+  };
+
+  // Double-click resets camera
+  canvas.addEventListener("dblclick", () => {
+    camera.position.set(0, 0, 420);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  });
+
+  // ── D3 force simulation ────────────────────────────────────────
+  // Scale from screen px to scene units
+  const SCALE = 0.8;
+
+  const simNodes = NODE_DEFS.map((n, i) => ({
+    ...n,
+    z: n.id === "wiki" ? 0 : (Math.sin(i * 1.2) * 60),
+  })) as NodeSim[];
+
+  const sim = d3.forceSimulation<NodeSim>(simNodes)
+    .force("link",    d3.forceLink<NodeSim, LinkDatum>(links).id(d => d.id).distance(200).strength(0.5))
+    .force("charge",  d3.forceManyBody().strength(-700))
+    .force("center",  d3.forceCenter(0, 0))
+    .force("collide", d3.forceCollide<NodeSim>().radius(d => (d.id === "wiki" ? 40 : 25)))
+    .alphaDecay(0.025);
+
+  const centerSim = simNodes.find(n => n.id === "wiki")!;
+  centerSim.fx = 0;
+  centerSim.fy = 0;
+
+  // ── build Three.js objects ─────────────────────────────────────
+  const nodeGroup = new THREE.Group();
+  scene.add(nodeGroup);
+
+  const edgeGroup = new THREE.Group();
+  scene.add(edgeGroup);
+
+  // Shared geometry
+  const sphereGeo = new THREE.SphereGeometry(1, 48, 48);
+
+  // Store refs per node
+  interface NodeObj {
+    sim:    NodeSim;
+    mesh:   THREE.Mesh;
+    glow:   THREE.Mesh;
+    label:  CSS2DObject;
+    rings?: THREE.Mesh[]; // central only
+  }
+
+  const nodeObjs: NodeObj[] = [];
+  const meshToNode = new Map<THREE.Mesh, NodeObj>();
+
+  for (const n of simNodes) {
+    const isCentral = n.id === "wiki";
+    const radius    = isCentral ? 22 : 12;
+
+    // Main sphere
+    const mat = new THREE.MeshPhongMaterial({
+      color:     n.color,
+      emissive:  n.emissive,
+      emissiveIntensity: 0.4,
+      shininess: 90,
+      specular:  new THREE.Color(0xffffff),
+    });
+    const mesh = new THREE.Mesh(sphereGeo, mat);
+    mesh.scale.setScalar(radius);
+    nodeGroup.add(mesh);
+
+    // Glow halo — additive blended larger transparent sphere
+    const glowMat = new THREE.MeshBasicMaterial({
+      color:       n.color,
+      transparent: true,
+      opacity:     0.12,
+      blending:    THREE.AdditiveBlending,
+      depthWrite:  false,
+      side:        THREE.FrontSide,
+    });
+    const glow = new THREE.Mesh(sphereGeo, glowMat);
+    glow.scale.setScalar(radius * 2.2);
+    nodeGroup.add(glow);
+
+    // CSS2D label
+    const wrap = document.createElement("div");
+    wrap.className = "node-label-wrap";
+
+    const namEl = document.createElement("span");
+    namEl.className = "node-label-name" + (isCentral ? " central" : "");
+    namEl.textContent = n.label;
+    wrap.appendChild(namEl);
+
+    if (!isCentral && "guides" in n) {
+      const cntEl = document.createElement("span");
+      cntEl.className = "node-label-count";
+      cntEl.textContent = `${String(n.guides).padStart(2,"0")} GUIDES`;
+      wrap.appendChild(cntEl);
+    }
+
+    const label = new CSS2DObject(wrap);
+    label.position.set(0, -(radius + 14), 0);
+    mesh.add(label);
+
+    // Pulse rings — central node only
+    const rings: THREE.Mesh[] = [];
+    if (isCentral) {
+      const ringGeo = new THREE.RingGeometry(1, 1.06, 64);
+      for (let i = 0; i < 3; i++) {
+        const ringMat = new THREE.MeshBasicMaterial({
+          color:       0xa855f7,
+          transparent: true,
+          opacity:     0.5,
+          blending:    THREE.AdditiveBlending,
+          depthWrite:  false,
+          side:        THREE.DoubleSide,
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.scale.setScalar(radius);
+        ring.userData.phaseOffset = i * (1.2 / 3);
+        nodeGroup.add(ring);
+        rings.push(ring);
+      }
+    }
+
+    const obj: NodeObj = { sim: n, mesh, glow, label, rings };
+    nodeObjs.push(obj);
+    meshToNode.set(mesh, obj);
+  }
+
+  // Edges — one LineSegments object, updated each tick
+  const edgePositions = new Float32Array(links.length * 6); // 2 vertices × 3 floats each
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute("position", new THREE.BufferAttribute(edgePositions, 3));
+  const edgeMat = new THREE.LineBasicMaterial({
+    color:       0xa855f7,
+    transparent: true,
+    opacity:     0.25,
+    blending:    THREE.AdditiveBlending,
+    depthWrite:  false,
+  });
+  const edgeMesh = new THREE.LineSegments(edgeGeo, edgeMat);
+  edgeGroup.add(edgeMesh);
+
+  // ── raycaster for hover ────────────────────────────────────────
+  const raycaster = new THREE.Raycaster();
+  const pointer   = new THREE.Vector2();
+  let hoveredObj: NodeObj | null = null;
+  const meshList  = nodeObjs.map(o => o.mesh);
+
+  canvas.addEventListener("mousemove", (e: MouseEvent) => {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(meshList);
+
+    if (hits.length > 0) {
+      const obj = meshToNode.get(hits[0].object as THREE.Mesh)!;
+      if (obj && !("central" in obj.sim && obj.sim.central)) {
+        if (hoveredObj !== obj) {
+          if (hoveredObj) unhoverNode(hoveredObj);
+          hoverNode(obj);
+          hoveredObj = obj;
+        }
+        const n = obj.sim as any;
+        tipName.textContent  = n.label;
+        tipDesc.textContent  = n.desc ?? "";
+        tipCount.textContent = `${String(n.guides ?? 0).padStart(2,"0")} GUIDES`;
+        tip.style.left = `${e.clientX + 16}px`;
+        tip.style.top  = `${e.clientY - 14}px`;
+        tip.classList.add("visible");
+        canvas.style.cursor = "pointer";
+      }
     } else {
-      // Purple sphere
-      grad.append("stop").attr("offset",  "0%").attr("stop-color", "#ffffff");
-      grad.append("stop").attr("offset", "22%").attr("stop-color", "rgba(216,180,254,1)");
-      grad.append("stop").attr("offset", "60%").attr("stop-color", "rgba(168,85,247,1)");
-      grad.append("stop").attr("offset","100%").attr("stop-color", "rgba(76,29,149,1)");
+      if (hoveredObj) { unhoverNode(hoveredObj); hoveredObj = null; }
+      tip.classList.remove("visible");
+      canvas.style.cursor = "";
     }
   });
 
-  // ── zoom container ────────────────────────────────────────────
-  const g = svg.append("g").attr("class", "zoom-layer");
-  const zoom = d3.zoom<SVGSVGElement, unknown>()
-    .scaleExtent([0.4, 3])
-    .on("zoom", (e) => g.attr("transform", e.transform));
-  svg.call(zoom);
-
-  // ── simulation ────────────────────────────────────────────────
-  const sim = d3.forceSimulation<NodeDatum>(mutableNodes)
-    .force("link",    d3.forceLink<NodeDatum, LinkDatum>(links).id(d => d.id).distance(160).strength(0.6))
-    .force("charge",  d3.forceManyBody().strength(-600))
-    .force("center",  d3.forceCenter(W / 2, H / 2))
-    .force("collide", d3.forceCollide<NodeDatum>().radius(d => nodeRadius(d) + 20))
-    .alphaDecay(0.025);
-
-  const centerNode = mutableNodes.find(n => n.id === "wiki")!;
-  centerNode.fx = W / 2;
-  centerNode.fy = H / 2;
-  mutableNodes.forEach(n => { n.x = W / 2; n.y = H / 2; });
-
-  // ── edges ─────────────────────────────────────────────────────
-  const linkSel = g.append("g").attr("class", "links")
-    .selectAll("line")
-    .data(links)
-    .join("line")
-    .attr("stroke", "rgba(168,85,247,.18)")
-    .attr("stroke-width", 1)
-    .attr("stroke-dasharray", d => {
-      const isSpoke = (d.source as string) === "wiki" || (d.target as string) === "wiki";
-      return isSpoke ? "none" : "3 4";
-    });
-
-  // ── node groups ───────────────────────────────────────────────
-  const nodeG = g.append("g").attr("class", "nodes")
-    .selectAll<SVGGElement, NodeDatum>("g")
-    .data(mutableNodes)
-    .join("g")
-    .attr("class", "node-group")
-    .style("cursor", d => ("route" in d && (d as any).route) ? "pointer" : "default");
-
-  // Outer glow halo
-  nodeG.append("circle")
-    .attr("class", "node-halo")
-    .attr("r", d => nodeRadius(d) + 14)
-    .attr("fill", d => {
-      if ("central" in d && d.central) return "rgba(168,85,247,.55)";
-      if ("accent" in d && (d as any).accent) return "rgba(34,211,238,.5)";
-      return "rgba(168,85,247,.4)";
-    })
-    .attr("filter", "url(#glow)")
-    .attr("opacity", 0.35);
-
-  // Main sphere circle
-  nodeG.append("circle")
-    .attr("class", "node-sphere")
-    .attr("r", d => nodeRadius(d))
-    .attr("fill", d => `url(#grad-${d.id})`)
-    .attr("stroke", d => {
-      if ("central" in d && d.central) return "rgba(216,180,254,.5)";
-      if ("accent" in d && (d as any).accent) return "rgba(186,230,253,.4)";
-      return "rgba(168,85,247,.4)";
-    })
-    .attr("stroke-width", 1);
-
-  // Specular highlight — tiny bright ellipse offset top-left for 3D look
-  nodeG.append("ellipse")
-    .attr("class", "node-specular")
-    .attr("cx", d => -nodeRadius(d) * 0.28)
-    .attr("cy", d => -nodeRadius(d) * 0.3)
-    .attr("rx", d => nodeRadius(d) * 0.28)
-    .attr("ry", d => nodeRadius(d) * 0.18)
-    .attr("fill", "rgba(255,255,255,.55)")
-    .style("pointer-events", "none");
-
-  // Pulse rings — central node only
-  const centralG = nodeG.filter(d => "central" in d && !!d.central);
-  [0, 1.4, 2.8].forEach(delay => {
-    centralG.append("circle")
-      .attr("class", "pulse-ring")
-      .attr("r", 28)
-      .attr("fill", "none")
-      .attr("stroke", "rgba(168,85,247,.3)")
-      .attr("stroke-width", 1.5)
-      .style("animation", `pulseRing 3.6s ease-out ${delay}s infinite`)
-      .style("transform-origin", "0 0");
+  canvas.addEventListener("click", () => {
+    if (hoveredObj) {
+      const route = (hoveredObj.sim as any).route;
+      if (route) window.location.href = route;
+    }
   });
 
-  // Labels
-  nodeG.append("text")
-    .attr("class", "node-label")
-    .attr("dy", d => nodeRadius(d) + 18)
-    .attr("text-anchor", "middle")
-    .attr("fill", "#fff")
-    .attr("font-family", "Georgia, serif")
-    .attr("font-style", "italic")
-    .attr("font-size", d => ("central" in d && d.central) ? "13px" : "11px")
-    .style("text-shadow", "0 0 12px rgba(0,0,0,.9)")
-    .style("pointer-events", "none")
-    .text(d => d.label);
+  function hoverNode(obj: NodeObj) {
+    const mat = obj.mesh.material as THREE.MeshPhongMaterial;
+    mat.emissiveIntensity = 1.0;
+    (obj.glow.material as THREE.MeshBasicMaterial).opacity = 0.28;
+    obj.mesh.scale.setScalar(obj.mesh.scale.x * 1.2);
+    obj.glow.scale.setScalar(obj.glow.scale.x * 1.2);
+  }
 
-  // Guide count badge (child nodes only)
-  nodeG.filter(d => !("central" in d) || !d.central)
-    .append("text")
-    .attr("class", "node-count")
-    .attr("dy", d => nodeRadius(d) + 30)
-    .attr("text-anchor", "middle")
-    .attr("fill", d => ("accent" in d && (d as any).accent) ? "rgba(186,230,253,.65)" : "rgba(216,180,254,.6)")
-    .attr("font-family", "'SF Mono', Menlo, monospace")
-    .attr("font-size", "8px")
-    .attr("letter-spacing", "0.12em")
-    .style("pointer-events", "none")
-    .text(d => `${String((d as any).guides ?? 0).padStart(2,"0")} GUIDES`);
+  function unhoverNode(obj: NodeObj) {
+    const isCentral = "central" in obj.sim && obj.sim.central;
+    const radius    = isCentral ? 22 : 12;
+    const mat = obj.mesh.material as THREE.MeshPhongMaterial;
+    mat.emissiveIntensity = 0.4;
+    (obj.glow.material as THREE.MeshBasicMaterial).opacity = 0.12;
+    obj.mesh.scale.setScalar(radius);
+    obj.glow.scale.setScalar(radius * 2.2);
+  }
 
-  // ── drag ──────────────────────────────────────────────────────
-  const drag = d3.drag<SVGGElement, NodeDatum>()
-    .on("start", (e, d) => {
-      if (!e.active) sim.alphaTarget(0.3).restart();
-      if (!("central" in d) || !d.central) { d.fx = d.x; d.fy = d.y; }
-    })
-    .on("drag", (e, d) => {
-      if (!("central" in d) || !d.central) { d.fx = e.x; d.fy = e.y; }
-    })
-    .on("end", (e, d) => {
-      if (!e.active) sim.alphaTarget(0);
-      if (!("central" in d) || !d.central) { d.fx = null; d.fy = null; }
-    });
-
-  nodeG.call(drag as any);
-
-  // ── hover & click ─────────────────────────────────────────────
-  nodeG
-    .on("mouseenter", function(e: MouseEvent, d) {
-      if ("central" in d && d.central) return;
-      const nd = d as any;
-      tipName.textContent  = nd.label;
-      tipDesc.textContent  = nd.desc ?? "";
-      tipCount.textContent = `${String(nd.guides ?? 0).padStart(2,"0")} GUIDES`;
-      tip.classList.add("visible");
-
-      // Scale up + intensify glow
-      d3.select(this).select(".node-sphere").transition().duration(180)
-        .attr("r", nodeRadius(d) * 1.22);
-      d3.select(this).select(".node-halo").transition().duration(180)
-        .attr("r", nodeRadius(d) * 1.22 + 18)
-        .attr("opacity", 0.6);
-      d3.select(this).select(".node-specular").transition().duration(180)
-        .attr("rx", d => nodeRadius(d) * 0.35)
-        .attr("ry", d => nodeRadius(d) * 0.22);
-      d3.select(this).select(".node-sphere")
-        .attr("filter", "url(#glow-hover)");
-    })
-    .on("mousemove", (e: MouseEvent) => {
-      tip.style.left = `${e.clientX + 16}px`;
-      tip.style.top  = `${e.clientY - 14}px`;
-    })
-    .on("mouseleave", function(_e, d) {
-      tip.classList.remove("visible");
-      d3.select(this).select(".node-sphere").transition().duration(200)
-        .attr("r", nodeRadius(d))
-        .attr("filter", null);
-      d3.select(this).select(".node-halo").transition().duration(200)
-        .attr("r", nodeRadius(d) + 14)
-        .attr("opacity", 0.35);
-    })
-    .on("click", (_e, d) => {
-      if ("route" in d && (d as any).route) window.location.href = (d as any).route;
-    });
-
-  // ── tick ──────────────────────────────────────────────────────
+  // ── tick: sync Three.js positions with D3 simulation ──────────
   sim.on("tick", () => {
-    linkSel
-      .attr("x1", d => (d.source as NodeDatum).x!)
-      .attr("y1", d => (d.source as NodeDatum).y!)
-      .attr("x2", d => (d.target as NodeDatum).x!)
-      .attr("y2", d => (d.target as NodeDatum).y!);
-
-    nodeG.attr("transform", d => `translate(${d.x},${d.y})`);
-
-    // Update depth-based size and opacity each tick
-    nodeG.each(function(d) {
-      const vr  = visualRadius(d, W, H);
-      const opc = depthOpacity(d, W, H);
-      const sel = d3.select(this);
-      if (!("central" in d) || !d.central) {
-        sel.select(".node-sphere").attr("r", vr);
-        sel.select(".node-halo").attr("r", vr + 14);
-        sel.attr("opacity", opc);
+    for (const obj of nodeObjs) {
+      const { sim: s, mesh, glow } = obj;
+      const x = (s.x ?? 0) * SCALE;
+      const y = -(s.y ?? 0) * SCALE;
+      const z = s.z;
+      mesh.position.set(x, y, z);
+      glow.position.set(x, y, z);
+      if (obj.rings) {
+        obj.rings.forEach(r => r.position.set(x, y, z));
       }
+    }
+
+    // Update edge positions
+    const simMap = new Map(simNodes.map(n => [n.id, n]));
+    links.forEach((link, i) => {
+      const src = simMap.get(typeof link.source === "string" ? link.source : (link.source as any).id)!;
+      const tgt = simMap.get(typeof link.target === "string" ? link.target : (link.target as any).id)!;
+      const base = i * 6;
+      edgePositions[base + 0] = (src.x ?? 0) * SCALE;
+      edgePositions[base + 1] = -(src.y ?? 0) * SCALE;
+      edgePositions[base + 2] = src.z;
+      edgePositions[base + 3] = (tgt.x ?? 0) * SCALE;
+      edgePositions[base + 4] = -(tgt.y ?? 0) * SCALE;
+      edgePositions[base + 5] = tgt.z;
     });
+    edgeGeo.attributes.position.needsUpdate = true;
   });
 
-  // ── mouse parallax ────────────────────────────────────────────
-  // Each layer and each node shifts at a different rate based on depth
+  // ── mouse parallax for CSS star layers ────────────────────────
   const starsNebula = document.getElementById("layer-nebula")!;
   const starsFar    = document.getElementById("stars-far")!;
   const starsMid    = document.getElementById("stars-mid")!;
   const starsNear   = document.getElementById("stars-near")!;
 
-  let mouseX = 0, mouseY = 0;
-  let rafPending = false;
-
-  // Parallax offset for the SVG graph layer (nodes)
-  let graphOffsetX = 0, graphOffsetY = 0;
-
+  let mx = 0, my = 0, rafPending = false;
   document.addEventListener("mousemove", (e: MouseEvent) => {
-    // Normalized -1 → +1 from center
-    mouseX = (e.clientX / W - 0.5) * 2;
-    mouseY = (e.clientY / H - 0.5) * 2;
-
-    if (!rafPending) {
-      rafPending = true;
-      requestAnimationFrame(applyParallax);
-    }
+    mx = (e.clientX / W - 0.5) * 2;
+    my = (e.clientY / H - 0.5) * 2;
+    if (!rafPending) { rafPending = true; requestAnimationFrame(applyParallax); }
   });
-
   function applyParallax() {
     rafPending = false;
-
-    // Background star layers — each at different depth (far moves least)
-    starsNebula.style.transform = `translate(${mouseX * 3}px, ${mouseY * 2}px)`;
-    starsFar.style.transform    = `translate(${mouseX * 6}px, ${mouseY * 4}px)`;
-    starsMid.style.transform    = `translate(${mouseX * 12}px, ${mouseY * 8}px)`;
-    starsNear.style.transform   = `translate(${mouseX * 20}px, ${mouseY * 14}px)`;
-
-    // Shift the entire SVG graph group slightly — nodes will deviate further based on their depth
-    graphOffsetX = mouseX * 8;
-    graphOffsetY = mouseY * 6;
-
-    // Apply per-node parallax offset on top of simulation position
-    nodeG.attr("transform", d => {
-      const strength = parallaxStrength(d, W, H);
-      const px = mouseX * strength;
-      const py = mouseY * strength;
-      return `translate(${(d.x ?? W/2) + px}, ${(d.y ?? H/2) + py})`;
-    });
-
-    // Also shift link endpoints with a modest offset
-    linkSel
-      .attr("x1", d => {
-        const src = d.source as NodeDatum;
-        const str = parallaxStrength(src, W, H) * 0.5;
-        return (src.x ?? 0) + mouseX * str;
-      })
-      .attr("y1", d => {
-        const src = d.source as NodeDatum;
-        const str = parallaxStrength(src, W, H) * 0.5;
-        return (src.y ?? 0) + mouseY * str;
-      })
-      .attr("x2", d => {
-        const tgt = d.target as NodeDatum;
-        const str = parallaxStrength(tgt, W, H) * 0.5;
-        return (tgt.x ?? 0) + mouseX * str;
-      })
-      .attr("y2", d => {
-        const tgt = d.target as NodeDatum;
-        const str = parallaxStrength(tgt, W, H) * 0.5;
-        return (tgt.y ?? 0) + mouseY * str;
-      });
+    starsNebula.style.transform = `translate(${mx * 3}px, ${my * 2}px)`;
+    starsFar.style.transform    = `translate(${mx * 6}px, ${my * 4}px)`;
+    starsMid.style.transform    = `translate(${mx * 12}px, ${my * 8}px)`;
+    starsNear.style.transform   = `translate(${mx * 20}px, ${my * 14}px)`;
   }
+
+  // ── render loop ────────────────────────────────────────────────
+  const clock = new THREE.Clock();
+  let   animTime = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    animTime += delta;
+
+    controls.update();
+
+    // Animate pulse rings
+    for (const obj of nodeObjs) {
+      if (!obj.rings) continue;
+      const isCentral = "central" in obj.sim && obj.sim.central;
+      const radius = isCentral ? 22 : 12;
+      obj.rings.forEach(ring => {
+        const phase = ((animTime * 0.28 + ring.userData.phaseOffset) % 1);
+        const s     = radius + phase * radius * 2.6;
+        ring.scale.setScalar(s);
+        (ring.material as THREE.MeshBasicMaterial).opacity = (1 - phase) * 0.45;
+        // Make rings always face camera
+        ring.lookAt(camera.position);
+      });
+    }
+
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  }
+  animate();
 
   // ── resize ────────────────────────────────────────────────────
   window.addEventListener("resize", () => {
     W = root.clientWidth;
     H = root.clientHeight;
-    centerNode.fx = W / 2;
-    centerNode.fy = H / 2;
-    sim.force("center", d3.forceCenter(W / 2, H / 2)).alpha(0.3).restart();
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+    labelRenderer.setSize(W, H);
   });
 </script>
-
-<style is:global>
-  @keyframes pulseRing {
-    0%   { transform: scale(1);   opacity: .55; }
-    100% { transform: scale(2.8); opacity: 0;   }
-  }
-</style>
