@@ -880,6 +880,20 @@
 
     controls.update();
 
+    // Pulsate halos on non-central nodes
+    for (const obj of nodeObjs) {
+      const isCentral = "central" in obj.sim && obj.sim.central;
+      if (isCentral) continue;
+      // Each node gets a unique phase offset based on its index so they don't all pulse together
+      const phaseOffset = simNodes.indexOf(obj.sim) * 0.55;
+      const pulse = Math.sin(animTime * 1.1 + phaseOffset) * 0.5 + 0.5; // 0→1
+      (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = 0.12 + pulse * 0.14;
+      (obj.midGlow.material   as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.07;
+      const baseR = 12;
+      obj.innerGlow.scale.setScalar(baseR * (1.4 + pulse * 0.18));
+      obj.midGlow.scale.setScalar(baseR   * (2.2 + pulse * 0.3));
+    }
+
     // Animate pulse rings
     for (const obj of nodeObjs) {
       if (!obj.rings) continue;
