@@ -23,16 +23,22 @@
     <span class="tooltip__count"></span>
   </div>
 
-  <!-- Hero copy — sits at bottom center of the graph viewport -->
-  <div class="hero-copy">
+  <!-- Eyebrow — floats near top of viewport -->
+  <div class="hero-eyebrow-wrap">
     <p class="hero-eyebrow">AN OPEN WIKI &middot; BY PROGSU</p>
+  </div>
+
+  <!-- Headline + sub — floats in lower-middle -->
+  <div class="hero-headline-wrap">
     <h1 class="hero-headline">the open wiki for<br>breaking into tech.</h1>
     <p class="hero-sub">
       knowledge from people who landed offers in quant, big tech, research, and beyond.<br>
       signed, dated, free. take what helps.
     </p>
+  </div>
 
-    <!-- Search bar -->
+  <!-- Search bar — lower third -->
+  <div class="hero-search-wrap">
     <div class="search-bar">
       <div class="search-icon"><div class="search-handle"></div></div>
       <span class="search-placeholder">search 40 guides, 120 courses</span>
@@ -182,48 +188,67 @@
   }
 
   /* ── hero copy ─────────────────────────────────────────────── */
-  .hero-copy {
+  .hero-eyebrow-wrap {
     position: absolute;
-    bottom: 10%;
+    top: 14%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
     z-index: 20;
     pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .75rem;
-    width: max-content;
-    max-width: min(520px, 90vw);
   }
 
   .hero-eyebrow {
     font-family: 'SF Mono', Menlo, monospace;
-    font-size: .52rem;
-    color: rgba(216,180,254,.75);
-    letter-spacing: .28em;
-    margin: 0 0 .7rem;
+    font-size: .55rem;
+    color: rgba(216,180,254,.85);
+    letter-spacing: .25em;
+    margin: 0;
+    text-shadow: 0 0 18px rgba(0,0,0,.9);
+  }
+
+  .hero-headline-wrap {
+    position: absolute;
+    bottom: 23%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 20;
+    pointer-events: none;
+    padding: 0 1.5rem;
   }
 
   .hero-headline {
     font-family: Georgia, serif;
     font-style: italic;
     color: #fff;
-    font-size: clamp(1.4rem, 2.8vw, 2rem);
-    line-height: 1.08;
+    font-size: clamp(1.6rem, 3.2vw, 2rem);
+    line-height: 1.05;
     letter-spacing: -.01em;
-    text-shadow: 0 2px 28px rgba(0,0,0,.9), 0 0 44px rgba(76,29,149,.4);
-    margin: 0 0 .75rem;
+    text-shadow: 0 2px 24px rgba(0,0,0,.85), 0 0 40px rgba(76,29,149,.4);
+    max-width: 560px;
+    margin: 0 auto .85rem;
   }
 
   .hero-sub {
     font-family: Georgia, serif;
-    font-size: .68rem;
-    color: rgba(255,255,255,.5);
-    line-height: 1.65;
-    margin: 0;
+    font-size: .7rem;
+    color: rgba(255,255,255,.7);
+    line-height: 1.55;
+    max-width: 420px;
+    margin: 0 auto;
     text-shadow: 0 1px 8px rgba(0,0,0,.85);
+  }
+
+  .hero-search-wrap {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
+    max-width: 480px;
+    z-index: 20;
+    pointer-events: none;
   }
 
   .search-bar {
@@ -236,7 +261,6 @@
     border-radius: .55rem;
     padding: .65rem .9rem;
     width: 100%;
-    max-width: 440px;
     box-shadow: 0 0 32px rgba(168,85,247,.15), 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
     pointer-events: all;
     cursor: text;
@@ -282,9 +306,10 @@
   .search-proof {
     font-family: 'SF Mono', Menlo, monospace;
     font-size: .5rem;
-    color: rgba(255,255,255,.3);
-    letter-spacing: .14em;
-    margin: 0;
+    color: rgba(255,255,255,.4);
+    letter-spacing: .12em;
+    margin: .7rem 0 0;
+    text-align: center;
   }
 
   .controls-hint {
@@ -511,14 +536,16 @@
     glow.scale.setScalar(radius * 2.2);
     nodeGroup.add(glow);
 
-    // DOM label — projected manually each frame
+    // DOM label — projected manually each frame (central node has no label)
     const wrap = document.createElement("div");
     wrap.className = "node-label-wrap";
 
+    if (!isCentral) {
     const namEl = document.createElement("span");
-    namEl.className = "node-label-name" + (isCentral ? " central" : "");
+    namEl.className = "node-label-name";
     namEl.textContent = n.label;
     wrap.appendChild(namEl);
+    }
 
     if (!isCentral && "guides" in n) {
       const cntEl = document.createElement("span");
