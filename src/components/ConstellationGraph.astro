@@ -460,7 +460,6 @@
     { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 12, route: "/guides/career",       color: 0xd8b4fe, emissive: 0xa855f7 },
     { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6,  route: "/guides/networking",   color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
     { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 9,  route: "/guides/technical",    color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "experience",  label: "experience",     desc: "Internships, research, and side projects", guides: 5,  route: "/guides/experience",   color: 0xd8b4fe, emissive: 0xa855f7 },
     { id: "resources",   label: "resources",      desc: "Tools, courses, and reading lists",        guides: 7,  route: "/guides/resources",    color: 0xd8b4fe, emissive: 0xa855f7 },
   ] as const;
 
@@ -473,11 +472,9 @@
     { source: "wiki", target: "career" },
     { source: "wiki", target: "networking" },
     { source: "wiki", target: "technical" },
-    { source: "wiki", target: "experience" },
     { source: "wiki", target: "resources" },
     { source: "foundations", target: "technical" },
     { source: "career",      target: "networking" },
-    { source: "career",      target: "experience" },
   ];
 
   // ── Three.js setup ─────────────────────────────────────────────
