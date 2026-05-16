@@ -736,12 +736,6 @@
 
   function hoverNode(obj: NodeObj) {
     const isCentral = "central" in obj.sim && obj.sim.central;
-    const radius = isCentral ? 22 : 12;
-    const s = 1.15;
-    obj.mesh.scale.setScalar(radius * s);
-    obj.innerGlow.scale.setScalar(radius * s * 1.4);
-    obj.midGlow.scale.setScalar(radius * s * (isCentral ? 2.8 : 2.2));
-    obj.glow.scale.setScalar(radius * s * (isCentral ? 5.0 : 4.0));
     (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.55 : 0.38;
     (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.22 : 0.15;
     (obj.glow.material as THREE.MeshBasicMaterial).opacity      = isCentral ? 0.12 : 0.09;
