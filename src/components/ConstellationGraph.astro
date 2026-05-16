@@ -47,9 +47,22 @@
     <p class="search-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</p>
   </div>
 
-  <div class="controls-hint">
+  <div class="controls-hint" id="controls-hint-3d">
     drag · rotate &nbsp;|&nbsp; right-drag · pan &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; dbl-click · reset
   </div>
+  <div class="controls-hint" id="controls-hint-2d" style="display:none">
+    click a node to explore &nbsp;|&nbsp; hover for details
+  </div>
+
+  <!-- 2D fallback view -->
+  <div id="graph-2d" style="display:none">
+    <svg id="graph-2d-svg" width="100%" height="100%"></svg>
+  </div>
+
+  <!-- View toggle button -->
+  <button id="view-toggle" class="view-toggle" aria-label="Switch to 2D view" title="Switch to 2D view">
+    <span id="view-toggle-label">2D</span>
+  </button>
 </div>
 
 <style>
@@ -379,6 +392,45 @@
   @keyframes driftFar  { from { transform: translate(0,0) }   to { transform: translate(60px,40px) } }
   @keyframes driftMid  { from { transform: translate(0,0) }   to { transform: translate(-80px,50px) } }
   @keyframes driftNear { from { transform: translate(0,0) }   to { transform: translate(100px,-60px) } }
+
+  /* ── 2D fallback ──────────────────────────────────────────────── */
+  #graph-2d {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+
+  #graph-2d-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── toggle button ────────────────────────────────────────────── */
+  .view-toggle {
+    position: absolute;
+    bottom: 2.8rem;
+    right: 1.2rem;
+    z-index: 30;
+    background: rgba(8,8,18,.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(168,85,247,.45);
+    border-radius: .4rem;
+    padding: .35rem .7rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    color: rgba(216,180,254,.85);
+    letter-spacing: .15em;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+    box-shadow: 0 0 12px rgba(168,85,247,.12);
+    pointer-events: all;
+  }
+  .view-toggle:hover {
+    background: rgba(168,85,247,.18);
+    border-color: rgba(168,85,247,.8);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(168,85,247,.3);
+  }
 </style>
 
 <style is:global>
@@ -456,11 +508,11 @@
   // ── node data ──────────────────────────────────────────────────
   const NODE_DEFS = [
     { id: "wiki",        label: "progsu / wiki", desc: "",                                          central: true,  guides: 0,  color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 8,  route: "/guides/foundations", color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 8,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
     { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 12, route: "/guides/career",       color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6,  route: "/guides/networking",   color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
+    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6,  route: "/guides/networking",   color: 0xd8b4fe, emissive: 0xa855f7 },
     { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 9,  route: "/guides/technical",    color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "resources",   label: "resources",      desc: "Tools, courses, and reading lists",        guides: 7,  route: "/guides/resources",    color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "misc",        label: "misc",            desc: "Everything else worth knowing",            guides: 7,  route: "/guides/misc",         color: 0xd8b4fe, emissive: 0xa855f7 },
   ] as const;
 
   type NodeDef   = typeof NODE_DEFS[number];
@@ -472,7 +524,7 @@
     { source: "wiki", target: "career" },
     { source: "wiki", target: "networking" },
     { source: "wiki", target: "technical" },
-    { source: "wiki", target: "resources" },
+    { source: "wiki", target: "misc" },
     { source: "foundations", target: "technical" },
     { source: "career",      target: "networking" },
   ];
@@ -1072,5 +1124,213 @@
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     renderer.setSize(W, H);
+    if (is2D) draw2D();
+  });
+
+  // ── 2D fallback view ──────────────────────────────────────────
+  const graph2dEl    = document.getElementById("graph-2d")!;
+  const svg2d        = document.getElementById("graph-2d-svg") as unknown as SVGSVGElement;
+  const hint3d       = document.getElementById("controls-hint-3d")!;
+  const hint2d       = document.getElementById("controls-hint-2d")!;
+  const toggleBtn    = document.getElementById("view-toggle")!;
+  const toggleLabel  = document.getElementById("view-toggle-label")!;
+  let   is2D         = false;
+
+  const NS = "http://www.w3.org/2000/svg";
+
+  // Radial layout: center node + 5 evenly spread around it
+  function get2DPositions(w: number, h: number) {
+    const cx = w / 2, cy = h / 2;
+    const r  = Math.min(w, h) * 0.30;
+    const positions: Record<string, { x: number; y: number }> = { wiki: { x: cx, y: cy } };
+    const satellites = simNodes.filter(n => n.id !== "wiki");
+    satellites.forEach((n, i) => {
+      const angle = (i / satellites.length) * Math.PI * 2 - Math.PI / 2;
+      positions[n.id] = { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+    });
+    return positions;
+  }
+
+  function draw2D() {
+    const w = root.clientWidth;
+    const h = root.clientHeight;
+    const pos = get2DPositions(w, h);
+
+    // Clear
+    while (svg2d.firstChild) svg2d.removeChild(svg2d.firstChild);
+
+    // Defs: glow filters
+    const defs = document.createElementNS(NS, "defs");
+
+    // Central glow
+    const fCentral = document.createElementNS(NS, "filter");
+    fCentral.setAttribute("id", "glow-central");
+    fCentral.setAttribute("x", "-80%"); fCentral.setAttribute("y", "-80%");
+    fCentral.setAttribute("width", "260%"); fCentral.setAttribute("height", "260%");
+    const feC = document.createElementNS(NS, "feGaussianBlur");
+    feC.setAttribute("stdDeviation", "14"); feC.setAttribute("result", "blur");
+    const feM1 = document.createElementNS(NS, "feMerge");
+    [document.createElementNS(NS, "feMergeNode"), document.createElementNS(NS, "feMergeNode")].forEach((n,i) => {
+      if (i === 1) n.setAttribute("in", "SourceGraphic");
+      feM1.appendChild(n);
+    });
+    fCentral.appendChild(feC); fCentral.appendChild(feM1);
+    defs.appendChild(fCentral);
+
+    // Node glow
+    const fNode = document.createElementNS(NS, "filter");
+    fNode.setAttribute("id", "glow-node");
+    fNode.setAttribute("x", "-80%"); fNode.setAttribute("y", "-80%");
+    fNode.setAttribute("width", "260%"); fNode.setAttribute("height", "260%");
+    const feN = document.createElementNS(NS, "feGaussianBlur");
+    feN.setAttribute("stdDeviation", "8"); feN.setAttribute("result", "blur");
+    const feM2 = document.createElementNS(NS, "feMerge");
+    [document.createElementNS(NS, "feMergeNode"), document.createElementNS(NS, "feMergeNode")].forEach((n,i) => {
+      if (i === 1) n.setAttribute("in", "SourceGraphic");
+      feM2.appendChild(n);
+    });
+    fNode.appendChild(feN); fNode.appendChild(feM2);
+    defs.appendChild(fNode);
+
+    svg2d.appendChild(defs);
+
+    // Draw edges first (behind nodes)
+    for (const link of links) {
+      const srcId = typeof link.source === "string" ? link.source : (link.source as any).id;
+      const tgtId = typeof link.target === "string" ? link.target : (link.target as any).id;
+      const s = pos[srcId], t = pos[tgtId];
+      if (!s || !t) continue;
+      const line = document.createElementNS(NS, "line");
+      line.setAttribute("x1", String(s.x)); line.setAttribute("y1", String(s.y));
+      line.setAttribute("x2", String(t.x)); line.setAttribute("y2", String(t.y));
+      line.setAttribute("stroke", "rgba(168,85,247,0.3)");
+      line.setAttribute("stroke-width", "1.5");
+      svg2d.appendChild(line);
+    }
+
+    // Draw nodes
+    for (const n of simNodes) {
+      const p = pos[n.id];
+      if (!p) continue;
+      const isCentral = n.id === "wiki";
+      const r = isCentral ? 26 : 18;
+      const hexColor = "#" + n.color.toString(16).padStart(6, "0");
+      const hexEmit  = "#" + n.emissive.toString(16).padStart(6, "0");
+
+      const g = document.createElementNS(NS, "g");
+      g.setAttribute("transform", `translate(${p.x},${p.y})`);
+      if (!isCentral) {
+        g.style.cursor = "pointer";
+        g.setAttribute("data-route", (n as any).route ?? "");
+        g.setAttribute("data-label", n.label);
+        g.setAttribute("data-desc",  (n as any).desc ?? "");
+        g.setAttribute("data-guides", String((n as any).guides ?? 0));
+      }
+
+      // Outer glow halo
+      const halo = document.createElementNS(NS, "circle");
+      halo.setAttribute("r", String(r * 2.4));
+      halo.setAttribute("fill", hexEmit);
+      halo.setAttribute("opacity", isCentral ? "0.15" : "0.1");
+      g.appendChild(halo);
+
+      // Inner glow
+      const innerH = document.createElementNS(NS, "circle");
+      innerH.setAttribute("r", String(r * 1.5));
+      innerH.setAttribute("fill", hexEmit);
+      innerH.setAttribute("opacity", isCentral ? "0.28" : "0.18");
+      g.appendChild(innerH);
+
+      // Main sphere
+      const circle = document.createElementNS(NS, "circle");
+      circle.setAttribute("r", String(r));
+      circle.setAttribute("fill", hexColor);
+      circle.setAttribute("filter", `url(#${isCentral ? "glow-central" : "glow-node"})`);
+      g.appendChild(circle);
+
+      // Invisible hit-area for easier clicking/tapping
+      if (!isCentral) {
+        const hit = document.createElementNS(NS, "circle");
+        hit.setAttribute("r", String(r + 20));
+        hit.setAttribute("fill", "transparent");
+        g.appendChild(hit);
+      }
+
+      // Label (non-central)
+      if (!isCentral) {
+        const label = document.createElementNS(NS, "text");
+        label.setAttribute("y", String(r + 22));
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("font-family", "Georgia, serif");
+        label.setAttribute("font-style", "italic");
+        label.setAttribute("font-size", "14");
+        label.setAttribute("fill", "rgba(255,255,255,0.92)");
+        label.setAttribute("pointer-events", "none");
+        label.textContent = n.label;
+        g.appendChild(label);
+      }
+
+      svg2d.appendChild(g);
+
+      // Click to navigate
+      if (!isCentral) {
+        g.addEventListener("click", () => {
+          const route = g.getAttribute("data-route");
+          if (route) window.location.href = route;
+        });
+
+        // Hover tooltip reuse
+        g.addEventListener("mouseenter", (e: MouseEvent) => {
+          tipName.textContent  = g.getAttribute("data-label") ?? "";
+          tipDesc.textContent  = g.getAttribute("data-desc") ?? "";
+          const cnt = g.getAttribute("data-guides") ?? "0";
+          tipCount.textContent = `${String(cnt).padStart(2,"0")} GUIDES`;
+          tip.style.left = `${e.clientX + 16}px`;
+          tip.style.top  = `${e.clientY - 14}px`;
+          tip.classList.add("visible");
+        });
+        g.addEventListener("mousemove", (e: MouseEvent) => {
+          tip.style.left = `${e.clientX + 16}px`;
+          tip.style.top  = `${e.clientY - 14}px`;
+        });
+        g.addEventListener("mouseleave", () => tip.classList.remove("visible"));
+      }
+    }
+  }
+
+  function enable2D() {
+    is2D = true;
+    canvas.style.display   = "none";
+    labelEl.style.display  = "none";
+    hint3d.style.display   = "none";
+    hint2d.style.display   = "";
+    graph2dEl.style.display = "";
+    toggleLabel.textContent = "3D";
+    toggleBtn.setAttribute("aria-label", "Switch to 3D view");
+    toggleBtn.setAttribute("title", "Switch to 3D view");
+    draw2D();
+  }
+
+  function enable3D() {
+    is2D = false;
+    canvas.style.display   = "";
+    labelEl.style.display  = "";
+    hint3d.style.display   = "";
+    hint2d.style.display   = "none";
+    graph2dEl.style.display = "none";
+    tip.classList.remove("visible");
+    toggleLabel.textContent = "2D";
+    toggleBtn.setAttribute("aria-label", "Switch to 2D view");
+    toggleBtn.setAttribute("title", "Switch to 2D view");
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    if (is2D) enable3D(); else enable2D();
+  });
+
+  // Auto-fallback: if WebGL context is lost or unavailable, switch to 2D
+  canvas.addEventListener("webglcontextlost", (e) => {
+    e.preventDefault();
+    enable2D();
   });
 </script>
