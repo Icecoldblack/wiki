@@ -1,0 +1,579 @@
+---
+// Hero section — extracted from reference/07-cosmic-hero.html
+// Custom CSS handles all star/orb/node effects; Tailwind handles structural layout only
+---
+
+<section class="constellation-hero">
+
+  <!-- LAYER 1: deep background nebula -->
+  <div class="layer-nebula"></div>
+
+  <!-- LAYER 2: far starfield (tiny, slow drift) -->
+  <div class="layer-stars layer-stars--far"></div>
+
+  <!-- LAYER 3: mid starfield (slightly larger, medium drift) -->
+  <div class="layer-stars layer-stars--mid"></div>
+
+  <!-- LAYER 4: near starfield (brightest, fastest drift) -->
+  <div class="layer-stars layer-stars--near"></div>
+
+  <!-- vignette -->
+  <div class="vignette"></div>
+
+  <!-- NAVBAR: minimal top chrome -->
+  <nav class="hero-nav">
+    <div class="hero-nav__logo">
+      <div class="hero-nav__orb"></div>
+      <span class="hero-nav__title">progsu / wiki</span>
+    </div>
+    <div class="hero-nav__links">
+      <a href="/" class="hero-nav__link">start</a>
+      <a href="/guides" class="hero-nav__link">guides</a>
+      <a href="/courses" class="hero-nav__link">courses</a>
+      <a href="https://github.com/progsu" class="hero-nav__link">contribute</a>
+      <span class="hero-nav__kbd">⌘K</span>
+    </div>
+  </nav>
+
+  <!-- CONSTELLATION (3D space) -->
+  <div class="constellation-stage">
+    <div class="constellation-inner">
+
+      <!-- edges SVG -->
+      <svg class="constellation-svg" viewBox="0 0 700 680" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="edge-1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(168,85,247,.55)"/>
+            <stop offset="100%" stop-color="rgba(168,85,247,.02)"/>
+          </linearGradient>
+          <linearGradient id="edge-2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(216,180,254,.45)"/>
+            <stop offset="100%" stop-color="rgba(168,85,247,.02)"/>
+          </linearGradient>
+          <linearGradient id="edge-cyan" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(34,211,238,.55)"/>
+            <stop offset="100%" stop-color="rgba(168,85,247,.05)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- spokes from center -->
+        <line x1="350" y1="340" x2="140" y2="200" stroke="url(#edge-1)" stroke-width="1"/>
+        <line x1="350" y1="340" x2="200" y2="510" stroke="url(#edge-1)" stroke-width="1"/>
+        <line x1="350" y1="340" x2="555" y2="180" stroke="url(#edge-cyan)" stroke-width="1.2"/>
+        <line x1="350" y1="340" x2="600" y2="420" stroke="url(#edge-1)" stroke-width=".9"/>
+        <line x1="350" y1="340" x2="475" y2="555" stroke="url(#edge-2)" stroke-width="1"/>
+        <line x1="350" y1="340" x2="130" y2="475" stroke="url(#edge-2)" stroke-width=".9"/>
+
+        <!-- inter-cluster connections (dashed, faint) -->
+        <line x1="140" y1="200" x2="555" y2="180" stroke="rgba(168,85,247,.08)" stroke-width=".5" stroke-dasharray="3 4"/>
+        <line x1="200" y1="510" x2="600" y2="420" stroke="rgba(168,85,247,.08)" stroke-width=".5" stroke-dasharray="3 4"/>
+        <line x1="140" y1="200" x2="200" y2="510" stroke="rgba(168,85,247,.06)" stroke-width=".5" stroke-dasharray="3 4"/>
+        <line x1="555" y1="180" x2="600" y2="420" stroke="rgba(34,211,238,.1)" stroke-width=".5" stroke-dasharray="3 4"/>
+
+        <!-- cluster local edges -->
+        <line x1="140" y1="200" x2="80" y2="155" stroke="rgba(168,85,247,.3)" stroke-width=".5"/>
+        <line x1="140" y1="200" x2="170" y2="135" stroke="rgba(168,85,247,.3)" stroke-width=".5"/>
+        <line x1="140" y1="200" x2="105" y2="270" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+        <line x1="200" y1="510" x2="135" y2="555" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+        <line x1="200" y1="510" x2="265" y2="565" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+        <line x1="200" y1="510" x2="155" y2="455" stroke="rgba(216,180,254,.2)" stroke-width=".5"/>
+        <line x1="555" y1="180" x2="615" y2="135" stroke="rgba(34,211,238,.35)" stroke-width=".6"/>
+        <line x1="555" y1="180" x2="495" y2="115" stroke="rgba(34,211,238,.3)" stroke-width=".5"/>
+        <line x1="600" y1="420" x2="660" y2="380" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+        <line x1="600" y1="420" x2="650" y2="475" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+        <line x1="475" y1="555" x2="525" y2="610" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+        <line x1="130" y1="475" x2="65" y2="510" stroke="rgba(168,85,247,.2)" stroke-width=".4"/>
+        <line x1="130" y1="475" x2="170" y2="535" stroke="rgba(168,85,247,.2)" stroke-width=".4"/>
+      </svg>
+
+      <!-- CENTRAL ANCHOR: glowing core -->
+      <div class="orb-wrap">
+        <div class="orb-bloom"></div>
+        <div class="orb-ring orb-ring--1"></div>
+        <div class="orb-ring orb-ring--2"></div>
+        <div class="orb-ring orb-ring--3"></div>
+        <div class="orb-core"></div>
+      </div>
+
+      <!-- CLUSTER: foundations (upper-left) -->
+      <div class="cluster" style="top:22%;left:18%">
+        <div class="cluster__node" style="width:18px;height:18px;box-shadow:0 0 24px rgba(168,85,247,.85),0 0 48px rgba(168,85,247,.4);background:radial-gradient(circle at 35% 30%,#fff,rgba(216,180,254,1) 30%,rgba(168,85,247,1) 70%,rgba(76,29,149,1) 100%);animation-delay:0s"></div>
+        <div class="cluster__label">foundations</div>
+        <div class="cluster__count">08 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:14%;left:11%;width:5px;height:5px;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+      <div class="satellite" style="top:14%;left:24%;width:4px;height:4px;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+      <div class="satellite" style="top:37%;left:14%;width:5px;height:5px;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+      <!-- CLUSTER: networking (upper-right, CYAN accent) -->
+      <div class="cluster" style="top:21%;left:74%">
+        <div class="cluster__node" style="width:16px;height:16px;box-shadow:0 0 22px rgba(34,211,238,.9),0 0 44px rgba(34,211,238,.4);background:radial-gradient(circle at 35% 30%,#fff,rgba(186,230,253,1) 30%,rgba(34,211,238,1) 70%,rgba(8,51,68,1) 100%);animation-delay:.7s"></div>
+        <div class="cluster__label">networking</div>
+        <div class="cluster__count" style="color:rgba(186,230,253,.75)">06 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:14%;left:82%;width:5px;height:5px;background:rgba(186,230,253,.75);box-shadow:0 0 6px rgba(34,211,238,.5)"></div>
+      <div class="satellite" style="top:13%;left:68%;width:4px;height:4px;background:rgba(186,230,253,.7);box-shadow:0 0 5px rgba(34,211,238,.45)"></div>
+
+      <!-- CLUSTER: career (mid-lower-left) -->
+      <div class="cluster" style="top:67%;left:23%">
+        <div class="cluster__node" style="width:20px;height:20px;box-shadow:0 0 28px rgba(168,85,247,.9),0 0 56px rgba(168,85,247,.45);background:radial-gradient(circle at 35% 30%,#fff,rgba(216,180,254,1) 25%,rgba(168,85,247,1) 65%,rgba(76,29,149,1) 100%);animation-delay:1.4s"></div>
+        <div class="cluster__label">career</div>
+        <div class="cluster__count">12 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:80%;left:18%;width:5px;height:5px;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+      <div class="satellite" style="top:81%;left:34%;width:5px;height:5px;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+      <div class="satellite" style="top:65%;left:14%;width:4px;height:4px;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+      <!-- CLUSTER: technical (mid-right, slightly recessed) -->
+      <div class="cluster" style="top:60%;left:81%;opacity:.9">
+        <div class="cluster__node" style="width:15px;height:15px;box-shadow:0 0 20px rgba(168,85,247,.75),0 0 40px rgba(168,85,247,.35);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(216,180,254,.95) 30%,rgba(168,85,247,.95) 70%,rgba(76,29,149,1) 100%);animation-delay:2.1s"></div>
+        <div class="cluster__label">technical</div>
+        <div class="cluster__count">09 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:53%;left:90%;width:4px;height:4px;background:rgba(216,180,254,.65);box-shadow:0 0 5px rgba(168,85,247,.4)"></div>
+      <div class="satellite" style="top:67%;left:93%;width:5px;height:5px;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+      <!-- CLUSTER: experience (lower-mid-right, recessed) -->
+      <div class="cluster" style="top:78%;left:65%;opacity:.78">
+        <div class="cluster__node" style="width:13px;height:13px;box-shadow:0 0 16px rgba(168,85,247,.6),0 0 32px rgba(168,85,247,.25);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.85),rgba(216,180,254,.85) 30%,rgba(168,85,247,.85) 70%,rgba(76,29,149,.9) 100%);animation-delay:2.8s"></div>
+        <div class="cluster__label" style="font-size:.65rem">experience</div>
+        <div class="cluster__count" style="font-size:.45rem;color:rgba(216,180,254,.55)">05 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:88%;left:75%;width:4px;height:4px;background:rgba(216,180,254,.55);box-shadow:0 0 4px rgba(168,85,247,.35)"></div>
+
+      <!-- CLUSTER: resources (lower-left, farthest/faintest) -->
+      <div class="cluster" style="top:67%;left:11%;opacity:.68">
+        <div class="cluster__node" style="width:11px;height:11px;box-shadow:0 0 14px rgba(168,85,247,.45);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.75),rgba(216,180,254,.75) 30%,rgba(168,85,247,.7) 70%,rgba(76,29,149,.8) 100%);animation-delay:3.5s"></div>
+        <div class="cluster__label" style="font-size:.6rem">resources</div>
+        <div class="cluster__count" style="font-size:.45rem;color:rgba(216,180,254,.45)">07 GUIDES</div>
+      </div>
+      <div class="satellite" style="top:78%;left:6%;width:4px;height:4px;background:rgba(216,180,254,.45);box-shadow:0 0 4px rgba(168,85,247,.3)"></div>
+
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY: eyebrow (top-center) -->
+  <div class="hero-eyebrow">AN OPEN WIKI &middot; BY PROGSU</div>
+
+  <!-- TYPOGRAPHY: headline + subline (lower-center, floating in space) -->
+  <div class="hero-copy">
+    <h1 class="hero-headline">the open wiki for<br>breaking into tech.</h1>
+    <p class="hero-subline">knowledge from people who landed offers in quant, big tech, research, and beyond.<br>signed, dated, free. take what helps.</p>
+  </div>
+
+  <!-- SEARCH BAR: lower third -->
+  <div class="hero-search-wrap">
+    <div class="hero-search">
+      <div class="hero-search__icon">
+        <div class="hero-search__handle"></div>
+      </div>
+      <span class="hero-search__placeholder">search 40 guides, 120 courses</span>
+      <span class="hero-search__kbd">⌘K</span>
+    </div>
+    <div class="hero-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</div>
+  </div>
+
+  <!-- scroll hint -->
+  <div class="hero-scroll">SCROLL</div>
+
+</section>
+
+<style>
+  /* ── layout ──────────────────────────────────────────────── */
+  .constellation-hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background: #020205;
+  }
+
+  /* ── nebula background ───────────────────────────────────── */
+  .layer-nebula {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76,29,149,.35), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30,27,75,.5), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.4), transparent 65%),
+      linear-gradient(180deg, #02020a 0%, #050516 50%, #020205 100%);
+  }
+
+  /* ── starfield layers ────────────────────────────────────── */
+  .layer-stars { position: absolute; inset: 0; }
+
+  .layer-stars--far {
+    background-image:
+      radial-gradient(1px 1px at 12% 23%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 78% 67%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 34% 81%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 88% 14%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 95% 88%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 45% 18%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 55% 92%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 38% 45%, rgba(255,255,255,.25), transparent);
+    background-size: 280px 280px;
+    animation: driftFar 180s linear infinite;
+    opacity: .7;
+  }
+
+  .layer-stars--mid {
+    background-image:
+      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216,180,254,.6), transparent),
+      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255,255,255,.65), transparent),
+      radial-gradient(1.5px 1.5px at 8% 65%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186,230,253,.55), transparent),
+      radial-gradient(1.5px 1.5px at 48% 88%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 72% 8%, rgba(216,180,254,.5), transparent);
+    background-size: 380px 380px;
+    animation: driftMid 120s linear infinite;
+    opacity: .85;
+  }
+
+  .layer-stars--near {
+    background-image:
+      radial-gradient(2px 2px at 18% 73%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.4) 30%, transparent 60%),
+      radial-gradient(2px 2px at 73% 22%, rgba(216,180,254,.85) 0%, rgba(216,180,254,.3) 30%, transparent 60%),
+      radial-gradient(2px 2px at 87% 84%, rgba(255,255,255,.9) 0%, rgba(255,255,255,.35) 30%, transparent 60%),
+      radial-gradient(2px 2px at 6% 26%, rgba(186,230,253,.8) 0%, rgba(186,230,253,.3) 30%, transparent 60%);
+    background-size: 480px 480px;
+    animation: driftNear 80s linear infinite;
+    opacity: .9;
+  }
+
+  /* ── vignette ────────────────────────────────────────────── */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 95% 80% at 50% 50%, transparent 40%, rgba(0,0,0,.55) 95%);
+    pointer-events: none;
+  }
+
+  /* ── navbar ──────────────────────────────────────────────── */
+  .hero-nav {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .hero-nav__logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .hero-nav__orb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(216,180,254,1) 0%, rgba(168,85,247,1) 50%, rgba(76,29,149,1) 100%);
+    box-shadow: 0 0 8px rgba(168,85,247,.6);
+  }
+
+  .hero-nav__title {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .6rem;
+    color: rgba(255,255,255,.65);
+    letter-spacing: .15em;
+  }
+
+  .hero-nav__links {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    color: rgba(255,255,255,.5);
+    letter-spacing: .12em;
+  }
+
+  .hero-nav__link {
+    color: rgba(255,255,255,.5);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .hero-nav__link:hover { color: rgba(255,255,255,.9); }
+
+  .hero-nav__kbd {
+    border: 1px solid rgba(255,255,255,.18);
+    padding: .2rem .4rem;
+    border-radius: .25rem;
+    color: rgba(255,255,255,.7);
+  }
+
+  /* ── constellation stage ─────────────────────────────────── */
+  .constellation-stage {
+    position: absolute;
+    inset: 0;
+    perspective: 1400px;
+    perspective-origin: 50% 50%;
+  }
+
+  .constellation-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(6deg) rotateY(-2deg);
+  }
+
+  .constellation-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* ── central orb ─────────────────────────────────────────── */
+  .orb-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    pointer-events: none;
+  }
+
+  .orb-bloom {
+    position: absolute;
+    inset: -60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.2) 0%, rgba(168,85,247,.05) 30%, transparent 65%);
+    filter: blur(20px);
+  }
+
+  .orb-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(168,85,247,.18);
+    animation: pulseRing 4s ease-out infinite;
+  }
+  .orb-ring--1 { inset: -30px; animation-delay: 0s; }
+  .orb-ring--2 { inset: -50px; border-color: rgba(168,85,247,.12); animation-delay: 1.3s; }
+  .orb-ring--3 { inset: -70px; border-color: rgba(168,85,247,.08); animation-delay: 2.6s; }
+
+  .orb-core {
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,1) 0%, rgba(216,180,254,.95) 15%, rgba(168,85,247,.9) 40%, rgba(76,29,149,1) 75%, #1a0a2e 100%);
+    box-shadow:
+      0 0 50px rgba(168,85,247,.6),
+      0 0 100px rgba(168,85,247,.3),
+      0 0 150px rgba(168,85,247,.15),
+      inset -10px -10px 20px rgba(0,0,0,.5);
+  }
+
+  /* ── cluster nodes ───────────────────────────────────────── */
+  .cluster {
+    position: absolute;
+    text-align: center;
+  }
+
+  .cluster__node {
+    border-radius: 50%;
+    margin: 0 auto;
+    animation: nodeBreathe 5s ease-in-out infinite;
+  }
+
+  .cluster__label {
+    font-size: .7rem;
+    color: #fff;
+    font-style: italic;
+    font-family: Georgia, serif;
+    margin-top: .55rem;
+    letter-spacing: .01em;
+    text-shadow: 0 0 12px rgba(0,0,0,.8);
+  }
+
+  .cluster__count {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .5rem;
+    color: rgba(216,180,254,.7);
+    letter-spacing: .12em;
+    margin-top: .2rem;
+  }
+
+  /* ── satellite dots ──────────────────────────────────────── */
+  .satellite {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  /* ── typography ──────────────────────────────────────────── */
+  .hero-eyebrow {
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 5;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    color: rgba(216,180,254,.85);
+    letter-spacing: .25em;
+    text-shadow: 0 0 18px rgba(0,0,0,.9);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .hero-copy {
+    position: absolute;
+    bottom: 23%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 5;
+    padding: 0 1.5rem;
+    pointer-events: none;
+  }
+
+  .hero-headline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 24px rgba(0,0,0,.85), 0 0 40px rgba(76,29,149,.4);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .hero-subline {
+    font-family: Georgia, serif;
+    font-size: .7rem;
+    color: rgba(255,255,255,.7);
+    margin-top: .85rem;
+    line-height: 1.55;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 0 1px 8px rgba(0,0,0,.85);
+  }
+
+  /* ── search bar ──────────────────────────────────────────── */
+  .hero-search-wrap {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
+    max-width: 480px;
+    z-index: 5;
+  }
+
+  .hero-search {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    background: rgba(8,8,18,.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168,85,247,.35);
+    border-radius: .55rem;
+    padding: .65rem .9rem;
+    box-shadow:
+      0 0 32px rgba(168,85,247,.15),
+      0 8px 32px rgba(0,0,0,.5),
+      inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  .hero-search__icon {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid rgba(216,180,254,.7);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .hero-search__handle {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 4px;
+    height: 1.5px;
+    background: rgba(216,180,254,.7);
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+
+  .hero-search__placeholder {
+    font-size: .7rem;
+    color: rgba(255,255,255,.55);
+    flex: 1;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  .hero-search__kbd {
+    font-size: .55rem;
+    color: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: .15rem .35rem;
+    border-radius: .2rem;
+    letter-spacing: .05em;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  /* ── social proof bar ────────────────────────────────────── */
+  .hero-proof {
+    text-align: center;
+    margin-top: .7rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .5rem;
+    color: rgba(255,255,255,.4);
+    letter-spacing: .12em;
+  }
+
+  /* ── scroll hint ─────────────────────────────────────────── */
+  .hero-scroll {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .4rem;
+    color: rgba(255,255,255,.25);
+    letter-spacing: .4em;
+    z-index: 5;
+  }
+
+  /* ── animations ──────────────────────────────────────────── */
+  @keyframes pulseRing {
+    0%   { transform: scale(.85); opacity: .6; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  @keyframes nodeBreathe {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.12); }
+  }
+
+  @keyframes driftFar {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(60px, 40px); }
+  }
+
+  @keyframes driftMid {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(-80px, 50px); }
+  }
+
+  @keyframes driftNear {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(100px, -60px); }
+  }
+</style>
