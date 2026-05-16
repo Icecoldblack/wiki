@@ -1,22 +1,78 @@
 ---
-import { SITE_TITLE, NAV_LINKS } from "../consts";
+import { NAV_LINKS } from "../consts";
 ---
 
-<header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-50">
-  <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-    <a href="/" class="text-lg font-bold text-white no-underline hover:text-indigo-300">
-      {SITE_TITLE}
-    </a>
-    <ul class="flex gap-6 list-none m-0 p-0">
-      {
-        NAV_LINKS.map((link) => (
-          <li>
-            <a href={link.href} class="text-sm font-medium no-underline text-gray-300 hover:text-white">
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
-</header>
+<nav class="hero-nav">
+  <div class="hero-nav__logo">
+    <div class="hero-nav__orb"></div>
+    <span class="hero-nav__title">progsu / wiki</span>
+  </div>
+  <div class="hero-nav__links">
+    <a href="/" class="hero-nav__link">start</a>
+    {NAV_LINKS.map((l) => (
+      <a href={l.href} class="hero-nav__link">{l.label.toLowerCase()}</a>
+    ))}
+    <a href="https://github.com/progsu" class="hero-nav__link">contribute</a>
+    <span class="hero-nav__kbd">⌘K</span>
+  </div>
+</nav>
+
+<style>
+  .hero-nav {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 30;
+  }
+
+  .hero-nav__logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .hero-nav__orb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(216,180,254,1) 0%, rgba(168,85,247,1) 50%, rgba(76,29,149,1) 100%);
+    box-shadow: 0 0 8px rgba(168, 85, 247, .6);
+  }
+
+  .hero-nav__title {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .6rem;
+    color: rgba(255, 255, 255, .65);
+    letter-spacing: .15em;
+  }
+
+  .hero-nav__links {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    letter-spacing: .12em;
+  }
+
+  .hero-nav__link {
+    color: rgba(255, 255, 255, .5);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .hero-nav__link:hover { color: rgba(255, 255, 255, .9); }
+
+  .hero-nav__kbd {
+    border: 1px solid rgba(255, 255, 255, .18);
+    padding: .2rem .4rem;
+    border-radius: .25rem;
+    color: rgba(255, 255, 255, .7);
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    letter-spacing: .12em;
+  }
+</style>
