@@ -1,5 +1,7 @@
 ---
-import ConstellationHero from "../components/ConstellationHero.astro";
+import Navbar from "../components/Navbar.astro";
+import ConstellationGraph from "../components/ConstellationGraph.astro";
+import SearchBar from "../components/SearchBar.astro";
 import "../styles/global.css";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
@@ -13,7 +15,18 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{SITE_TITLE}</title>
   </head>
-  <body style="margin:0;padding:0;background:#020205">
-    <ConstellationHero />
+  <body>
+    <ConstellationGraph />
+    <Navbar />
+    <SearchBar />
   </body>
 </html>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #06060f;
+    overflow: hidden;
+  }
+</style>

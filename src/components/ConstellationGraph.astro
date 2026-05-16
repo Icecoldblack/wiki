@@ -1,0 +1,472 @@
+---
+// D3 force-directed constellation graph
+// Visual palette extracted from reference/07-cosmic-hero.html
+---
+
+<div id="constellation-root">
+
+  <!-- Starfield layers (CSS-animated, extracted from reference) -->
+  <div class="layer-nebula"></div>
+  <div class="layer-stars layer-stars--far"></div>
+  <div class="layer-stars layer-stars--mid"></div>
+  <div class="layer-stars layer-stars--near"></div>
+  <div class="vignette"></div>
+
+  <!-- D3 graph mounts here -->
+  <svg id="graph-svg"></svg>
+
+  <!-- Tooltip -->
+  <div id="node-tooltip" class="tooltip" aria-hidden="true"></div>
+
+  <!-- Hero copy -->
+  <div class="hero-copy" id="hero-copy">
+    <div class="hero-eyebrow">AN OPEN WIKI &middot; BY PROGSU</div>
+    <h1 class="hero-headline">the open wiki for<br>breaking into tech.</h1>
+    <p class="hero-subline">
+      knowledge from people who landed offers in quant, big tech, research, and beyond.<br>
+      signed, dated, free. take what helps.
+    </p>
+  </div>
+
+  <div class="hero-scroll">SCROLL</div>
+</div>
+
+<style>
+  /* ── root ──────────────────────────────────────────────── */
+  #constellation-root {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background: #06060f;
+  }
+
+  /* ── nebula ────────────────────────────────────────────── */
+  .layer-nebula {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76,29,149,.35), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30,27,75,.5), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.4), transparent 65%),
+      linear-gradient(180deg, #02020a 0%, #050516 50%, #02020a 100%);
+  }
+
+  /* ── starfields ────────────────────────────────────────── */
+  .layer-stars { position: absolute; inset: 0; }
+
+  .layer-stars--far {
+    background-image:
+      radial-gradient(1px 1px at 12% 23%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 78% 67%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 34% 81%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 88% 14%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 5%  55%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 25% 8%,  rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 95% 88%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 45% 18%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 55% 92%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 38% 45%, rgba(255,255,255,.25), transparent);
+    background-size: 280px 280px;
+    animation: driftFar 180s linear infinite;
+    opacity: .7;
+  }
+
+  .layer-stars--mid {
+    background-image:
+      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216,180,254,.6), transparent),
+      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255,255,255,.65), transparent),
+      radial-gradient(1.5px 1.5px at 8%  65%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186,230,253,.55), transparent),
+      radial-gradient(1.5px 1.5px at 48% 88%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 72% 8%,  rgba(216,180,254,.5), transparent);
+    background-size: 380px 380px;
+    animation: driftMid 120s linear infinite;
+    opacity: .85;
+  }
+
+  .layer-stars--near {
+    background-image:
+      radial-gradient(2px 2px at 18% 73%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.4) 30%, transparent 60%),
+      radial-gradient(2px 2px at 73% 22%, rgba(216,180,254,.85) 0%, rgba(216,180,254,.3) 30%, transparent 60%),
+      radial-gradient(2px 2px at 87% 84%, rgba(255,255,255,.9) 0%, rgba(255,255,255,.35) 30%, transparent 60%),
+      radial-gradient(2px 2px at 6%  26%, rgba(186,230,253,.8) 0%, rgba(186,230,253,.3) 30%, transparent 60%);
+    background-size: 480px 480px;
+    animation: driftNear 80s linear infinite;
+    opacity: .9;
+  }
+
+  /* ── vignette ──────────────────────────────────────────── */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 95% 80% at 50% 50%, transparent 40%, rgba(0,0,0,.6) 95%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ── D3 SVG ────────────────────────────────────────────── */
+  #graph-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    cursor: grab;
+  }
+  #graph-svg:active { cursor: grabbing; }
+
+  /* ── tooltip ───────────────────────────────────────────── */
+  .tooltip {
+    position: fixed;
+    padding: .55rem .8rem;
+    background: rgba(8, 8, 18, .85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(168, 85, 247, .4);
+    border-radius: .45rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .6rem;
+    color: rgba(255, 255, 255, .85);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 50;
+    white-space: nowrap;
+    box-shadow: 0 0 20px rgba(168, 85, 247, .2);
+  }
+  .tooltip.visible { opacity: 1; }
+  .tooltip__name {
+    font-style: italic;
+    font-family: Georgia, serif;
+    font-size: .75rem;
+    color: #fff;
+    display: block;
+    margin-bottom: .25rem;
+  }
+  .tooltip__count { color: rgba(216, 180, 254, .7); letter-spacing: .1em; }
+
+  /* ── hero copy ─────────────────────────────────────────── */
+  .hero-copy {
+    position: absolute;
+    bottom: 18%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 20;
+    padding: 0 1.5rem;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    color: rgba(216, 180, 254, .85);
+    letter-spacing: .25em;
+    margin-bottom: .75rem;
+    text-shadow: 0 0 18px rgba(0,0,0,.9);
+  }
+
+  .hero-headline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 24px rgba(0,0,0,.85), 0 0 40px rgba(76,29,149,.4);
+    max-width: 560px;
+    margin: 0 auto .85rem;
+  }
+
+  .hero-subline {
+    font-family: Georgia, serif;
+    font-size: .7rem;
+    color: rgba(255, 255, 255, .65);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+    text-shadow: 0 1px 8px rgba(0,0,0,.85);
+  }
+
+  /* ── scroll hint ───────────────────────────────────────── */
+  .hero-scroll {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .4rem;
+    color: rgba(255, 255, 255, .25);
+    letter-spacing: .4em;
+    z-index: 20;
+  }
+
+  /* ── animations ────────────────────────────────────────── */
+  @keyframes driftFar  { from { transform: translate(0,0) }   to { transform: translate(60px,40px) } }
+  @keyframes driftMid  { from { transform: translate(0,0) }   to { transform: translate(-80px,50px) } }
+  @keyframes driftNear { from { transform: translate(0,0) }   to { transform: translate(100px,-60px) } }
+</style>
+
+<script>
+  import * as d3 from "d3";
+
+  // ── data ──────────────────────────────────────────────────
+  const nodes = [
+    { id: "wiki",        label: "progsu / wiki", central: true },
+    { id: "foundations", label: "foundations",   guides: 8,  route: "/guides/foundations" },
+    { id: "career",      label: "career",         guides: 12, route: "/guides/career" },
+    { id: "networking",  label: "networking",     guides: 6,  route: "/guides/networking", accent: true },
+    { id: "technical",   label: "technical",      guides: 9,  route: "/guides/technical" },
+    { id: "experience",  label: "experience",     guides: 5,  route: "/guides/experience" },
+    { id: "resources",   label: "resources",      guides: 7,  route: "/guides/resources" },
+  ] as const;
+
+  type NodeDatum = typeof nodes[number] & d3.SimulationNodeDatum;
+  type LinkDatum = { source: string; target: string };
+
+  const links: LinkDatum[] = [
+    { source: "wiki", target: "foundations" },
+    { source: "wiki", target: "career" },
+    { source: "wiki", target: "networking" },
+    { source: "wiki", target: "technical" },
+    { source: "wiki", target: "experience" },
+    { source: "wiki", target: "resources" },
+    { source: "foundations", target: "technical" },
+    { source: "career",      target: "networking" },
+    { source: "career",      target: "experience" },
+  ];
+
+  // ── helpers ────────────────────────────────────────────────
+  const nodeRadius = (d: NodeDatum) => ("central" in d && d.central) ? 28 : 14;
+
+  const nodeColor = (d: NodeDatum) => {
+    if ("central" in d && d.central) return "rgba(168,85,247,1)";
+    if ("accent" in d && d.accent)   return "rgba(34,211,238,1)";
+    return "rgba(168,85,247,0.9)";
+  };
+
+  const nodeGlow = (d: NodeDatum) => {
+    if ("central" in d && d.central) return "rgba(168,85,247,.7)";
+    if ("accent" in d && d.accent)   return "rgba(34,211,238,.8)";
+    return "rgba(168,85,247,.55)";
+  };
+
+  // ── mount ──────────────────────────────────────────────────
+  const root  = document.getElementById("constellation-root")!;
+  const svgEl = document.getElementById("graph-svg") as unknown as SVGSVGElement;
+  const tip   = document.getElementById("node-tooltip")!;
+
+  const W = root.clientWidth;
+  const H = root.clientHeight;
+
+  const svg = d3.select(svgEl);
+
+  // defs: radial gradients + filters
+  const defs = svg.append("defs");
+
+  // glow filter
+  defs.append("filter")
+    .attr("id", "glow")
+    .attr("x", "-50%").attr("y", "-50%")
+    .attr("width", "200%").attr("height", "200%")
+    .append("feGaussianBlur")
+    .attr("stdDeviation", "6");
+
+  // pulse-ring filter (softer)
+  defs.append("filter")
+    .attr("id", "glow-soft")
+    .attr("x", "-100%").attr("y", "-100%")
+    .attr("width", "300%").attr("height", "300%")
+    .append("feGaussianBlur")
+    .attr("stdDeviation", "12");
+
+  // node gradients
+  const mutableNodes = nodes.map(n => ({ ...n })) as NodeDatum[];
+
+  mutableNodes.forEach(d => {
+    const grad = defs.append("radialGradient")
+      .attr("id", `grad-${d.id}`)
+      .attr("cx", "35%").attr("cy", "30%").attr("r", "65%");
+
+    if ("central" in d && d.central) {
+      grad.append("stop").attr("offset", "0%").attr("stop-color", "#fff");
+      grad.append("stop").attr("offset", "20%").attr("stop-color", "rgba(216,180,254,1)");
+      grad.append("stop").attr("offset", "55%").attr("stop-color", "rgba(168,85,247,1)");
+      grad.append("stop").attr("offset", "85%").attr("stop-color", "rgba(76,29,149,1)");
+      grad.append("stop").attr("offset", "100%").attr("stop-color", "#1a0a2e");
+    } else if ("accent" in d && d.accent) {
+      grad.append("stop").attr("offset", "0%").attr("stop-color", "#fff");
+      grad.append("stop").attr("offset", "30%").attr("stop-color", "rgba(186,230,253,1)");
+      grad.append("stop").attr("offset", "70%").attr("stop-color", "rgba(34,211,238,1)");
+      grad.append("stop").attr("offset", "100%").attr("stop-color", "rgba(8,51,68,1)");
+    } else {
+      grad.append("stop").attr("offset", "0%").attr("stop-color", "#fff");
+      grad.append("stop").attr("offset", "25%").attr("stop-color", "rgba(216,180,254,1)");
+      grad.append("stop").attr("offset", "65%").attr("stop-color", "rgba(168,85,247,1)");
+      grad.append("stop").attr("offset", "100%").attr("stop-color", "rgba(76,29,149,1)");
+    }
+  });
+
+  // ── zoom container ─────────────────────────────────────────
+  const g = svg.append("g").attr("class", "zoom-layer");
+
+  const zoom = d3.zoom<SVGSVGElement, unknown>()
+    .scaleExtent([0.4, 3])
+    .on("zoom", (e) => g.attr("transform", e.transform));
+
+  svg.call(zoom);
+
+  // ── simulation ─────────────────────────────────────────────
+  const sim = d3.forceSimulation<NodeDatum>(mutableNodes)
+    .force("link",   d3.forceLink<NodeDatum, LinkDatum>(links).id(d => d.id).distance(160).strength(0.6))
+    .force("charge", d3.forceManyBody().strength(-600))
+    .force("center", d3.forceCenter(W / 2, H / 2))
+    .force("collide", d3.forceCollide<NodeDatum>().radius(d => nodeRadius(d) + 20))
+    .alphaDecay(0.025);
+
+  // fix central node to center
+  const centerNode = mutableNodes.find(n => n.id === "wiki")!;
+  centerNode.fx = W / 2;
+  centerNode.fy = H / 2;
+
+  // start nodes at center for animate-in effect
+  mutableNodes.forEach(n => { n.x = W / 2; n.y = H / 2; });
+
+  // ── edges ──────────────────────────────────────────────────
+  const linkSel = g.append("g").attr("class", "links")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("stroke", "rgba(168,85,247,.18)")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", (d) => {
+      const isSpoke = d.source === "wiki" || d.target === "wiki";
+      return isSpoke ? "none" : "3 4";
+    });
+
+  // ── node groups ────────────────────────────────────────────
+  const nodeG = g.append("g").attr("class", "nodes")
+    .selectAll("g")
+    .data(mutableNodes)
+    .join("g")
+    .attr("class", "node-group")
+    .style("cursor", d => ("route" in d) ? "pointer" : "default");
+
+  // outer glow circle (blur filter)
+  nodeG.append("circle")
+    .attr("r", d => nodeRadius(d) + 14)
+    .attr("fill", d => nodeGlow(d))
+    .attr("opacity", 0.35)
+    .attr("filter", "url(#glow)");
+
+  // main node circle
+  nodeG.append("circle")
+    .attr("r", d => nodeRadius(d))
+    .attr("fill", d => `url(#grad-${d.id})`)
+    .attr("stroke", d => nodeColor(d))
+    .attr("stroke-width", 1)
+    .attr("stroke-opacity", 0.4);
+
+  // pulse rings (central node only)
+  const centralG = nodeG.filter(d => "central" in d && !!d.central);
+  [0, 1.3, 2.6].forEach(delay => {
+    centralG.append("circle")
+      .attr("class", "pulse-ring")
+      .attr("r", 28)
+      .attr("fill", "none")
+      .attr("stroke", "rgba(168,85,247,.25)")
+      .attr("stroke-width", 1)
+      .style("animation", `pulseRing 4s ease-out ${delay}s infinite`);
+  });
+
+  // label
+  nodeG.append("text")
+    .attr("class", "node-label")
+    .attr("dy", d => nodeRadius(d) + 18)
+    .attr("text-anchor", "middle")
+    .attr("fill", "#fff")
+    .attr("font-family", "Georgia, serif")
+    .attr("font-style", "italic")
+    .attr("font-size", d => ("central" in d && d.central) ? "13px" : "11px")
+    .style("text-shadow", "0 0 12px rgba(0,0,0,.9)")
+    .style("pointer-events", "none")
+    .text(d => d.label);
+
+  // guide count (child nodes only)
+  nodeG.filter(d => !("central" in d) || !d.central)
+    .append("text")
+    .attr("dy", d => nodeRadius(d) + 30)
+    .attr("text-anchor", "middle")
+    .attr("fill", d => ("accent" in d && d.accent) ? "rgba(186,230,253,.75)" : "rgba(216,180,254,.7)")
+    .attr("font-family", "'SF Mono', Menlo, monospace")
+    .attr("font-size", "8px")
+    .attr("letter-spacing", "0.12em")
+    .style("pointer-events", "none")
+    .text(d => `${"guides" in d ? String(d.guides).padStart(2,"0") : ""} GUIDES`);
+
+  // ── drag ───────────────────────────────────────────────────
+  const drag = d3.drag<SVGGElement, NodeDatum>()
+    .on("start", (e, d) => {
+      if (!e.active) sim.alphaTarget(0.3).restart();
+      if (!("central" in d) || !d.central) { d.fx = d.x; d.fy = d.y; }
+    })
+    .on("drag", (e, d) => {
+      if (!("central" in d) || !d.central) { d.fx = e.x; d.fy = e.y; }
+    })
+    .on("end", (e, d) => {
+      if (!e.active) sim.alphaTarget(0);
+      if (!("central" in d) || !d.central) { d.fx = null; d.fy = null; }
+    });
+
+  (nodeG as unknown as d3.Selection<SVGGElement, NodeDatum, SVGGElement, unknown>).call(drag);
+
+  // ── tooltip & click ────────────────────────────────────────
+  nodeG
+    .on("mouseenter", (e: MouseEvent, d) => {
+      if ("central" in d && d.central) return;
+      const name  = d.label;
+      const count = "guides" in d ? d.guides : 0;
+      tip.innerHTML = `<span class="tooltip__name">${name}</span><span class="tooltip__count">${String(count).padStart(2,"0")} GUIDES</span>`;
+      tip.classList.add("visible");
+    })
+    .on("mousemove", (e: MouseEvent) => {
+      tip.style.left = `${e.clientX + 14}px`;
+      tip.style.top  = `${e.clientY - 10}px`;
+    })
+    .on("mouseleave", () => tip.classList.remove("visible"))
+    .on("click", (_e, d) => {
+      if ("route" in d && d.route) window.location.href = d.route;
+    });
+
+  // ── tick ───────────────────────────────────────────────────
+  sim.on("tick", () => {
+    linkSel
+      .attr("x1", d => (d.source as NodeDatum).x!)
+      .attr("y1", d => (d.source as NodeDatum).y!)
+      .attr("x2", d => (d.target as NodeDatum).x!)
+      .attr("y2", d => (d.target as NodeDatum).y!);
+
+    nodeG.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  // ── resize ─────────────────────────────────────────────────
+  window.addEventListener("resize", () => {
+    const nW = root.clientWidth;
+    const nH = root.clientHeight;
+    centerNode.fx = nW / 2;
+    centerNode.fy = nH / 2;
+    sim.force("center", d3.forceCenter(nW / 2, nH / 2)).alpha(0.3).restart();
+  });
+</script>
+
+<style is:global>
+  @keyframes pulseRing {
+    0%   { transform: scale(.85); opacity: .6; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+</style>

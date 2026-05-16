@@ -1,0 +1,86 @@
+---
+---
+<div class="search-wrap">
+  <div class="search-bar">
+    <div class="search-icon">
+      <div class="search-handle"></div>
+    </div>
+    <span class="search-placeholder">search 40 guides, 120 courses</span>
+    <span class="search-kbd">⌘K</span>
+  </div>
+  <div class="search-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</div>
+</div>
+
+<style>
+  .search-wrap {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
+    max-width: 480px;
+    z-index: 20;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    background: rgba(8, 8, 18, .6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168, 85, 247, .35);
+    border-radius: .55rem;
+    padding: .65rem .9rem;
+    box-shadow:
+      0 0 32px rgba(168, 85, 247, .15),
+      0 8px 32px rgba(0, 0, 0, .5),
+      inset 0 1px 0 rgba(255, 255, 255, .06);
+    cursor: text;
+  }
+
+  .search-icon {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid rgba(216, 180, 254, .7);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .search-handle {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 4px;
+    height: 1.5px;
+    background: rgba(216, 180, 254, .7);
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+
+  .search-placeholder {
+    font-size: .7rem;
+    color: rgba(255, 255, 255, .55);
+    flex: 1;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  .search-kbd {
+    font-size: .55rem;
+    color: rgba(255, 255, 255, .5);
+    border: 1px solid rgba(255, 255, 255, .18);
+    padding: .15rem .35rem;
+    border-radius: .2rem;
+    letter-spacing: .05em;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  .search-proof {
+    text-align: center;
+    margin-top: .7rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .5rem;
+    color: rgba(255, 255, 255, .4);
+    letter-spacing: .12em;
+  }
+</style>
