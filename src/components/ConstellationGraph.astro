@@ -503,6 +503,7 @@
 <script>
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
   import * as d3 from "d3";
 
   // ── node data ──────────────────────────────────────────────────
@@ -581,6 +582,25 @@
   const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.18);
   rimLight.position.set(0.3, -1.0, -1.0);
   scene.add(rimLight);
+
+  // ── Mona model ────────────────────────────────────────────────
+  let monaModel: THREE.Object3D | null = null;
+  const gltfLoader = new GLTFLoader();
+  gltfLoader.load("/mona.glb", (gltf) => {
+    monaModel = gltf.scene;
+    monaModel.scale.setScalar(60);
+    monaModel.position.set(-220, 120, -60);
+    monaModel.rotation.y = 0.5;
+    // Soften all materials so she reads as background
+    monaModel.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mats.forEach((m: any) => { if (m) m.opacity !== undefined ? (m.transparent = true, m.opacity = 0.72) : null; });
+      }
+    });
+    scene.add(monaModel);
+  }, undefined, (err) => console.warn("Mona model failed to load:", err));
 
   // OrbitControls — left drag = rotate, middle drag = pan, scroll = zoom
   const controls = new OrbitControls(camera, canvas);
@@ -922,6 +942,12 @@
     animTime += delta;
 
     controls.update();
+
+    // Slow idle sway on Mona
+    if (monaModel) {
+      monaModel.position.y = 120 + Math.sin(animTime * 0.8) * 6;
+      monaModel.rotation.y = 0.5 + Math.sin(animTime * 0.25) * 0.08;
+    }
 
     // Clamp pan so the graph can't drift off-screen
     const PAN_LIMIT = 200;
