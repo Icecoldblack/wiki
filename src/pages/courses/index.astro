@@ -3,9 +3,48 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <Layout title="Courses">
-  <h1 class="text-3xl font-bold text-white mb-4">Courses</h1>
-  <p class="text-gray-400 leading-relaxed max-w-2xl">
-    Structured learning paths and course resources curated by ProgSU members — covering GSU
-    coursework, self-paced study plans, and recommended external courses. More content coming soon.
+  <p class="page-eyebrow">COURSES</p>
+  <h1 class="page-headline">structured paths<br>to get there faster.</h1>
+  <p class="page-sub">
+    GSU coursework, self-paced study plans, and external courses curated by ProgSU members who've taken them.
   </p>
+  <p class="coming-soon">courses coming soon.</p>
 </Layout>
+
+<style>
+  .page-eyebrow {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .52rem;
+    color: rgba(216,180,254,.75);
+    letter-spacing: .28em;
+    margin: 0 0 1rem;
+  }
+  .page-headline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 24px rgba(0,0,0,.8), 0 0 40px rgba(76,29,149,.35);
+    margin: 0 0 .75rem;
+  }
+  .page-sub {
+    font-family: Georgia, serif;
+    font-size: .72rem;
+    color: rgba(255,255,255,.45);
+    line-height: 1.6;
+    margin: 0 0 2.5rem;
+    max-width: 480px;
+  }
+  .coming-soon {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .5rem;
+    color: rgba(168,85,247,.4);
+    letter-spacing: .2em;
+    border: 1px solid rgba(168,85,247,.15);
+    border-radius: .4rem;
+    padding: .6rem 1rem;
+    display: inline-block;
+  }
+</style>

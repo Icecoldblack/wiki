@@ -21,11 +21,95 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | {SITE_TITLE}</title>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body>
+    <!-- Cosmic background layers -->
+    <div class="bg-nebula"></div>
+    <div class="bg-stars bg-stars--far"></div>
+    <div class="bg-stars bg-stars--mid"></div>
+    <div class="bg-vignette"></div>
+
     <Navbar />
-    <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-12">
+    <main class="layout-main">
       <slot />
     </main>
     <Footer />
   </body>
 </html>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #02020a;
+    color: rgba(255,255,255,.85);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .bg-nebula {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76,29,149,.25), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30,27,75,.35), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.3), transparent 65%),
+      linear-gradient(180deg, #02020a 0%, #050516 50%, #02020a 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-stars--far {
+    background-image:
+      radial-gradient(1px 1px at 12% 23%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 78% 67%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 34% 81%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 88% 14%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 5%  55%, rgba(255,255,255,.3),  transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,.25), transparent),
+      radial-gradient(1px 1px at 25%  8%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 95% 88%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 45% 18%, rgba(255,255,255,.25), transparent),
+      radial-gradient(1px 1px at 55% 92%, rgba(255,255,255,.3),  transparent);
+    background-size: 280px 280px;
+    opacity: .55;
+  }
+  .bg-stars--mid {
+    background-image:
+      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255,255,255,.6),  transparent),
+      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216,180,254,.5),  transparent),
+      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 8%  65%, rgba(255,255,255,.5),  transparent),
+      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186,230,253,.45), transparent),
+      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1.5px 1.5px at 72%  8%, rgba(216,180,254,.4),  transparent);
+    background-size: 380px 380px;
+    opacity: .7;
+  }
+
+  .bg-vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 45%, rgba(0,0,0,.5) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout-main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 6rem 1.5rem 4rem;
+  }
+</style>
