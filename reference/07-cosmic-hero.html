@@ -1,0 +1,253 @@
+<h2>cosmic hero, full-bleed</h2>
+<p class="subtitle" style="color:var(--text-secondary)">Constellation owns the viewport. Three star layers for depth, restrained palette (mostly violet with a single cyan accent), typography floats inside the space rather than sitting above it. Polish bar: Linear / Vercel / Anthropic landing.</p>
+
+<div class="card" data-choice="cosmic" onclick="toggleSelect(this)" style="border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);overflow:hidden;border-radius:.5rem">
+  <div class="card-image" style="background:#020205;padding:0;height:680px;border-bottom:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden">
+
+    <!-- LAYER 1: deep background nebula -->
+    <div style="position:absolute;inset:0;background:
+      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76,29,149,.35), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30,27,75,.5), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.4), transparent 65%),
+      linear-gradient(180deg, #02020a 0%, #050516 50%, #020205 100%);"></div>
+
+    <!-- LAYER 2: far starfield (tiny, slow drift) -->
+    <div style="position:absolute;inset:0;background-image:
+      radial-gradient(1px 1px at 12% 23%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 78% 67%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 34% 81%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 88% 14%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 95% 88%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 45% 18%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 55% 92%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 38% 45%, rgba(255,255,255,.25), transparent);
+      background-size:280px 280px;animation:driftFar 180s linear infinite;opacity:.7"></div>
+
+    <!-- LAYER 3: mid starfield (slightly larger, medium drift) -->
+    <div style="position:absolute;inset:0;background-image:
+      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216,180,254,.6), transparent),
+      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255,255,255,.65), transparent),
+      radial-gradient(1.5px 1.5px at 8% 65%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186,230,253,.55), transparent),
+      radial-gradient(1.5px 1.5px at 48% 88%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 72% 8%, rgba(216,180,254,.5), transparent);
+      background-size:380px 380px;animation:driftMid 120s linear infinite;opacity:.85"></div>
+
+    <!-- LAYER 4: near starfield (brightest, fastest drift) -->
+    <div style="position:absolute;inset:0;background-image:
+      radial-gradient(2px 2px at 18% 73%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.4) 30%, transparent 60%),
+      radial-gradient(2px 2px at 73% 22%, rgba(216,180,254,.85) 0%, rgba(216,180,254,.3) 30%, transparent 60%),
+      radial-gradient(2px 2px at 87% 84%, rgba(255,255,255,.9) 0%, rgba(255,255,255,.35) 30%, transparent 60%),
+      radial-gradient(2px 2px at 6% 26%, rgba(186,230,253,.8) 0%, rgba(186,230,253,.3) 30%, transparent 60%);
+      background-size:480px 480px;animation:driftNear 80s linear infinite;opacity:.9"></div>
+
+    <!-- vignette -->
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 95% 80% at 50% 50%, transparent 40%, rgba(0,0,0,.55) 95%);pointer-events:none"></div>
+
+    <!-- TOP CHROME: minimal -->
+    <div style="position:absolute;top:1.25rem;left:1.5rem;right:1.5rem;display:flex;justify-content:space-between;align-items:center;z-index:10">
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <div style="width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(216,180,254,1) 0%, rgba(168,85,247,1) 50%, rgba(76,29,149,1) 100%);box-shadow:0 0 8px rgba(168,85,247,.6)"></div>
+        <span style="font-family:'SF Mono',Menlo,monospace;font-size:.6rem;color:rgba(255,255,255,.65);letter-spacing:.15em">progsu / wiki</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.2rem;font-family:'SF Mono',Menlo,monospace;font-size:.55rem;color:rgba(255,255,255,.5);letter-spacing:.12em">
+        <span>start</span><span>guides</span><span>courses</span><span>contribute</span>
+        <span style="border:1px solid rgba(255,255,255,.18);padding:.2rem .4rem;border-radius:.25rem;color:rgba(255,255,255,.7)">&#8984;K</span>
+      </div>
+    </div>
+
+    <!-- THE CONSTELLATION (3D space) -->
+    <div style="position:absolute;inset:0;perspective:1400px;perspective-origin:50% 50%">
+      <div style="position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(6deg) rotateY(-2deg)">
+
+        <!-- edges -->
+        <svg style="position:absolute;inset:0;width:100%;height:100%;overflow:visible" viewBox="0 0 700 680" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="cosmic-edge-1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(168,85,247,.55)"/>
+              <stop offset="100%" stop-color="rgba(168,85,247,.02)"/>
+            </linearGradient>
+            <linearGradient id="cosmic-edge-2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(216,180,254,.45)"/>
+              <stop offset="100%" stop-color="rgba(168,85,247,.02)"/>
+            </linearGradient>
+            <linearGradient id="cosmic-edge-cyan" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(34,211,238,.55)"/>
+              <stop offset="100%" stop-color="rgba(168,85,247,.05)"/>
+            </linearGradient>
+            <radialGradient id="anchor-glow">
+              <stop offset="0%" stop-color="rgba(216,180,254,1)"/>
+              <stop offset="30%" stop-color="rgba(168,85,247,.9)"/>
+              <stop offset="70%" stop-color="rgba(76,29,149,.6)"/>
+              <stop offset="100%" stop-color="rgba(76,29,149,0)"/>
+            </radialGradient>
+            <filter id="bloom" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4"/>
+            </filter>
+          </defs>
+
+          <!-- spokes from center -->
+          <line x1="350" y1="340" x2="140" y2="200" stroke="url(#cosmic-edge-1)" stroke-width="1"/>
+          <line x1="350" y1="340" x2="200" y2="510" stroke="url(#cosmic-edge-1)" stroke-width="1"/>
+          <line x1="350" y1="340" x2="555" y2="180" stroke="url(#cosmic-edge-cyan)" stroke-width="1.2"/>
+          <line x1="350" y1="340" x2="600" y2="420" stroke="url(#cosmic-edge-1)" stroke-width=".9"/>
+          <line x1="350" y1="340" x2="475" y2="555" stroke="url(#cosmic-edge-2)" stroke-width="1"/>
+          <line x1="350" y1="340" x2="130" y2="475" stroke="url(#cosmic-edge-2)" stroke-width=".9"/>
+
+          <!-- inter-cluster connections (dashed, faint) -->
+          <line x1="140" y1="200" x2="555" y2="180" stroke="rgba(168,85,247,.08)" stroke-width=".5" stroke-dasharray="3 4"/>
+          <line x1="200" y1="510" x2="600" y2="420" stroke="rgba(168,85,247,.08)" stroke-width=".5" stroke-dasharray="3 4"/>
+          <line x1="140" y1="200" x2="200" y2="510" stroke="rgba(168,85,247,.06)" stroke-width=".5" stroke-dasharray="3 4"/>
+          <line x1="555" y1="180" x2="600" y2="420" stroke="rgba(34,211,238,.1)" stroke-width=".5" stroke-dasharray="3 4"/>
+
+          <!-- cluster local edges -->
+          <line x1="140" y1="200" x2="80" y2="155" stroke="rgba(168,85,247,.3)" stroke-width=".5"/>
+          <line x1="140" y1="200" x2="170" y2="135" stroke="rgba(168,85,247,.3)" stroke-width=".5"/>
+          <line x1="140" y1="200" x2="105" y2="270" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+          <line x1="200" y1="510" x2="135" y2="555" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+          <line x1="200" y1="510" x2="265" y2="565" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+          <line x1="200" y1="510" x2="155" y2="455" stroke="rgba(216,180,254,.2)" stroke-width=".5"/>
+          <line x1="555" y1="180" x2="615" y2="135" stroke="rgba(34,211,238,.35)" stroke-width=".6"/>
+          <line x1="555" y1="180" x2="495" y2="115" stroke="rgba(34,211,238,.3)" stroke-width=".5"/>
+          <line x1="600" y1="420" x2="660" y2="380" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+          <line x1="600" y1="420" x2="650" y2="475" stroke="rgba(168,85,247,.25)" stroke-width=".5"/>
+          <line x1="475" y1="555" x2="525" y2="610" stroke="rgba(216,180,254,.25)" stroke-width=".5"/>
+          <line x1="130" y1="475" x2="65" y2="510" stroke="rgba(168,85,247,.2)" stroke-width=".4"/>
+          <line x1="130" y1="475" x2="170" y2="535" stroke="rgba(168,85,247,.2)" stroke-width=".4"/>
+        </svg>
+
+        <!-- CENTRAL ANCHOR: glowing core -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140px;height:140px;pointer-events:none">
+          <!-- outermost bloom -->
+          <div style="position:absolute;inset:-60px;border-radius:50%;background:radial-gradient(circle at 50% 50%, rgba(168,85,247,.2) 0%, rgba(168,85,247,.05) 30%, transparent 65%);filter:blur(20px)"></div>
+          <!-- pulse rings -->
+          <div style="position:absolute;inset:-30px;border-radius:50%;border:1px solid rgba(168,85,247,.18);animation:pulseRing 4s ease-out infinite"></div>
+          <div style="position:absolute;inset:-50px;border-radius:50%;border:1px solid rgba(168,85,247,.12);animation:pulseRing 4s ease-out infinite;animation-delay:1.3s"></div>
+          <div style="position:absolute;inset:-70px;border-radius:50%;border:1px solid rgba(168,85,247,.08);animation:pulseRing 4s ease-out infinite;animation-delay:2.6s"></div>
+          <!-- inner core -->
+          <div style="position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,1) 0%, rgba(216,180,254,.95) 15%, rgba(168,85,247,.9) 40%, rgba(76,29,149,1) 75%, #1a0a2e 100%);box-shadow:0 0 50px rgba(168,85,247,.6), 0 0 100px rgba(168,85,247,.3), 0 0 150px rgba(168,85,247,.15), inset -10px -10px 20px rgba(0,0,0,.5)"></div>
+        </div>
+
+        <!-- CLUSTER: foundations (upper-left, close, primary violet) -->
+        <div style="position:absolute;top:22%;left:18%;text-align:center">
+          <div style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,1), rgba(216,180,254,1) 30%, rgba(168,85,247,1) 70%, rgba(76,29,149,1) 100%);box-shadow:0 0 24px rgba(168,85,247,.85), 0 0 48px rgba(168,85,247,.4);animation:nodeBreathe 5s ease-in-out infinite;margin:0 auto"></div>
+          <div style="font-size:.7rem;color:#fff;font-style:italic;font-family:Georgia,serif;margin-top:.55rem;letter-spacing:.01em;text-shadow:0 0 12px rgba(0,0,0,.8)">foundations</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.5rem;color:rgba(216,180,254,.7);letter-spacing:.12em;margin-top:.2rem">08 GUIDES</div>
+        </div>
+        <!-- foundations satellites -->
+        <div style="position:absolute;top:14%;left:11%;width:5px;height:5px;border-radius:50%;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+        <div style="position:absolute;top:14%;left:24%;width:4px;height:4px;border-radius:50%;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+        <div style="position:absolute;top:37%;left:14%;width:5px;height:5px;border-radius:50%;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+        <!-- CLUSTER: networking (upper-right, accent CYAN — eye-catcher) -->
+        <div style="position:absolute;top:21%;left:74%;text-align:center">
+          <div style="width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,1), rgba(186,230,253,1) 30%, rgba(34,211,238,1) 70%, rgba(8,51,68,1) 100%);box-shadow:0 0 22px rgba(34,211,238,.9), 0 0 44px rgba(34,211,238,.4);animation:nodeBreathe 5s ease-in-out infinite;animation-delay:.7s;margin:0 auto"></div>
+          <div style="font-size:.7rem;color:#fff;font-style:italic;font-family:Georgia,serif;margin-top:.55rem;text-shadow:0 0 12px rgba(0,0,0,.8)">networking</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.5rem;color:rgba(186,230,253,.75);letter-spacing:.12em;margin-top:.2rem">06 GUIDES</div>
+        </div>
+        <div style="position:absolute;top:14%;left:82%;width:5px;height:5px;border-radius:50%;background:rgba(186,230,253,.75);box-shadow:0 0 6px rgba(34,211,238,.5)"></div>
+        <div style="position:absolute;top:13%;left:68%;width:4px;height:4px;border-radius:50%;background:rgba(186,230,253,.7);box-shadow:0 0 5px rgba(34,211,238,.45)"></div>
+
+        <!-- CLUSTER: career (mid-lower-left, mid violet) -->
+        <div style="position:absolute;top:67%;left:23%;text-align:center">
+          <div style="width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,1), rgba(216,180,254,1) 25%, rgba(168,85,247,1) 65%, rgba(76,29,149,1) 100%);box-shadow:0 0 28px rgba(168,85,247,.9), 0 0 56px rgba(168,85,247,.45);animation:nodeBreathe 5s ease-in-out infinite;animation-delay:1.4s;margin:0 auto"></div>
+          <div style="font-size:.7rem;color:#fff;font-style:italic;font-family:Georgia,serif;margin-top:.55rem;text-shadow:0 0 12px rgba(0,0,0,.8)">career</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.5rem;color:rgba(216,180,254,.7);letter-spacing:.12em;margin-top:.2rem">12 GUIDES</div>
+        </div>
+        <div style="position:absolute;top:80%;left:18%;width:5px;height:5px;border-radius:50%;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+        <div style="position:absolute;top:81%;left:34%;width:5px;height:5px;border-radius:50%;background:rgba(216,180,254,.75);box-shadow:0 0 6px rgba(168,85,247,.5)"></div>
+        <div style="position:absolute;top:65%;left:14%;width:4px;height:4px;border-radius:50%;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+        <!-- CLUSTER: technical (mid-right, mid violet, slightly recessed) -->
+        <div style="position:absolute;top:60%;left:81%;text-align:center;opacity:.9">
+          <div style="width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.95), rgba(216,180,254,.95) 30%, rgba(168,85,247,.95) 70%, rgba(76,29,149,1) 100%);box-shadow:0 0 20px rgba(168,85,247,.75), 0 0 40px rgba(168,85,247,.35);animation:nodeBreathe 5s ease-in-out infinite;animation-delay:2.1s;margin:0 auto"></div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.95);font-style:italic;font-family:Georgia,serif;margin-top:.5rem;text-shadow:0 0 12px rgba(0,0,0,.8)">technical</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.5rem;color:rgba(216,180,254,.65);letter-spacing:.12em;margin-top:.2rem">09 GUIDES</div>
+        </div>
+        <div style="position:absolute;top:53%;left:90%;width:4px;height:4px;border-radius:50%;background:rgba(216,180,254,.65);box-shadow:0 0 5px rgba(168,85,247,.4)"></div>
+        <div style="position:absolute;top:67%;left:93%;width:5px;height:5px;border-radius:50%;background:rgba(216,180,254,.7);box-shadow:0 0 5px rgba(168,85,247,.45)"></div>
+
+        <!-- CLUSTER: experience (lower-mid-right, dim violet, recessed) -->
+        <div style="position:absolute;top:78%;left:65%;text-align:center;opacity:.78">
+          <div style="width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.85), rgba(216,180,254,.85) 30%, rgba(168,85,247,.85) 70%, rgba(76,29,149,.9) 100%);box-shadow:0 0 16px rgba(168,85,247,.6), 0 0 32px rgba(168,85,247,.25);animation:nodeBreathe 5s ease-in-out infinite;animation-delay:2.8s;margin:0 auto"></div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.85);font-style:italic;font-family:Georgia,serif;margin-top:.45rem;text-shadow:0 0 12px rgba(0,0,0,.8)">experience</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.45rem;color:rgba(216,180,254,.55);letter-spacing:.12em;margin-top:.15rem">05 GUIDES</div>
+        </div>
+        <div style="position:absolute;top:88%;left:75%;width:4px;height:4px;border-radius:50%;background:rgba(216,180,254,.55);box-shadow:0 0 4px rgba(168,85,247,.35)"></div>
+
+        <!-- CLUSTER: resources (lower-left, dim, far) -->
+        <div style="position:absolute;top:67%;left:11%;text-align:center;opacity:.68">
+          <div style="width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.75), rgba(216,180,254,.75) 30%, rgba(168,85,247,.7) 70%, rgba(76,29,149,.8) 100%);box-shadow:0 0 14px rgba(168,85,247,.45);animation:nodeBreathe 5s ease-in-out infinite;animation-delay:3.5s;margin:0 auto"></div>
+          <div style="font-size:.6rem;color:rgba(255,255,255,.75);font-style:italic;font-family:Georgia,serif;margin-top:.4rem;text-shadow:0 0 12px rgba(0,0,0,.8)">resources</div>
+          <div style="font-family:'SF Mono',Menlo,monospace;font-size:.45rem;color:rgba(216,180,254,.45);letter-spacing:.12em;margin-top:.15rem">07 GUIDES</div>
+        </div>
+        <div style="position:absolute;top:78%;left:6%;width:4px;height:4px;border-radius:50%;background:rgba(216,180,254,.45);box-shadow:0 0 4px rgba(168,85,247,.3)"></div>
+
+      </div>
+    </div>
+
+    <!-- TYPOGRAPHY OVERLAY: floats in space, drop-shadow for legibility -->
+    <div style="position:absolute;top:14%;left:50%;transform:translateX(-50%);text-align:center;z-index:5;max-width:560px;padding:0 1.5rem;pointer-events:none">
+      <div style="font-family:'SF Mono',Menlo,monospace;font-size:.55rem;color:rgba(216,180,254,.85);letter-spacing:.25em;margin-bottom:.7rem;text-shadow:0 0 18px rgba(0,0,0,.9)">AN OPEN WIKI &middot; BY PROGSU</div>
+    </div>
+
+    <div style="position:absolute;bottom:23%;left:0;right:0;text-align:center;z-index:5;padding:0 1.5rem;pointer-events:none">
+      <div style="font-family:Georgia,serif;font-style:italic;color:#fff;font-size:2rem;line-height:1.05;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.85), 0 0 40px rgba(76,29,149,.4);max-width:560px;margin:0 auto">the open wiki for<br>breaking into tech.</div>
+      <div style="font-family:Georgia,serif;font-size:.7rem;color:rgba(255,255,255,.7);margin-top:.85rem;line-height:1.55;max-width:420px;margin-left:auto;margin-right:auto;text-shadow:0 1px 8px rgba(0,0,0,.85)">knowledge from people who landed offers in quant, big tech, research, and beyond. signed, dated, free. take what helps.</div>
+    </div>
+
+    <!-- SEARCH BAR: floats in lower-third -->
+    <div style="position:absolute;bottom:8%;left:50%;transform:translateX(-50%);width:88%;max-width:480px;z-index:5">
+      <div style="display:flex;align-items:center;gap:.6rem;background:rgba(8,8,18,.6);backdrop-filter:blur(20px);border:1px solid rgba(168,85,247,.35);border-radius:.55rem;padding:.65rem .9rem;box-shadow:0 0 32px rgba(168,85,247,.15), 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06)">
+        <div style="width:10px;height:10px;border:1.5px solid rgba(216,180,254,.7);border-radius:50%;flex-shrink:0;position:relative">
+          <div style="position:absolute;bottom:-3px;right:-3px;width:4px;height:1.5px;background:rgba(216,180,254,.7);transform:rotate(45deg);border-radius:1px"></div>
+        </div>
+        <span style="font-size:.7rem;color:rgba(255,255,255,.55);flex:1;font-family:'SF Mono',Menlo,monospace">search 40 guides, 120 courses</span>
+        <span style="font-size:.55rem;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.18);padding:.15rem .35rem;border-radius:.2rem;letter-spacing:.05em;font-family:'SF Mono',Menlo,monospace">&#8984;K</span>
+      </div>
+      <div style="text-align:center;margin-top:.7rem;font-family:'SF Mono',Menlo,monospace;font-size:.5rem;color:rgba(255,255,255,.4);letter-spacing:.12em">
+        40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB
+      </div>
+    </div>
+
+    <!-- subtle scroll hint, bottom-center -->
+    <div style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);font-family:'SF Mono',Menlo,monospace;font-size:.4rem;color:rgba(255,255,255,.25);letter-spacing:.4em;z-index:5">SCROLL</div>
+
+  </div>
+
+  <div class="card-body" style="padding:1.5rem;color:var(--text-primary)">
+    <h3 style="margin:0 0 .5rem">cosmic constellation, full-bleed</h3>
+    <div style="font-size:.7rem;color:rgba(168,85,247,.85);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.7rem;font-weight:600">3 starfield layers &middot; restrained palette &middot; floating type &middot; series-A polish bar</div>
+    <p style="font-size:.9rem;line-height:1.6;color:var(--text-secondary);margin:0 0 .8rem">
+      The constellation owns the viewport. Three star layers parallax at different speeds, creating real depth. The central anchor is a fully-bloomed orb with three concentric pulse rings &mdash; this is the visual focal point that the eye lands on first. Six clusters orbit it with intentional hierarchy: foundations and career are closest (largest, brightest), networking gets the single cyan accent so the eye notices it, technical and experience are recessed (smaller, dimmer), resources is the farthest (faintest). Palette discipline: violet primary, cyan as the one accent, no rainbow.
+    </p>
+    <p style="font-size:.9rem;line-height:1.6;color:var(--text-secondary);margin:0 0 .8rem">
+      Typography floats <em>inside</em> the space rather than sitting on top of it. The eyebrow ("AN OPEN WIKI &middot; BY PROGSU") in tight-tracked mono. Headline in big italic serif with multi-layer drop-shadow so it stays legible against starfields. Sub-line names the offer types without flexing numbers. Search bar in the lower-third with backdrop-blur glass effect and a subtle purple glow border &mdash; modeled on Linear's command palette aesthetic.
+    </p>
+    <p style="font-size:.9rem;line-height:1.6;color:var(--text-secondary);margin:0">
+      No masthead, no boxed framing, no nav competing for attention. Just: tiny logo top-left, sparse nav top-right, the wiki itself in the middle of the screen as a living constellation. Below the fold (not shown here): the numbered ToC + featured guides + contribute footer. This hero is the front door; the editorial structure lives below.
+    </p>
+  </div>
+</div>
+
+<div style="margin-top:1.5rem;padding:1rem 1.25rem;border:1px solid rgba(168,85,247,.25);border-radius:.5rem;background:rgba(168,85,247,.04);font-size:.9rem;line-height:1.6;color:var(--text-primary)">
+  <strong style="color:rgba(168,85,247,.95)">references the bar is set against:</strong> Linear (precision, command-palette aesthetic), Vercel (depth + restraint), Anthropic (calm authority), Modal (3D dimensional), Resend (typography + atmospheric bg), Phantom (cosmic gradients done right). All restrained on color, generous with space, polished on motion.
+  <br><br>
+  <strong style="color:rgba(168,85,247,.95)">what's still abstract in this mockup:</strong> mouse-parallax on the star layers, subtle motion when you hover a cluster (its sub-nodes pulse and a tooltip card appears), node-to-tooltip transition when you click. Those are real-build details that don't render in a static HTML preview but absolutely ship in the React/Astro version.
+  <br><br>
+  <strong style="color:rgba(168,85,247,.95)">push back if:</strong> typography is in the wrong place (above-the-fold vs in space), palette is too monochrome (want more cluster differentiation), anchor is too big/small, search should be at the top instead of bottom, copy needs different framing.
+</div>
+
+<style>
+@keyframes pulseRing { 0% { transform: scale(.85); opacity: .6 } 100% { transform: scale(1.6); opacity: 0 } }
+@keyframes nodeBreathe { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.12) } }
+@keyframes driftFar { 0% { transform: translate(0,0) } 100% { transform: translate(60px,40px) } }
+@keyframes driftMid { 0% { transform: translate(0,0) } 100% { transform: translate(-80px,50px) } }
+@keyframes driftNear { 0% { transform: translate(0,0) } 100% { transform: translate(100px,-60px) } }
+</style>
