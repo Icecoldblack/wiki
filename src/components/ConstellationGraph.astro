@@ -222,7 +222,7 @@
 
   .hero-eyebrow-wrap {
     position: absolute;
-    top: 14%;
+    top: 8%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -241,7 +241,7 @@
 
   .hero-headline-wrap {
     position: absolute;
-    bottom: 23%;
+    bottom: 17%;
     left: 0;
     right: 0;
     text-align: center;
@@ -274,7 +274,7 @@
 
   .hero-search-wrap {
     position: absolute;
-    bottom: 8%;
+    bottom: 5%;
     left: 50%;
     transform: translateX(-50%);
     width: 88%;
@@ -1028,7 +1028,15 @@
 
       li.appendChild(dot);
       li.appendChild(label);
-      li.addEventListener("mousedown", (e) => { e.preventDefault(); zoomToNode(n.id); });
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        if (is2D) {
+          const route = (n as any).route;
+          if (route) window.location.href = route;
+        } else {
+          zoomToNode(n.id);
+        }
+      });
       searchResults.appendChild(li);
     });
   }
@@ -1079,7 +1087,15 @@
       items[prev]?.scrollIntoView({ block: "nearest" });
     } else if (e.key === "Enter") {
       const active = items[cur === -1 ? 0 : cur];
-      if (active?.dataset.id) zoomToNode(active.dataset.id);
+      if (active?.dataset.id) {
+        if (is2D) {
+          const node = simNodes.find(n => n.id === active.dataset.id);
+          const route = (node as any)?.route;
+          if (route) window.location.href = route;
+        } else {
+          zoomToNode(active.dataset.id);
+        }
+      }
     } else if (e.key === "Escape") {
       closeSearch();
     }
@@ -1114,6 +1130,7 @@
 
   // ── focus/unfocus hero copy on graph interaction ──────────────
   function onGraphActivity() {
+    if (is2D) return;
     root.classList.add("graph-focused");
     if (idleTimer) clearTimeout(idleTimer);
     idleTimer = setTimeout(() => root.classList.remove("graph-focused"), 10_000);
@@ -1146,8 +1163,8 @@
 
   // Radial layout: center node + 5 evenly spread around it
   function get2DPositions(w: number, h: number) {
-    const cx = w / 2, cy = h / 2;
-    const r  = Math.min(w, h) * 0.30;
+    const cx = w / 2, cy = h * 0.40;
+    const r  = Math.min(w, h) * 0.22;
     const positions: Record<string, { x: number; y: number }> = { wiki: { x: cx, y: cy } };
     const satellites = simNodes.filter(n => n.id !== "wiki");
     satellites.forEach((n, i) => {
@@ -1304,13 +1321,19 @@
     }
   }
 
+  const eyebrowWrap  = document.querySelector(".hero-eyebrow-wrap")  as HTMLElement;
+  const headlineWrap = document.querySelector(".hero-headline-wrap") as HTMLElement;
+  const searchWrap   = document.querySelector(".hero-search-wrap")   as HTMLElement;
+
   function enable2D() {
     is2D = true;
-    canvas.style.display   = "none";
-    labelEl.style.display  = "none";
-    hint3d.style.display   = "none";
-    hint2d.style.display   = "";
+    canvas.style.display    = "none";
+    labelEl.style.display   = "none";
+    hint3d.style.display    = "none";
+    hint2d.style.display    = "";
     graph2dEl.style.display = "";
+    // Ensure graph-focused class (which hides headline/eyebrow) is cleared
+    root.classList.remove("graph-focused");
     toggleLabel.textContent = "3D";
     toggleBtn.setAttribute("aria-label", "Switch to 3D view");
     toggleBtn.setAttribute("title", "Switch to 3D view");
@@ -1319,10 +1342,10 @@
 
   function enable3D() {
     is2D = false;
-    canvas.style.display   = "";
-    labelEl.style.display  = "";
-    hint3d.style.display   = "";
-    hint2d.style.display   = "none";
+    canvas.style.display    = "";
+    labelEl.style.display   = "";
+    hint3d.style.display    = "";
+    hint2d.style.display    = "none";
     graph2dEl.style.display = "none";
     tip.classList.remove("visible");
     toggleLabel.textContent = "2D";
