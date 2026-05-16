@@ -1,7 +1,6 @@
 ---
 import Navbar from "../components/Navbar.astro";
 import ConstellationGraph from "../components/ConstellationGraph.astro";
-import SearchBar from "../components/SearchBar.astro";
 import "../styles/global.css";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
@@ -16,9 +15,36 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <title>{SITE_TITLE}</title>
   </head>
   <body>
-    <ConstellationGraph />
-    <Navbar />
-    <SearchBar />
+    <!-- Full-viewport graph hero -->
+    <section class="hero-viewport">
+      <ConstellationGraph />
+      <Navbar />
+      <div class="scroll-cue">SCROLL</div>
+    </section>
+
+    <!-- Below-fold content -->
+    <section class="below-fold">
+      <div class="below-fold__inner">
+        <p class="below-fold__eyebrow">AN OPEN WIKI &middot; BY PROGSU</p>
+        <h1 class="below-fold__headline">
+          the open wiki for<br>breaking into tech.
+        </h1>
+        <p class="below-fold__sub">
+          knowledge from people who landed offers in quant, big tech, research, and beyond.<br>
+          signed, dated, free. take what helps.
+        </p>
+
+        <!-- Search bar -->
+        <div class="search-bar">
+          <div class="search-icon">
+            <div class="search-handle"></div>
+          </div>
+          <span class="search-placeholder">search 40 guides, 120 courses</span>
+          <span class="search-kbd">⌘K</span>
+        </div>
+        <p class="search-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</p>
+      </div>
+    </section>
   </body>
 </html>
 
@@ -27,6 +53,140 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     margin: 0;
     padding: 0;
     background: #06060f;
+  }
+
+  .hero-viewport {
+    position: relative;
+    width: 100%;
+    height: 100vh;
     overflow: hidden;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .4rem;
+    color: rgba(255,255,255,.22);
+    letter-spacing: .45em;
+    z-index: 20;
+    animation: fadeUpDown 2.4s ease-in-out infinite;
+  }
+
+  /* ── below fold ───────────────────────────────────────────── */
+  .below-fold {
+    background: #06060f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 6rem 1.5rem;
+  }
+
+  .below-fold__inner {
+    max-width: 560px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .below-fold__eyebrow {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .55rem;
+    color: rgba(216,180,254,.7);
+    letter-spacing: .28em;
+    margin: 0;
+  }
+
+  .below-fold__headline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 32px rgba(0,0,0,.9), 0 0 50px rgba(76,29,149,.35);
+    margin: .25rem 0 .5rem;
+  }
+
+  .below-fold__sub {
+    font-family: Georgia, serif;
+    font-size: .72rem;
+    color: rgba(255,255,255,.55);
+    line-height: 1.65;
+    margin: 0 0 1.5rem;
+  }
+
+  /* Search bar */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    background: rgba(8,8,18,.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168,85,247,.35);
+    border-radius: .55rem;
+    padding: .65rem .9rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow:
+      0 0 32px rgba(168,85,247,.15),
+      0 8px 32px rgba(0,0,0,.5),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    cursor: text;
+  }
+
+  .search-icon {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid rgba(216,180,254,.7);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .search-handle {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 4px;
+    height: 1.5px;
+    background: rgba(216,180,254,.7);
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+
+  .search-placeholder {
+    font-size: .7rem;
+    color: rgba(255,255,255,.45);
+    flex: 1;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  .search-kbd {
+    font-size: .55rem;
+    color: rgba(255,255,255,.4);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: .15rem .35rem;
+    border-radius: .2rem;
+    letter-spacing: .05em;
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  .search-proof {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: .5rem;
+    color: rgba(255,255,255,.3);
+    letter-spacing: .14em;
+    margin: 0;
+  }
+
+  @keyframes fadeUpDown {
+    0%, 100% { opacity: .22; transform: translateX(-50%) translateY(0); }
+    50%       { opacity: .5;  transform: translateX(-50%) translateY(-4px); }
   }
 </style>
