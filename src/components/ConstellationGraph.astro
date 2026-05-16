@@ -40,11 +40,11 @@
   <div class="hero-search-wrap">
     <div id="search-bar" class="search-bar">
       <div class="search-icon"><div class="search-handle"></div></div>
-      <input id="search-input" class="search-bar__input" type="text" placeholder="search 40 guides, 120 courses" autocomplete="off" spellcheck="false" />
+      <input id="search-input" class="search-bar__input" type="text" placeholder="search guides &amp; resources" autocomplete="off" spellcheck="false" />
       <span id="search-kbd" class="search-kbd">/</span>
     </div>
     <ul id="search-results" class="search-bar__results"></ul>
-    <p class="search-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</p>
+    <p class="search-proof">GROWING WIKI &middot; BY PROGSU &middot; OPEN ON GITHUB</p>
   </div>
 
   <div class="controls-hint" id="controls-hint-3d">
@@ -508,11 +508,11 @@
   // ── node data ──────────────────────────────────────────────────
   const NODE_DEFS = [
     { id: "wiki",        label: "progsu / wiki", desc: "",                                          central: true,  guides: 0,  color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 8,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
-    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 12, route: "/guides/career",       color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 6,  route: "/guides/networking",   color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 9,  route: "/guides/technical",    color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "misc",        label: "misc",            desc: "Everything else worth knowing",            guides: 7,  route: "/guides/misc",         color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 0,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
+    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 0,  route: "/guides/career",       color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 0,  route: "/guides/networking",   color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 0,  route: "/guides/technical",    color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "misc",        label: "misc",            desc: "Everything else worth knowing",            guides: 0,  route: "/guides/misc",         color: 0xd8b4fe, emissive: 0xa855f7 },
   ] as const;
 
   type NodeDef   = typeof NODE_DEFS[number];
@@ -591,7 +591,7 @@
   controls.rotateSpeed      = 0.6;
   controls.zoomSpeed        = 1.0;
   controls.minDistance      = 80;
-  controls.maxDistance      = 900;
+  controls.maxDistance      = 650;
   controls.mouseButtons     = {
     LEFT:   THREE.MOUSE.ROTATE,
     MIDDLE: null as any,
@@ -774,7 +774,7 @@
         const n = obj.sim as any;
         tipName.textContent  = n.label;
         tipDesc.textContent  = n.desc ?? "";
-        tipCount.textContent = `${String(n.guides ?? 0).padStart(2,"0")} GUIDES`;
+        tipCount.textContent = "";
         tip.style.left = `${e.clientX + 16}px`;
         tip.style.top  = `${e.clientY - 14}px`;
         tip.classList.add("visible");
@@ -922,6 +922,12 @@
     animTime += delta;
 
     controls.update();
+
+    // Clamp pan so the graph can't drift off-screen
+    const PAN_LIMIT = 200;
+    controls.target.x = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, controls.target.x));
+    controls.target.y = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, controls.target.y));
+    controls.target.z = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, controls.target.z));
 
     // Pulsate halos on non-central nodes
     for (const obj of nodeObjs) {
