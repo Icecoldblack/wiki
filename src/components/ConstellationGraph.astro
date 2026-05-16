@@ -422,24 +422,34 @@
   const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 2000);
   camera.position.set(0, 0, 420);
 
-  // Lighting — dark ambient so shadow side goes near-black, bright key for white hotspot
-  // This replicates the CSS radial-gradient(circle at 35% 30%, white → lavender → purple → #1a0a2e)
-  const ambient = new THREE.AmbientLight(0x100520, 1.2);
+  // Ambient: very dim so shadow side is nearly black, not washed
+  const ambient = new THREE.AmbientLight(0x080210, 0.6);
   scene.add(ambient);
 
-  // Key: pure white, very bright, from top-left front — creates the white specular hotspot
-  const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
+  // Key: soft white from top-left — lowered intensity so the hotspot is subtle, not blinding
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
   keyLight.position.set(-1.4, 1.4, 2.0);
   scene.add(keyLight);
 
-  // Soft secondary white fill from slightly different angle — softens the terminator edge
-  const key2Light = new THREE.DirectionalLight(0xddd0ff, 0.6);
-  key2Light.position.set(-0.6, 0.8, 1.5);
+  // Secondary key: lavender-white, slightly different angle — widens and softens the lit zone
+  const key2Light = new THREE.DirectionalLight(0xe8d8ff, 0.7);
+  key2Light.position.set(-0.5, 0.6, 1.8);
   scene.add(key2Light);
 
-  // Faint cyan rim from behind/below — edge separation, not fill
-  const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.25);
-  rimLight.position.set(0.4, -1.2, -0.8);
+  // Mid fill: dim purple from the right — creates gradual colour gradient in the penumbra
+  // instead of a hard jump from lit → black
+  const fillLight = new THREE.DirectionalLight(0x4c1d95, 0.55);
+  fillLight.position.set(1.2, 0.2, 0.6);
+  scene.add(fillLight);
+
+  // Deep fill: even dimmer violet from below-right — stretches the shadow gradient darker
+  const deepFill = new THREE.DirectionalLight(0x1e0a3c, 0.8);
+  deepFill.position.set(0.8, -1.0, 0.3);
+  scene.add(deepFill);
+
+  // Rim: faint cyan from behind — edge light only, no fill
+  const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.18);
+  rimLight.position.set(0.3, -1.0, -1.0);
   scene.add(rimLight);
 
   // OrbitControls — left drag = rotate, middle drag = pan, scroll = zoom
@@ -523,8 +533,8 @@
       color:             n.color,
       emissive:          new THREE.Color(n.emissive).multiplyScalar(0.15),
       emissiveIntensity: 1.0,
-      shininess:         isCentral ? 600 : 480,
-      specular:          new THREE.Color(0xffffff),
+      shininess:         isCentral ? 180 : 140,
+      specular:          new THREE.Color(0xddd0ff),
     });
     const mesh = new THREE.Mesh(sphereGeo, mat);
     mesh.scale.setScalar(radius);
