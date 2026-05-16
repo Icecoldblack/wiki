@@ -422,28 +422,24 @@
   const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 2000);
   camera.position.set(0, 0, 420);
 
-  // Lighting — bright top-left key for sphere highlight + coloured fill + cyan rim
-  const ambient = new THREE.AmbientLight(0x0d0520, 4);
+  // Lighting — dark ambient so shadow side goes near-black, bright key for white hotspot
+  // This replicates the CSS radial-gradient(circle at 35% 30%, white → lavender → purple → #1a0a2e)
+  const ambient = new THREE.AmbientLight(0x100520, 1.2);
   scene.add(ambient);
 
-  // Key: bright white from top-left front — creates the "35% 30%" highlight of reference
-  const keyLight = new THREE.PointLight(0xffffff, 5, 1800);
-  keyLight.position.set(-280, 280, 400);
+  // Key: pure white, very bright, from top-left front — creates the white specular hotspot
+  const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
+  keyLight.position.set(-1.4, 1.4, 2.0);
   scene.add(keyLight);
 
-  // Secondary key: slightly warm white offset, creates the refraction shimmer
-  const key2Light = new THREE.PointLight(0xe8d5ff, 2.5, 1200);
-  key2Light.position.set(-120, 180, 350);
+  // Soft secondary white fill from slightly different angle — softens the terminator edge
+  const key2Light = new THREE.DirectionalLight(0xddd0ff, 0.6);
+  key2Light.position.set(-0.6, 0.8, 1.5);
   scene.add(key2Light);
 
-  // Fill: purple — wraps the shadow side in violet colour
-  const fillLight = new THREE.PointLight(0xa855f7, 2.0, 1000);
-  fillLight.position.set(200, -80, 150);
-  scene.add(fillLight);
-
-  // Rim: cyan — edge highlight from behind/below
-  const rimLight = new THREE.PointLight(0x22d3ee, 1.4, 700);
-  rimLight.position.set(60, -260, -120);
+  // Faint cyan rim from behind/below — edge separation, not fill
+  const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.25);
+  rimLight.position.set(0.4, -1.2, -0.8);
   scene.add(rimLight);
 
   // OrbitControls — left drag = rotate, middle drag = pan, scroll = zoom
@@ -508,6 +504,7 @@
     sim:       NodeSim;
     mesh:      THREE.Mesh;
     innerGlow: THREE.Mesh;
+    midGlow:   THREE.Mesh;
     glow:      THREE.Mesh;
     labelEl:   HTMLDivElement;
     rings?:    THREE.Mesh[];
@@ -520,40 +517,53 @@
     const isCentral = n.id === "wiki";
     const radius    = isCentral ? 22 : 12;
 
-    // Main sphere — high-shininess Phong with white specular for the bright highlight
+    // Main sphere — very high shininess for tight white hotspot, dark emissive so shadow goes deep
+    // Matches reference: radial-gradient(circle at 35% 30%, white → lavender → purple → #1a0a2e)
     const mat = new THREE.MeshPhongMaterial({
       color:             n.color,
-      emissive:          n.emissive,
-      emissiveIntensity: isCentral ? 0.55 : 0.35,
-      shininess:         isCentral ? 320 : 220,
-      specular:          new THREE.Color(isCentral ? 0xffffff : 0xf0e0ff),
+      emissive:          new THREE.Color(n.emissive).multiplyScalar(0.15),
+      emissiveIntensity: 1.0,
+      shininess:         isCentral ? 600 : 480,
+      specular:          new THREE.Color(0xffffff),
     });
     const mesh = new THREE.Mesh(sphereGeo, mat);
     mesh.scale.setScalar(radius);
     nodeGroup.add(mesh);
 
-    // Inner bloom — tight additive sphere just over the surface
+    // Inner bloom — tight halo just over the surface (like box-shadow 0 0 24px)
     const innerGlowMat = new THREE.MeshBasicMaterial({
       color:       n.emissive,
       transparent: true,
-      opacity:     isCentral ? 0.28 : 0.18,
+      opacity:     isCentral ? 0.35 : 0.22,
       blending:    THREE.AdditiveBlending,
       depthWrite:  false,
     });
     const innerGlow = new THREE.Mesh(sphereGeo, innerGlowMat);
-    innerGlow.scale.setScalar(radius * 1.25);
+    innerGlow.scale.setScalar(radius * 1.4);
     nodeGroup.add(innerGlow);
 
-    // Outer bloom — wide soft halo
+    // Mid bloom (like box-shadow 0 0 48-100px)
+    const midGlowMat = new THREE.MeshBasicMaterial({
+      color:       n.emissive,
+      transparent: true,
+      opacity:     isCentral ? 0.14 : 0.09,
+      blending:    THREE.AdditiveBlending,
+      depthWrite:  false,
+    });
+    const midGlow = new THREE.Mesh(sphereGeo, midGlowMat);
+    midGlow.scale.setScalar(radius * (isCentral ? 2.8 : 2.2));
+    nodeGroup.add(midGlow);
+
+    // Outer bloom — widest halo (like box-shadow 0 0 150px)
     const glowMat = new THREE.MeshBasicMaterial({
       color:       n.color,
       transparent: true,
-      opacity:     isCentral ? 0.10 : 0.07,
+      opacity:     isCentral ? 0.07 : 0.05,
       blending:    THREE.AdditiveBlending,
       depthWrite:  false,
     });
     const glow = new THREE.Mesh(sphereGeo, glowMat);
-    glow.scale.setScalar(radius * (isCentral ? 3.5 : 2.8));
+    glow.scale.setScalar(radius * (isCentral ? 5.0 : 4.0));
     nodeGroup.add(glow);
 
     // DOM label — projected manually each frame (central node has no label)
@@ -596,7 +606,7 @@
       }
     }
 
-    const obj: NodeObj = { sim: n, mesh, innerGlow, glow, labelEl: wrap, rings };
+    const obj: NodeObj = { sim: n, mesh, innerGlow, midGlow, glow, labelEl: wrap, rings };
     nodeObjs.push(obj);
     meshToNode.set(mesh, obj);
   }
@@ -716,37 +726,39 @@
 
   function hoverNode(obj: NodeObj) {
     const isCentral = "central" in obj.sim && obj.sim.central;
-    const mat = obj.mesh.material as THREE.MeshPhongMaterial;
-    mat.emissiveIntensity = 1.2;
-    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.5 : 0.35;
-    (obj.glow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.18 : 0.14;
     const radius = isCentral ? 22 : 12;
-    obj.mesh.scale.setScalar(radius * 1.18);
-    obj.innerGlow.scale.setScalar(radius * 1.18 * 1.25);
-    obj.glow.scale.setScalar(radius * 1.18 * (isCentral ? 3.5 : 2.8));
+    const s = 1.15;
+    obj.mesh.scale.setScalar(radius * s);
+    obj.innerGlow.scale.setScalar(radius * s * 1.4);
+    obj.midGlow.scale.setScalar(radius * s * (isCentral ? 2.8 : 2.2));
+    obj.glow.scale.setScalar(radius * s * (isCentral ? 5.0 : 4.0));
+    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.55 : 0.38;
+    (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.22 : 0.15;
+    (obj.glow.material as THREE.MeshBasicMaterial).opacity      = isCentral ? 0.12 : 0.09;
   }
 
   function unhoverNode(obj: NodeObj) {
     const isCentral = "central" in obj.sim && obj.sim.central;
     const radius    = isCentral ? 22 : 12;
-    const mat = obj.mesh.material as THREE.MeshPhongMaterial;
-    mat.emissiveIntensity = isCentral ? 0.55 : 0.35;
-    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.28 : 0.18;
-    (obj.glow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.10 : 0.07;
     obj.mesh.scale.setScalar(radius);
-    obj.innerGlow.scale.setScalar(radius * 1.25);
-    obj.glow.scale.setScalar(radius * (isCentral ? 3.5 : 2.8));
+    obj.innerGlow.scale.setScalar(radius * 1.4);
+    obj.midGlow.scale.setScalar(radius * (isCentral ? 2.8 : 2.2));
+    obj.glow.scale.setScalar(radius * (isCentral ? 5.0 : 4.0));
+    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.35 : 0.22;
+    (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.14 : 0.09;
+    (obj.glow.material as THREE.MeshBasicMaterial).opacity      = isCentral ? 0.07 : 0.05;
   }
 
   // ── tick: sync Three.js positions with D3 simulation ──────────
   sim.on("tick", () => {
     for (const obj of nodeObjs) {
-      const { sim: s, mesh, innerGlow, glow } = obj;
+      const { sim: s, mesh, innerGlow, midGlow, glow } = obj;
       const x = (s.x ?? 0) * SCALE;
       const y = -(s.y ?? 0) * SCALE;
       const z = s.z;
       mesh.position.set(x, y, z);
       innerGlow.position.set(x, y, z);
+      midGlow.position.set(x, y, z);
       glow.position.set(x, y, z);
       if (obj.rings) {
         obj.rings.forEach(r => r.position.set(x, y, z));
