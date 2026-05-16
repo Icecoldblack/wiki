@@ -655,12 +655,6 @@
     wrap.appendChild(namEl);
     }
 
-    if (!isCentral && "guides" in n) {
-      const cntEl = document.createElement("span");
-      cntEl.className = "node-label-count";
-      cntEl.textContent = `${String(n.guides).padStart(2,"0")} GUIDES`;
-      wrap.appendChild(cntEl);
-    }
     labelEl.appendChild(wrap);
 
     // Pulse rings — central node only

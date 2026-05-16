@@ -1,6 +1,6 @@
 # PROGSU Wiki
 
-The open wiki for breaking into tech — built by ProgSU members for GSU students.
+The open wiki for breaking into tech built by ProgSU members for GSU students.
 
 ## About
 
@@ -83,7 +83,7 @@ wiki/
 
 ## Contributing
 
-Contributions from all club members are welcome — whether that's writing a new guide, fixing a typo, or improving the site.
+Contributions from all club members are welcome whether that's writing a new guide, fixing a typo, or improving the site.
 
 ### Adding or Editing Guides
 
