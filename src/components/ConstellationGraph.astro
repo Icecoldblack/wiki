@@ -599,7 +599,7 @@
         mats.forEach((m: any) => { if (m) m.opacity !== undefined ? (m.transparent = true, m.opacity = 0.72) : null; });
       }
     });
-    scene.add(monaModel);
+    // scene.add(monaModel); // hidden — model kept, just not added to scene
   }, undefined, (err) => console.warn("Mona model failed to load:", err));
 
   // OrbitControls — left drag = rotate, middle drag = pan, scroll = zoom
