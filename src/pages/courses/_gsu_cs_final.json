@@ -1,0 +1,2124 @@
+﻿{
+  "school": "Georgia State University",
+  "department": "Computer Science (CSC)",
+  "catalog_year": "2025-2026",
+  "scraped_date": "2026-05-16",
+  "total_courses": 72,
+  "notes": [
+    "Professor list reflects courses scheduled in GoSOLAR — courses with no scheduled sections have empty professors arrays.",
+    "Run phase1_gosolar_allterms.js across all 12 semesters and re-merge to get a complete professor list.",
+    "RMP fields are null until phase2_ratemyprof.js is run.",
+    "CSC 3780 (GoSOLAR) was mapped to CSC 4780 (catalog) — same course, different legacy code."
+  ],
+  "courses": [
+    {
+      "code": "CSC 1010",
+      "title": "Computers and Applications",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: high school Algebra II.",
+      "description": "A tech literacy course for non-CS majors — covers how computers and the internet work, common software tools, and the basics of digital security with no programming required.",
+      "professors": [
+        {
+          "name": "Alfred Basta",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2694565"
+        },
+        {
+          "name": "Ana Ansari",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2944497"
+        },
+        {
+          "name": "Bernice Jackson",
+          "rmp_rating": 3.5,
+          "rmp_num_ratings": 8,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2783294"
+        },
+        {
+          "name": "Bhaskar Ray",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3113022"
+        },
+        {
+          "name": "Chintan Thakkar",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Matthew Fawcett",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Nadine Basta",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Srilatha Bingi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Suxing Liu",
+          "rmp_rating": 2.2,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3019982"
+        },
+        {
+          "name": "Thomas Jackson",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2322054"
+        },
+        {
+          "name": "Wen-Shing Dwan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 1301",
+      "title": "Principles of Computer Science I",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: Only for STEM majors and minors. Co-requisite: CSC 1301L. Students must be enrolled in MATH 1111 or 1113 (or a higher level mathematics course excluding MATH 1401) or have previously completed one of these courses with a C or higher.",
+      "description": "Your first real coding class for STEM majors — you'll learn Python from scratch, writing programs that use variables, loops, functions, and basic algorithms to solve real problems.",
+      "professors": [
+        {
+          "name": "Hossein Saghaeiannejad Esfahani",
+          "rmp_rating": 2.5,
+          "rmp_num_ratings": 44,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2358126"
+        },
+        {
+          "name": "Alfred Basta",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2694565"
+        },
+        {
+          "name": "Ana Ansari",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2944497"
+        },
+        {
+          "name": "Angela Service",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Bernice Jackson",
+          "rmp_rating": 3.5,
+          "rmp_num_ratings": 8,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2783294"
+        },
+        {
+          "name": "Chintan Thakkar",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Deepa Muralidhar",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2716806"
+        },
+        {
+          "name": "Faris Hawamdeh",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2927602"
+        },
+        {
+          "name": "Minoo Jafarlou",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3162798"
+        },
+        {
+          "name": "Nadine Basta",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Srilatha Bingi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Sulakshan Vajipayajula",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Thomas Jackson",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2322054"
+        },
+        {
+          "name": "Wen-Shing Dwan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 1301K",
+      "title": "Principles of Computer Science I",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: Only for majors in Computer Science, Mathematics, Physics or Engineering, or minor in Computer Science. Students must be enrolled in MATH 1111 or 1113 (or a higher level mathematics course excluding MATH 1401) or have previously completed one of these courses with a C or higher.",
+      "description": "Same intro Python content as CSC 1301 with the lab built into one 4-credit course — designed for CS, math, physics, and engineering majors who want lecture and lab combined.",
+      "professors": [
+        {
+          "name": "Angela Service",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Bernice Jackson",
+          "rmp_rating": 3.5,
+          "rmp_num_ratings": 8,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2783294"
+        },
+        {
+          "name": "Bhaskar Ray",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3113022"
+        },
+        {
+          "name": "Chintan Thakkar",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Matthew Fawcett",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Srilatha Bingi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Sulakshan Vajipayajula",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Suxing Liu",
+          "rmp_rating": 2.2,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3019982"
+        },
+        {
+          "name": "Wen-Shing Dwan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 1301L",
+      "title": "Principles of Computer Science Laboratory I",
+      "credit_hours": "N/A",
+      "prerequisites": "None",
+      "description": "Weekly coding lab that runs alongside CSC 1301 — you put lecture concepts into practice by writing and submitting Python programs in a hands-on setting.",
+      "professors": [
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        },
+        {
+          "name": "Aya Abdelkarem",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Ayotomiwa Adeniyi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Huaiyuan Chu",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2209019"
+        },
+        {
+          "name": "Minoo Jafarlou",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3162798"
+        },
+        {
+          "name": "Prakash Chourasia",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3127019"
+        },
+        {
+          "name": "Ryan Garland",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Sonipriya Paul",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3084211"
+        },
+        {
+          "name": "Xiaolong Tu",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 1302",
+      "title": "Principles of Computer Science II",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 1301 and CSC 1301L with a C or higher. Corequisite: CSC 1302L.",
+      "description": "Learning more about Python and diving into object-oriented programming you'll design classes, use inheritance and interfaces, and build more complex programs using fundamental data structures.",
+      "professors": [
+        {
+          "name": "Bingyi Xie",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2906245"
+        },
+        {
+          "name": "Ana Ansari",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2944497"
+        },
+        {
+          "name": "Angela Service",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Chet Goins",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Deepa Muralidhar",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2716806"
+        },
+        {
+          "name": "Lan Gao",
+          "rmp_rating": 2.4,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3075860"
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        },
+        {
+          "name": "Islam S M Towhidul",
+          "rmp_rating": 2.8,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2920434"
+        }
+      ]
+    },
+    {
+      "code": "CSC 1302K",
+      "title": "Principles of Computer Science II",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 1301K with a C or higher, or CSC 1301 and CSC 1301L, each with a C or higher.",
+      "description": "Same OOP and Python content as CSC 1302 with the lab integrated into one course — for students in the K-track who want lecture and lab combined.",
+      "professors": [
+        {
+          "name": "Ana Ansari",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2944497"
+        },
+        {
+          "name": "Angela Service",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Bhaskar Ray",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3113022"
+        },
+        {
+          "name": "Chet Goins",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Deepa Muralidhar",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2716806"
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 1302L",
+      "title": "Principles of Computer Science Laboratory II",
+      "credit_hours": "N/A",
+      "prerequisites": "Prerequisite: Only for majors in STEM majors or minors. Co-requisite: CSC 1302.",
+      "description": "Hands-on lab companion to CSC 1302 where you implement the Python and OOP concepts from lecture through graded programming exercises.",
+      "professors": [
+        {
+          "name": "Anupam Sarker",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2371743"
+        },
+        {
+          "name": "Ardavan Sassani",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Ayotomiwa Adeniyi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Jean Guo",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3052044"
+        },
+        {
+          "name": "Lu Zhang",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Richmond Azumah",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3161045"
+        },
+        {
+          "name": "Saba Aslanzadeh",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Xiangdong Hu",
+          "rmp_rating": 4.9,
+          "rmp_num_ratings": 7,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126721"
+        }
+      ]
+    },
+    {
+      "code": "CSC 2222",
+      "title": "Introduction to Information Security and Privacy",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: CSC 1302 with a C or better.",
+      "description": "A practical first look at cybersecurity — you'll get hands-on exposure to encryption, network attacks, access control models, and privacy tools, building a broad foundation before you specialize.",
+      "professors": [
+        {
+          "name": "Alfred Basta",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2694565"
+        }
+      ]
+    },
+    {
+      "code": "CSC 2510",
+      "title": "Theoretical Foundations of Computer Science",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: Math 1113 or Math 1220 with a C or higher.",
+      "description": "The math CS majors actually need covers logic, proofs by induction, set theory, combinatorics, and graph theory, all taught through the lens of how they underpin algorithms, databases, and program correctness.",
+      "professors": [
+        {
+          "name": "Armin Iraji",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 23,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2910619"
+        },
+        {
+          "name": "Chao Wang",
+          "rmp_rating": 3.5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3135913"
+        },
+        {
+          "name": "Haijing Zhang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3162135"
+        },
+        {
+          "name": "Ian Pruitt",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3071554"
+        },
+        {
+          "name": "Parag Tamhankar",
+          "rmp_rating": 3.7,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2937573"
+        },
+        {
+          "name": "Srilatha Bingi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Suxing Liu",
+          "rmp_rating": 2.2,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3019982"
+        }
+      ]
+    },
+    {
+      "code": "CSC 2720",
+      "title": "Data Structures",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: CSC 1302 and (CSC 2510 or MATH 2420) with a C or higher; and MATH 2211 with a C or higher or concurrent enrollment.",
+      "description": "Where you stop just writing code and start thinking about efficiency — you'll implement and analyze linked lists, trees, hash tables, and sorting algorithms, and learn to reason about time and space complexity.",
+      "professors": [
+        {
+          "name": "Islam S M Towhidul",
+          "rmp_rating": 2.8,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2920434"
+        },
+        {
+          "name": "Farhan Tanvir",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962612"
+        },
+        {
+          "name": "Alina Nemira",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3119831"
+        },
+        {
+          "name": "Ana Ansari",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2944497"
+        },
+        {
+          "name": "Chet Goins",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Natarajan Kumaresan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Parag Tamhankar",
+          "rmp_rating": 3.7,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2937573"
+        },
+        {
+          "name": "Sulakshan Vajipayajula",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 2920",
+      "title": "Ethical and Social Issues in Computing",
+      "credit_hours": "3",
+      "prerequisites": "MATH 1113",
+      "description": "A writing-heavy course examining the real-world impact of technology on society — covers AI bias, surveillance, privacy, intellectual property, and what ethical responsibility looks like for software engineers.",
+      "professors": [
+        {
+          "name": "Zhaoqi Hu",
+          "rmp_rating": 4.9,
+          "rmp_num_ratings": 7,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126721"
+        },
+        {
+          "name": "Alfred Basta",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2694565"
+        },
+        {
+          "name": "Deepa Muralidhar",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2716806"
+        }
+      ]
+    },
+    {
+      "code": "CSC 3210",
+      "title": "Computer Organization and Programming",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 1302, and CSc 2510 or Math 2420 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "You'll see what's actually happening under your Python or Java code — write x86 assembly programs and understand how the CPU executes instructions, manages memory, and handles the call stack.",
+      "professors": [
+        {
+          "name": "Lan Gao",
+          "rmp_rating": 2.4,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3075860"
+        },
+        {
+          "name": "Abdullah Bal",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2942443"
+        },
+        {
+          "name": "Jean Guo",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3052044"
+        },
+        {
+          "name": "Michael Weeks",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 91,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/418488"
+        }
+      ]
+    },
+    {
+      "code": "CSC 3320",
+      "title": "System-Level Programming",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: CSC 1302, CSC 1302L, and either CSC 2510 or MATH 2420 with a of C or higher. Students must meet the Computer Science Major Eligibility Requirement or be enrolled in an approved computing program to enroll in this course.",
+      "description": "A C programming course focused on talking directly to the OS — you'll write programs that open files, spawn processes, use pipes, and make Linux system calls, the way real systems software is built.",
+      "professors": [
+        {
+          "name": "Md Mahfuzur Rahman",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2519939"
+        },
+        {
+          "name": "Michael Weeks",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 91,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/418488"
+        },
+        {
+          "name": "Faris Hawamdeh",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2927602"
+        },
+        {
+          "name": "Hossein Saghaeiannejad Esfahani",
+          "rmp_rating": 2.5,
+          "rmp_num_ratings": 44,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2358126"
+        }
+      ]
+    },
+    {
+      "code": "CSC 3350",
+      "title": "Software Development-CTW",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "A software design course where you learn to plan before you code — covers UML modeling, design patterns, and test-driven development; writing is a significant graded component (CTW designation).",
+      "professors": [
+        {
+          "name": "William Johnson",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2329806"
+        },
+        {
+          "name": "Tushara Sadasivuni",
+          "rmp_rating": 2.1,
+          "rmp_num_ratings": 85,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2317655"
+        }
+      ]
+    },
+    {
+      "code": "CSC 3900",
+      "title": "Technical Interview Preparation I",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: CSC 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Structured prep for technical job interviews run in partnership with industry — expect algorithmic problem solving, mock interviews, resume review, and soft-skills coaching.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4110",
+      "title": "Introduction to Embedded Systems Laboratory",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "A hands-on course where you program microcontrollers and embedded hardware to respond to the physical world — bridges the gap between software and the hardware it runs on.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4120",
+      "title": "Introduction to Robotics",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 3210 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "You build and program physical robots using a hardware kit — teaches how to translate software logic into real-world movement in a way that's more hands-on than most CS courses.",
+      "professors": [
+        {
+          "name": "Yoon Jae Lee",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3066321"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4210",
+      "title": "Computer Architecture",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3210 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Goes deeper into how CPUs are actually designed — covers logic gates, combinational and sequential circuits, memory hierarchies, pipelining, and how instruction sets get implemented in hardware.",
+      "professors": [
+        {
+          "name": "Michael Weeks",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 91,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/418488"
+        },
+        {
+          "name": "Mohammed Alser",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 9,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126576"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4220",
+      "title": "Computer Networks",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 and either Math 3020 or Math 3030 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How the internet works, layer by layer — you'll study the full TCP/IP protocol stack from physical transmission up through application-level protocols like HTTP, DNS, and routing algorithms.",
+      "professors": [
+        {
+          "name": "Huadi Zhu",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Akram Sadat Hosseini",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2415899"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4221",
+      "title": "Mobile Computing and Wireless Network Security",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 and CSc 3320 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How wireless networks are designed and secured — covers the protocols behind WiFi, cellular, and sensor networks, and the unique security challenges that come with communication over the air.",
+      "professors": [
+        {
+          "name": "Mario Kubek",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2865296"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4222",
+      "title": "Fundamentals of Cybersecurity",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 and CSc 3320 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "A comprehensive look at how systems get attacked and how to defend them — covers encryption, malware, OS hardening, network security, and the legal and ethical frameworks around cybersecurity.",
+      "professors": [
+        {
+          "name": "Peng Wang",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2853169"
+        },
+        {
+          "name": "Olusesi Balogun",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 13,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2942984"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4223",
+      "title": "Privacy",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 and either Math 3020 or Math 3030 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "An upper-level course on formally defining and enforcing privacy — covers differential privacy, anonymization techniques, and where privacy law intersects with technical implementation.",
+      "professors": [
+        {
+          "name": "Zhipeng Cai",
+          "rmp_rating": 4.1,
+          "rmp_num_ratings": 16,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1640151"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4224",
+      "title": "Ethical Hacking",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 2720 (Data Structures) and CSc 3320 (System Level Programming). Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Teaches the mindset and techniques of penetration testers — you'll learn how attackers find and exploit vulnerabilities so you can identify and fix them before someone else does.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4226",
+      "title": "Secure Software Engineering",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 2720 and CSc 3320 with a C or better. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How to write software that doesn't get hacked — covers secure coding practices, common vulnerability classes (buffer overflows, injection attacks), static analysis tools, and how to bake security into the development lifecycle.",
+      "professors": [
+        {
+          "name": "Yili Jiang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3102563"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4227",
+      "title": "Network Security",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 4220 with a C or higher or equivalent. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Deep dive into the protocols that secure internet communication — covers TLS/SSL, firewalls, intrusion detection systems, public-key cryptography, and authentication systems like Kerberos.",
+      "professors": [
+        {
+          "name": "Peng Wang",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2853169"
+        },
+        {
+          "name": "Ravishankar Chamarajnagar",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3096742"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4228",
+      "title": "Security in Internet of Things",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSC 4220 with a C or higher or equivalent. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Why securing IoT devices is so hard and what the solutions look like — covers the attack surface of connected devices, lightweight cryptography, and real-world security challenges in smart homes and industrial systems.",
+      "professors": [
+        {
+          "name": "Haoxin Wang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2873696"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4250",
+      "title": "Malware Analysis and Defense",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 3210 Computer Organization and Programming, CSc 2720 Data Structure. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "You analyze real malicious software to understand how it works — covers static and dynamic malware analysis, reverse engineering techniques, and building defenses against common malware families.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4251",
+      "title": "Computer Forensics",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 2720 (Data Structures) and CSc 3320 (System Level Programming). Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How digital investigations work in practice — covers collecting and preserving evidence from computers and networks, file system forensics, disk imaging, and how findings get used in legal proceedings.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4260",
+      "title": "Digital Image Processing",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 or DSCI 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The algorithms that let computers understand and manipulate images — covers filtering, edge detection, transforms, compression, and segmentation, with heavy use of the underlying linear algebra.",
+      "professors": [
+        {
+          "name": "Abdullah Bal",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2942443"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4310",
+      "title": "Parallel and Distributed Computing",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 3210 and CSc 3320 with grades of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How to write software that runs across multiple processors or machines simultaneously — covers threading models, MPI, distributed algorithms, and the coordination and consistency problems that arise.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4311",
+      "title": "Cloud Computing",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 2720 or DSCI 2720 with C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How cloud infrastructure works and how to build on it — covers virtualization, containers, IaaS/PaaS/SaaS models, and how to deploy and scale applications on platforms like AWS or Azure.",
+      "professors": [
+        {
+          "name": "Bingyi Xie",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2906245"
+        },
+        {
+          "name": "Lipeng Wan",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2846784"
+        },
+        {
+          "name": "Saba Aslanzadeh",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 4320",
+      "title": "Operating Systems",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "What happens inside the OS while your program runs — covers process scheduling, memory management, file systems, and concurrency, with programming assignments that interact with the Linux kernel.",
+      "professors": [
+        {
+          "name": "Akram Sadat Hosseini",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2415899"
+        },
+        {
+          "name": "Faris Hawamdeh",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2927602"
+        },
+        {
+          "name": "Md Mahfuzur Rahman",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2519939"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4330",
+      "title": "Programming Language Concepts",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720, CSc 3210, and CSc 3320 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "A theoretical lens on programming languages — you'll study how different languages handle scoping, type systems, and memory management, and understand why languages are designed the way they are.",
+      "professors": [
+        {
+          "name": "Parag Tamhankar",
+          "rmp_rating": 3.7,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2937573"
+        },
+        {
+          "name": "Murray Patterson",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2712458"
+        },
+        {
+          "name": "Peng Wang",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2853169"
+        },
+        {
+          "name": "Sonipriya Paul",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3084211"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4340",
+      "title": "Compilers",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 and CSc 3210 with grades of “C” or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "How a compiler turns source code into machine instructions — you'll build key components of one, working through lexical analysis, parsing, semantic checking, and code generation.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4350",
+      "title": "Software Engineering - CTW",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720, CSc 3210, and CSc 3320 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "A senior-level software engineering course where you apply the full development lifecycle — requirements, design, implementation, and testing — on a large project, with significant technical writing required.",
+      "professors": [
+        {
+          "name": "David James",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3007536"
+        },
+        {
+          "name": "Tushara Sadasivuni",
+          "rmp_rating": 2.1,
+          "rmp_num_ratings": 85,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2317655"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4351",
+      "title": "Capstone Senior Design I-CTW",
+      "credit_hours": "2",
+      "prerequisites": "Prerequisite: CSC 3350 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "First half of the senior capstone — your team picks a project, writes a formal specification, designs the architecture, and produces a development plan ready for implementation.",
+      "professors": [
+        {
+          "name": "William Johnson",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2329806"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4352",
+      "title": "Capstone Senior Design II-CTW",
+      "credit_hours": "2",
+      "prerequisites": "Prerequisite: CSC 4351 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Second half of the capstone — you build, test, and present the system your team designed in CSC 4351, with faculty or industry mentorship throughout.",
+      "professors": [
+        {
+          "name": "William Johnson",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2329806"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4360",
+      "title": "Mobile Application Development",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 with a grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course. DescriptionCrosslisted with CSC 6360. Crosslisted with CSc 6360. This course will cover the technologies, tools, frameworks and languages that are most commonly used in developing mobile applications for multiple mobile platforms. Topics include mobile application design, user interfaces, mobile application demographic and platform delivery, mobile networking, hosting infrastructure, and mobile security.",
+      "description": "Build real apps for iOS and Android — covers the dominant mobile frameworks, designing for small screens and touch input, handling offline behavior, and getting an app shipped to an app store.",
+      "professors": [
+        {
+          "name": "Louis Henry",
+          "rmp_rating": 3.1,
+          "rmp_num_ratings": 165,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/458011"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4370",
+      "title": "Web Programming",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Full-stack web development the old-school way — you'll build server-side apps using Java Servlets, JSP, and PHP, wire them to MySQL databases, and work with HTML forms and XML.",
+      "professors": [
+        {
+          "name": "Louis Henry",
+          "rmp_rating": 3.1,
+          "rmp_num_ratings": 165,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/458011"
+        },
+        {
+          "name": "David James",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3007536"
+        },
+        {
+          "name": "Lan Gao",
+          "rmp_rating": 2.4,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3075860"
+        },
+        {
+          "name": "Mingxi Yan",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 4510",
+      "title": "Automata",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The theoretical limits of computation — you'll prove what problems can and can't be solved by machines, using finite automata, context-free grammars, pushdown automata, and Turing machines.",
+      "professors": [
+        {
+          "name": "Murray Patterson",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2712458"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4520",
+      "title": "Design and Analysis of Algorithms",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: (CSc 2720 or DSCI 2720) and either Math 3020 or Math 3030 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The core algorithms course — you'll prove correctness and analyze time/space complexity for divide-and-conquer, greedy, dynamic programming, and graph algorithms, and touch on NP-completeness.",
+      "professors": [
+        {
+          "name": "Abdullah Bal",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2942443"
+        },
+        {
+          "name": "Alina Nemira",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3119831"
+        },
+        {
+          "name": "Alex Zelikovskiy",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Hossein Saghaeiannejad Esfahani",
+          "rmp_rating": 2.5,
+          "rmp_num_ratings": 44,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2358126"
+        },
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Prakash Chourasia",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3127019"
+        },
+        {
+          "name": "Wei Li",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2435563"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4610",
+      "title": "Numerical Analysis I",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisites: Math 2215 with grade of C or higher and the ability to program in a high-level language. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Nature of error; iteration; techniques for nonlinear systems; zeros of functions; interpolation; numerical differentiation; Newton-Cotes formulae for definite integrals; computer implementation of algorithms.",
+      "professors": [
+        {
+          "name": "Michael Stewart",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/991191"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4620",
+      "title": "Numerical Analysis II",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisites: Either Math 3030 or both Math 2641 and Math 2215 with grades of C or higher, and the ability to program in a high level language. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Gaussian Elimination for linear systems; least squares; Taylor, predictor-corrector and Runge- Kutta methods for solving ordinary differential equations; boundary value problems; partial differential equations.",
+      "professors": [
+        {
+          "name": "Michael Stewart",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/991191"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4630",
+      "title": "Matlab",
+      "credit_hours": "4",
+      "prerequisites": "None",
+      "description": null,
+      "professors": []
+    },
+    {
+      "code": "CSC 4650",
+      "title": "Introduction to Bioinformatics",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720, Biol 1103K, [or Biol 1103 and Biol 1103L] and Chem 1211K [or Chem 1211 and Chem 1211L] with grades of “C” or higher.Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The explosion in biological knowledge due to various genome projects and other high-throughput techniques has created entirely new fields and industries, and a need for trained computational biologists who are familiar with Biology, Statistics, and Computer Science.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4710",
+      "title": "Database Systems",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CS 2720 with grade of “C” or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "An introduction to the fundamental concepts and principles that underlie the relational model of data. Topics include formal query languages; SQL; query optimization; relational database design theory; physical database design, integrity, security, and concurrency control.",
+      "professors": [
+        {
+          "name": "Islam S M Towhidul",
+          "rmp_rating": 2.8,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2920434"
+        },
+        {
+          "name": "Farhan Tanvir",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962612"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4720",
+      "title": "Human-Computer Interaction",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Techniques and methodologies for development of user interfaces in software systems; topics include interaction styles, interaction devices, user documentation, and interface assessment.",
+      "professors": [
+        {
+          "name": "Carol Bales",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2453519"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4730",
+      "title": "Data Visualization",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Data visualization or displaying data in visual forms and is closely related to data analytics. In this class, students will study the theories of data visualization, design principles, and data visualization techniques.",
+      "professors": [
+        {
+          "name": "Chetan Tiwari",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 4740",
+      "title": "Data Mining",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Introduction to basic data mining techniques (such as association rules mining, cluster analysis, and classification methods) and their applications (such as Web data mining, biomedical data mining and security).",
+      "professors": [
+        {
+          "name": "Farhan Tanvir",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962612"
+        },
+        {
+          "name": "Jingyu Liu",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2899697"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4750",
+      "title": "Semantic Web",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 or DSCI 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "In-depth overview of the Semantic Web and how it can be applied. Major topics include core technical components and language constructs for the Semantic Web, linked data concepts/projects and RDF triple stores, and real world semantic Web applications.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4760",
+      "title": "Big Data Programming",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course. DescriptionCrosslisted with CSC 6760. Crosslisted with CSc 6760. This course will cover the technologies, tools, frameworks and languages that are most commonly used in Big Data Programming. Focus will be on algorithms for analyzing and mining massive datasets, graphs and social network data. Topics include the storage, management, processing and analysis of massive datasets, as well as Big Data governance, security, and privacy issues.",
+      "description": "This course will cover the technologies, tools, frameworks and languages that are most commonly used in Big Data Programming.",
+      "professors": [
+        {
+          "name": "Yubao Wu",
+          "rmp_rating": 1.4,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2287117"
+        },
+        {
+          "name": "Farhan Tanvir",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962612"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4780",
+      "title": "Fundamentals of Data Science",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 2720 with a C or better. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Introduction to the fundamental concepts of predictive data science for tabular data with qualitative and quantitative scales.",
+      "professors": [
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Alina Nemira",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3119831"
+        },
+        {
+          "name": "Minoo Jafarlou",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3162798"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4810",
+      "title": "Artificial Intelligence",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisites: CSc 2720 or DSCI 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "An overview of techniques and methodologies in the field of artificial intelligence. Topics may include search strategies, problem solving, natural language processing, logic and deduction, memory models, learning, expert systems, knowledge representation, and robotics.",
+      "professors": [
+        {
+          "name": "Yanqing Zhang",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1806387"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4820",
+      "title": "Interactive Computer Graphics",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 3320 with grade of “C” or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "This course will introduce students to 3D computer graphics and game programming. Students will learn how to develop 3D games and interactive computer graphics applications (such as virtual reality) using game engines.",
+      "professors": [
+        {
+          "name": "Ying Zhu",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 12,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1135469"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4821",
+      "title": "Fundamentals of Game Design",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Covers major aspects of game design such as challenges, gameplay, actions, core mechanics, worlds, characters, game balancing, user interfaces, and game genres.",
+      "professors": [
+        {
+          "name": "Michael Weeks",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 91,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/418488"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4822",
+      "title": "Mobile Game Development",
+      "credit_hours": "N/A",
+      "prerequisites": "Prerequisite: CSC 3320 with grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "This course focuses on developing games for mobile platforms. Topics include mobile platforms, mobile game design principles, game engine, graphics, game physics, audio, mobile game input, playtesting, and publishing.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4830",
+      "title": "Extended Reality Engineering",
+      "credit_hours": "N/A",
+      "prerequisites": "Prerequisites: CSC3320 or CSC3350 with grade of C or higher.",
+      "description": "This course offers an overview of extended reality (XR) engineering characteristics and introduces the development approaches, focusing on the life cycle and key activities at each stage of XR development.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4840",
+      "title": "Advanced Computer Graphics Programming",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with a grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Students will learn advanced 3D graphics and game programming. The topics will include rendering, lighting, camera, animation, user interaction, physics simulation, game AI, and GPU.",
+      "professors": [
+        {
+          "name": "Ying Zhu",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 12,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1135469"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4841",
+      "title": "Computer Animation",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSc 3320 with a grade of C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The basics of three-dimensional computer animation including 3D modeling, lighting, texture mapping, key framing, character animation, rigid and soft body dynamics, particles, cloth, hair, fluid, etc.",
+      "professors": [
+      ]
+    },
+    {
+      "code": "CSC 4850",
+      "title": "Machine Learning",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 2720 and Math 2641 with a grade of C or better. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "This course is intended to provide a general introduction to machine learning. This course will cover the fundamental concepts and principles of supervised learning, unsupervised learning, semi-supervised learning and reinforcement learning.",
+      "professors": [
+        {
+          "name": "Md Mahfuzur Rahman",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2519939"
+        },
+        {
+          "name": "Bingyi Xie",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2906245"
+        },
+        {
+          "name": "Dong Hye Ye",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962506"
+        },
+        {
+          "name": "Esra Akbas",
+          "rmp_rating": 1,
+          "rmp_num_ratings": 6,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3006294"
+        },
+        {
+          "name": "Zafar Iqbal",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 4851",
+      "title": "Introduction to Deep Learning",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: CSC 2720 (or DSCI 2720) and MATH 2641 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "This course introduces the basic concepts and algorithms of deep neural networks and its applications to computer vision and natural language processing.",
+      "professors": [
+        {
+          "name": "Ping Xu",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3161718"
+        },
+        {
+          "name": "Yue Wang",
+          "rmp_rating": 2.7,
+          "rmp_num_ratings": 7,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3054364"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4870",
+      "title": "Honors Thesis I",
+      "credit_hours": "6",
+      "prerequisites": "Prerequisite: Good standing with the Honors College and consent of instructor. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Readings or research preparatory to honors thesis or project. Signature Experience course.",
+      "professors": [
+        {
+          "name": "Ashwin Ashok",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2688463"
+        },
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Mario Kubek",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2865296"
+        },
+        {
+          "name": "Rafal Angryk",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        },
+        {
+          "name": "Yi Ding",
+          "rmp_rating": 2.8,
+          "rmp_num_ratings": 5,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1040052"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4880",
+      "title": "Honors Thesis II",
+      "credit_hours": "6",
+      "prerequisites": "Prerequisite: Good standing with the Honors College and consent of instructor.Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Writing or production of honors thesis or project. Signature Experience course.",
+      "professors": [
+        {
+          "name": "Ashwin Ashok",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2688463"
+        },
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4900",
+      "title": "Technical Interview Preparation II",
+      "credit_hours": "3",
+      "prerequisites": "Prerequisite: CSC 2720 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "The course prepares students for careers in Computer Science through a collaborative program between the CSC department and strategic partners.",
+      "professors": [
+        {
+          "name": "Faris Hawamdeh",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 19,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2927602"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4940",
+      "title": "Computer Science Internship",
+      "credit_hours": "2",
+      "prerequisites": "None",
+      "description": null,
+      "professors": [
+        {
+          "name": "David James",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3007536"
+        },
+        {
+          "name": "Armin Mikler",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        }
+      ]
+    },
+    {
+      "code": "CSC 4980",
+      "title": "Topics in Computer Science",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: Consent of Instructor. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Selected topics in Computer Science will be covered. Topics include the latest advances in computing.",
+      "professors": [
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        },
+        {
+          "name": "Carol Jacobs",
+          "rmp_rating": 3.6,
+          "rmp_num_ratings": 9,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2574898"
+        },
+        {
+          "name": "Haoxin Wang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2873696"
+        },
+        {
+          "name": "Md Mahfuzur Rahman",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2519939"
+        },
+        {
+          "name": "Xiaolin Hu",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1683704"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4982",
+      "title": "Undergraduate Research in Computer Science",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: at least 12 upper-division hours in computer science. Authorization required. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Independent investigation of topics of common interest to student and instructor. This course may include a Signature Experience component.",
+      "professors": [
+        {
+          "name": "Anu Bourgeois",
+          "rmp_rating": 2.7,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/901019"
+        },
+        {
+          "name": "Ashwin Ashok",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2688463"
+        },
+        {
+          "name": "Dustin Kempton",
+          "rmp_rating": 1,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2759760"
+        },
+        {
+          "name": "Gennady Cymbalyuk",
+          "rmp_rating": 3.5,
+          "rmp_num_ratings": 14,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/626515"
+        },
+        {
+          "name": "Jingyu Liu",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2899697"
+        },
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Lipeng Wan",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2846784"
+        },
+        {
+          "name": "Louis Henry",
+          "rmp_rating": 3.1,
+          "rmp_num_ratings": 165,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/458011"
+        },
+        {
+          "name": "Mario Kubek",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2865296"
+        },
+        {
+          "name": "Parag Tamhankar",
+          "rmp_rating": 3.7,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2937573"
+        },
+        {
+          "name": "Paul Ulrich",
+          "rmp_rating": 3.2,
+          "rmp_num_ratings": 119,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1408965"
+        },
+        {
+          "name": "Qin Hu",
+          "rmp_rating": 4.9,
+          "rmp_num_ratings": 7,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126721"
+        },
+        {
+          "name": "William Johnson",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2329806"
+        },
+        {
+          "name": "Xiaolin Hu",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1683704"
+        },
+        {
+          "name": "Yili Jiang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3102563"
+        },
+        {
+          "name": "Yoon Jae Lee",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3066321"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4990",
+      "title": "Interdisciplinary Topics",
+      "credit_hours": "N/A",
+      "prerequisites": "Prerequisites: Consent of instructor. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Selected Interdisciplinary topics. May be repeated if topics are different.",
+      "professors": [
+        {
+          "name": "Carol Jacobs",
+          "rmp_rating": 3.6,
+          "rmp_num_ratings": 9,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2574898"
+        }
+      ]
+    },
+    {
+      "code": "CSC 4995",
+      "title": "Directed Readings BIS-CTW",
+      "credit_hours": "4",
+      "prerequisites": "None",
+      "description": null,
+      "professors": []
+    },
+    {
+      "code": "CSC 4997",
+      "title": "Student Research and Teaching Support",
+      "credit_hours": "N/A",
+      "prerequisites": "None",
+      "description": null,
+      "professors": []
+    },
+    {
+      "code": "CSC 4998",
+      "title": "Selected Topics",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: consent of instructor. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "No more than six credit hours may be applied toward the major. May be repeated if topics are different.",
+      "professors": []
+    },
+    {
+      "code": "CSC 4999",
+      "title": "Directed Readings",
+      "credit_hours": "4",
+      "prerequisites": "Prerequisite: GPA of 3.0 or higher and consent of instructor. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
+      "description": "Directed study with a faculty member.",
+      "professors": [
+        {
+          "name": "Rafal Angryk",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Anu Bourgeois",
+          "rmp_rating": 2.7,
+          "rmp_num_ratings": 30,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/901019"
+        },
+        {
+          "name": "Zhipeng Cai",
+          "rmp_rating": 4.1,
+          "rmp_num_ratings": 16,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1640151"
+        },
+        {
+          "name": "Yoon Jae Lee",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3066321"
+        },
+        {
+          "name": "Alex Zelikovskiy",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Armin Iraji",
+          "rmp_rating": 1.5,
+          "rmp_num_ratings": 23,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2910619"
+        },
+        {
+          "name": "Armin Mikler",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Ashwin Ashok",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2688463"
+        },
+        {
+          "name": "Berkay Aydin",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1996800"
+        },
+        {
+          "name": "Chetan Tiwari",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Daniel Takabi",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "David James",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3007536"
+        },
+        {
+          "name": "David Maimon",
+          "rmp_rating": 1,
+          "rmp_num_ratings": 6,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2866185"
+        },
+        {
+          "name": "Dong Hye Ye",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962506"
+        },
+        {
+          "name": "Dustin Kempton",
+          "rmp_rating": 1,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2759760"
+        },
+        {
+          "name": "Esra Akbas",
+          "rmp_rating": 1,
+          "rmp_num_ratings": 6,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3006294"
+        },
+        {
+          "name": "Farhan Tanvir",
+          "rmp_rating": 3,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2962612"
+        },
+        {
+          "name": "Haoxin Wang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2873696"
+        },
+        {
+          "name": "Hemanth Venkateswara Demakethepalli Venkateswara",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2904986"
+        },
+        {
+          "name": "Huadi Zhu",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Jingyu Liu",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 1,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2899697"
+        },
+        {
+          "name": "John Martin",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3024127"
+        },
+        {
+          "name": "Kiril Kuzmin",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2782285"
+        },
+        {
+          "name": "Lipeng Wan",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2846784"
+        },
+        {
+          "name": "Louis Henry",
+          "rmp_rating": 3.1,
+          "rmp_num_ratings": 165,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/458011"
+        },
+        {
+          "name": "Mario Kubek",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 2,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2865296"
+        },
+        {
+          "name": "Md S Q Zulkar Nine",
+          "rmp_rating": 4.3,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2632774"
+        },
+        {
+          "name": "Michael Weeks",
+          "rmp_rating": 1.7,
+          "rmp_num_ratings": 91,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/418488"
+        },
+        {
+          "name": "Mohammed Alser",
+          "rmp_rating": 5,
+          "rmp_num_ratings": 9,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126576"
+        },
+        {
+          "name": "Murray Patterson",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 4,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2712458"
+        },
+        {
+          "name": "Parag Tamhankar",
+          "rmp_rating": 3.7,
+          "rmp_num_ratings": 21,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2937573"
+        },
+        {
+          "name": "Peng Wang",
+          "rmp_rating": 3.3,
+          "rmp_num_ratings": 10,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2853169"
+        },
+        {
+          "name": "Ping Xu",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3161718"
+        },
+        {
+          "name": "Qin Hu",
+          "rmp_rating": 4.9,
+          "rmp_num_ratings": 7,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3126721"
+        },
+        {
+          "name": "Raj Sunderraman",
+          "rmp_rating": 4.8,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2614203"
+        },
+        {
+          "name": "Sergey Plis",
+          "rmp_rating": 2.3,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2837012"
+        },
+        {
+          "name": "Toivo Asheeke",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Tushara Sadasivuni",
+          "rmp_rating": 2.1,
+          "rmp_num_ratings": 85,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2317655"
+        },
+        {
+          "name": "Vince Calhoun",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3067512"
+        },
+        {
+          "name": "Wei Li",
+          "rmp_rating": 4,
+          "rmp_num_ratings": 3,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2435563"
+        },
+        {
+          "name": "William Johnson",
+          "rmp_rating": 3.8,
+          "rmp_num_ratings": 27,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2329806"
+        },
+        {
+          "name": "Xiaojun Cao",
+          "rmp_rating": 1.9,
+          "rmp_num_ratings": 12,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2577463"
+        },
+        {
+          "name": "Xiaolin Hu",
+          "rmp_rating": 2.6,
+          "rmp_num_ratings": 15,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1683704"
+        },
+        {
+          "name": "Yanqing Zhang",
+          "rmp_rating": 2,
+          "rmp_num_ratings": 11,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1806387"
+        },
+        {
+          "name": "Yi Ding",
+          "rmp_rating": 2.8,
+          "rmp_num_ratings": 5,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1040052"
+        },
+        {
+          "name": "Yili Jiang",
+          "rmp_rating": 0,
+          "rmp_num_ratings": 0,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/3102563"
+        },
+        {
+          "name": "Ying Zhu",
+          "rmp_rating": 4.5,
+          "rmp_num_ratings": 12,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/1135469"
+        },
+        {
+          "name": "Yingshu Li",
+          "rmp_rating": null,
+          "rmp_num_ratings": null,
+          "rmp_link": null
+        },
+        {
+          "name": "Yubao Wu",
+          "rmp_rating": 1.4,
+          "rmp_num_ratings": 20,
+          "rmp_link": "https://www.ratemyprofessors.com/professor/2287117"
+        }
+      ]
+    }
+  ]
+}
