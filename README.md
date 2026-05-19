@@ -111,7 +111,7 @@ Guides are written in MDX and live in `src/pages/guides/`. To add one:
 
 ## Getting Help
 
-- Join the ProgSU Discord for questions
+- Join the Progsu Discord for questions
 - Open a GitHub issue for bugs or feature requests
 - Reach out to a club officer for write access
 
