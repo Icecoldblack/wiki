@@ -748,12 +748,6 @@
       "prerequisites": "Prerequisites: CSc 3210 with a C or higher. Students must meet the Computer Science Major Eligibility Requirement in order to enroll in this course.",
       "description": "You build and program physical robots using a hardware kit — teaches how to translate software logic into real-world movement in a way that's more hands-on than most CS courses.",
       "professors": [
-        {
-          "name": "Yoon Jae Lee",
-          "rmp_rating": 5,
-          "rmp_num_ratings": 2,
-          "rmp_link": "https://www.ratemyprofessors.com/professor/3066321"
-        }
       ]
     },
     {
