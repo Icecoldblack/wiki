@@ -1,0 +1,224 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+interface TocSection {
+  heading: Heading;
+  children: Heading[];
+}
+
+const { headings } = Astro.props;
+const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+
+const sections: TocSection[] = [];
+for (const h of filtered) {
+  if (h.depth === 2) {
+    sections.push({ heading: h, children: [] });
+  } else if (sections.length > 0) {
+    sections[sections.length - 1].children.push(h);
+  }
+}
+---
+
+{sections.length > 0 && (
+  <nav class="toc" aria-label="On this page">
+    <details class="toc__wrapper surface-glass">
+      <summary class="toc__toggle">
+        <span class="toc__label">On this page</span>
+        <svg class="toc__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </summary>
+      <div class="toc__body">
+        {sections.map((section) => (
+          section.children.length > 0 ? (
+            <details class="toc__section">
+              <summary class="toc__section-toggle">
+                <a href={`#${section.heading.slug}`} class="toc__link toc__link--parent" data-slug={section.heading.slug}>{section.heading.text}</a>
+                <svg class="toc__section-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </summary>
+              <ol class="toc__sublist">
+                {section.children.map((child) => (
+                  <li class="toc__subitem">
+                    <a href={`#${child.slug}`} class="toc__link toc__link--child" data-slug={child.slug}>{child.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          ) : (
+            <a href={`#${section.heading.slug}`} class="toc__link toc__link--parent toc__link--solo" data-slug={section.heading.slug}>{section.heading.text}</a>
+          )
+        ))}
+      </div>
+    </details>
+  </nav>
+)}
+
+<style>
+  .toc {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    margin-bottom: var(--space-8);
+  }
+
+  .toc__wrapper {
+    border-radius: var(--radius-lg);
+  }
+
+  .toc__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    padding: var(--space-4) var(--space-5);
+    min-height: 44px;
+    color: var(--color-text-tertiary);
+    user-select: none;
+  }
+  .toc__toggle::-webkit-details-marker { display: none; }
+
+  .toc__label {
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  .toc__chevron {
+    transition: transform var(--duration-normal) var(--ease);
+  }
+  .toc__wrapper[open] .toc__chevron {
+    transform: rotate(180deg);
+  }
+
+  .toc__body {
+    padding: var(--space-2) var(--space-5) var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  /* ── Sections (collapsible h2 groups) ── */
+  .toc__section {
+    border: none;
+  }
+
+  .toc__section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    gap: var(--space-2);
+  }
+  .toc__section-toggle::-webkit-details-marker { display: none; }
+
+  .toc__section-chevron {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    transition: transform var(--duration-normal) var(--ease);
+  }
+  .toc__section[open] .toc__section-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ── Sublist (h3 children) ── */
+  .toc__sublist {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-1) 0 0;
+  }
+
+  .toc__subitem {
+    margin-top: 0;
+  }
+
+  /* ── Links ── */
+  .toc__link {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition:
+      color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease);
+    line-height: var(--leading-snug);
+  }
+  .toc__link:hover {
+    color: var(--color-text-secondary);
+  }
+  .toc__link.is-active {
+    color: var(--accent-text);
+    border-left-color: var(--accent-text);
+  }
+
+  .toc__link--parent {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  .toc__link--child {
+    padding-left: var(--space-6);
+  }
+  .toc__link--child::before {
+    content: '–';
+    margin-right: var(--space-2);
+    color: var(--color-text-muted);
+  }
+</style>
+
+<script>
+  function initToc() {
+    const links = document.querySelectorAll<HTMLAnchorElement>('.toc__link[data-slug]');
+    if (!links.length) return;
+
+    const slugs = Array.from(links).map((l) => l.dataset.slug!);
+    const headingEls = slugs
+      .map((s) => document.getElementById(s))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (!headingEls.length) return;
+
+    let active = '';
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            active = entry.target.id;
+            break;
+          }
+        }
+
+        links.forEach((link) => {
+          const isActive = link.dataset.slug === active;
+          link.classList.toggle('is-active', isActive);
+
+          if (isActive && link.classList.contains('toc__link--child')) {
+            const section = link.closest('.toc__section');
+            if (section instanceof HTMLDetailsElement && !section.open) {
+              section.open = true;
+            }
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+    );
+
+    headingEls.forEach((h) => observer.observe(h));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initToc);
+  } else {
+    initToc();
+  }
+</script>

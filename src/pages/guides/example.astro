@@ -1,0 +1,300 @@
+---
+import ContentLayout from "../../layouts/ContentLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Callout from "../../components/Callout.astro";
+
+const headings = [
+  { depth: 2, slug: "why-data-structures-matter", text: "Why Data Structures Matter" },
+  { depth: 2, slug: "arrays-and-strings", text: "Arrays and Strings" },
+  { depth: 3, slug: "time-complexity-basics", text: "Time Complexity Basics" },
+  { depth: 3, slug: "common-patterns", text: "Common Patterns" },
+  { depth: 2, slug: "linked-lists", text: "Linked Lists" },
+  { depth: 3, slug: "singly-vs-doubly", text: "Singly vs. Doubly Linked" },
+  { depth: 2, slug: "trees-and-graphs", text: "Trees and Graphs" },
+  { depth: 3, slug: "binary-search-trees", text: "Binary Search Trees" },
+  { depth: 3, slug: "graph-traversal", text: "Graph Traversal" },
+  { depth: 2, slug: "hash-maps", text: "Hash Maps" },
+  { depth: 2, slug: "next-steps", text: "Next Steps" },
+];
+
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: "Guides", href: "/guides" },
+  { label: "Foundations", href: "/guides/foundations" },
+  { label: "Data Structures" },
+];
+---
+
+<ContentLayout
+  title="Mastering Data Structures"
+  breadcrumbs={breadcrumbs}
+  headings={headings}
+>
+  <PageHeader
+    eyebrow="Foundations"
+    headline="mastering data structures"
+    subline="A practical guide to the building blocks that every technical interview — and every real system — depends on."
+  />
+
+  <div class="prose">
+    <p>
+      Data structures are the foundation of every piece of software you'll ever write. Whether you're
+      optimizing a database query, passing a coding interview, or building a feature at scale, your
+      ability to choose and manipulate the right data structure will define the quality of your
+      solution. This guide covers the structures you'll encounter most often, how to reason about
+      their trade-offs, and how to practice them effectively.
+    </p>
+
+    <h2 id="why-data-structures-matter">Why Data Structures Matter</h2>
+
+    <p>
+      Every program is, at its core, a set of operations on data. The <em>structure</em> you choose
+      determines how efficiently those operations execute. A poorly chosen data structure turns an
+      O(1) lookup into an O(n) scan. A well-chosen one makes a seemingly hard problem trivial.
+    </p>
+
+    <p>
+      In interviews, data structures are the language of problem-solving. Interviewers aren't
+      testing whether you've memorized <code>HashMap</code> internals — they're testing whether
+      you can <strong>recognize</strong> which structure fits the problem, <strong>articulate</strong>
+      why, and <strong>implement</strong> it cleanly under time pressure.
+    </p>
+
+    <Callout variant="info" title="Before you start">
+      <p>
+        This guide assumes you're comfortable with basic programming concepts — variables, loops,
+        functions, and recursion. If you need a refresher on recursion, read the
+        <a href="#">Recursion Fundamentals</a> guide first.
+      </p>
+    </Callout>
+
+    <h2 id="arrays-and-strings">Arrays and Strings</h2>
+
+    <p>
+      Arrays are the most fundamental data structure. They provide constant-time access to any
+      element by index, which makes them the default choice for ordered collections. Strings, in
+      most languages, behave like arrays of characters — and many string problems are really array
+      problems in disguise.
+    </p>
+
+    <h3 id="time-complexity-basics">Time Complexity Basics</h3>
+
+    <p>
+      Understanding time complexity is non-negotiable. Here's the quick reference for arrays:
+    </p>
+
+    <ul>
+      <li><strong>Access by index:</strong> O(1) — the whole point of arrays</li>
+      <li><strong>Search (unsorted):</strong> O(n) — you have to check every element</li>
+      <li><strong>Search (sorted):</strong> O(log n) — binary search</li>
+      <li><strong>Insert at end:</strong> O(1) amortized — unless the array needs to resize</li>
+      <li><strong>Insert at beginning:</strong> O(n) — everything shifts right</li>
+    </ul>
+
+    <p>
+      The key insight: arrays trade insertion flexibility for access speed. If you need fast
+      lookups by position, arrays win. If you need fast insertions and deletions at arbitrary
+      positions, consider a linked list or a balanced tree.
+    </p>
+
+    <h3 id="common-patterns">Common Patterns</h3>
+
+    <p>
+      Most array problems in interviews fall into a handful of patterns. Recognizing them
+      early saves you time and reduces the chance of going down a dead end.
+    </p>
+
+    <ol>
+      <li><strong>Two pointers</strong> — move two indices toward each other or in the same direction to find pairs or partitions</li>
+      <li><strong>Sliding window</strong> — maintain a window of elements and slide it across the array to track a running aggregate</li>
+      <li><strong>Prefix sums</strong> — precompute cumulative sums to answer range queries in O(1)</li>
+      <li><strong>Sorting + binary search</strong> — sort once, then binary search many times</li>
+    </ol>
+
+    <pre><code>// Two-pointer pattern: find a pair that sums to target
+function twoSum(nums: number[], target: number): number[] {'{'}
+  let left = 0;
+  let right = nums.length - 1;
+
+  while (left {'<'} right) {'{'}
+    const sum = nums[left] + nums[right];
+    if (sum === target) return [left, right];
+    if (sum {'<'} target) left++;
+    else right--;
+  {'}'}
+
+  return [];
+{'}'}</code></pre>
+
+    <Callout variant="tip" title="Interview tip">
+      <p>
+        When you see "find a pair" or "find a subarray," your first instinct should be two pointers
+        or sliding window. State this out loud to the interviewer — it shows pattern recognition
+        even before you write code.
+      </p>
+    </Callout>
+
+    <h2 id="linked-lists">Linked Lists</h2>
+
+    <p>
+      Linked lists store elements as nodes, where each node holds a value and a pointer to the
+      next node. This makes insertion and deletion O(1) if you have a reference to the node —
+      but access by index is O(n) because you have to traverse from the head.
+    </p>
+
+    <p>
+      In practice, linked lists show up less in production code than in interviews. Modern hardware
+      favors arrays because of <strong>cache locality</strong> — array elements sit next to each
+      other in memory, so the CPU can prefetch them efficiently. Linked list nodes are scattered
+      across the heap, causing frequent cache misses.
+    </p>
+
+    <h3 id="singly-vs-doubly">Singly vs. Doubly Linked</h3>
+
+    <p>
+      A singly linked list only has <code>next</code> pointers. A doubly linked list adds
+      <code>prev</code> pointers, which makes reverse traversal and deletion-by-reference O(1)
+      instead of requiring a full traversal to find the predecessor.
+    </p>
+
+    <blockquote>
+      <p>
+        "The linked list is rarely the optimal choice in production, but it's an essential tool
+        for building intuition about pointers, memory, and the trade-offs that define every
+        data structure decision."
+      </p>
+    </blockquote>
+
+    <Callout variant="warning" title="Common mistake">
+      <p>
+        When reversing a linked list, don't forget to save the <code>next</code> pointer
+        <em>before</em> you reassign it. Losing the reference to the rest of the list is the
+        most common bug in this class of problems.
+      </p>
+    </Callout>
+
+    <pre><code>// Reverse a singly linked list
+function reverse(head: ListNode | null): ListNode | null {'{'}
+  let prev: ListNode | null = null;
+  let curr = head;
+
+  while (curr) {'{'}
+    const next = curr.next;  // save before overwriting
+    curr.next = prev;
+    prev = curr;
+    curr = next;
+  {'}'}
+
+  return prev;
+{'}'}</code></pre>
+
+    <h2 id="trees-and-graphs">Trees and Graphs</h2>
+
+    <p>
+      Trees and graphs extend the linked list concept to multiple connections per node. A tree
+      is a connected acyclic graph with a designated root; a general graph can have cycles and
+      doesn't require a root. Both are essential for modeling hierarchical and networked
+      relationships.
+    </p>
+
+    <h3 id="binary-search-trees">Binary Search Trees</h3>
+
+    <p>
+      A binary search tree (BST) maintains the invariant that every node's left subtree contains
+      only smaller values and every right subtree contains only larger values. This enables
+      O(log n) search, insertion, and deletion — <em>if</em> the tree is balanced. An
+      unbalanced BST degrades to a linked list with O(n) operations.
+    </p>
+
+    <p>
+      Self-balancing variants — AVL trees, red-black trees, B-trees — guarantee O(log n) height
+      through rotations or restructuring. You rarely implement these from scratch, but understanding
+      <em>why</em> they exist is critical for reasoning about performance guarantees in standard
+      library data structures like <code>TreeMap</code> in Java or <code>std::map</code> in C++.
+    </p>
+
+    <h3 id="graph-traversal">Graph Traversal</h3>
+
+    <p>
+      The two fundamental graph traversal algorithms are BFS (breadth-first search) and DFS
+      (depth-first search). BFS explores neighbors first — it finds the shortest path in
+      unweighted graphs. DFS explores as deep as possible before backtracking — it's useful
+      for detecting cycles, topological sorting, and exploring all paths.
+    </p>
+
+    <ul>
+      <li><strong>BFS</strong> uses a queue and is ideal for shortest-path problems and level-order traversal</li>
+      <li><strong>DFS</strong> uses a stack (or recursion) and is ideal for exhaustive search and backtracking</li>
+      <li>Both run in O(V + E) time, where V is vertices and E is edges</li>
+    </ul>
+
+    <Callout variant="info" title="When to use which">
+      <p>
+        If the problem asks for the <strong>shortest</strong> path or <strong>minimum</strong>
+        number of steps, reach for BFS. If it asks you to explore <strong>all</strong>
+        possibilities or detect <strong>cycles</strong>, reach for DFS.
+      </p>
+    </Callout>
+
+    <h2 id="hash-maps">Hash Maps</h2>
+
+    <p>
+      Hash maps (or hash tables) provide average-case O(1) insertion, deletion, and lookup by
+      mapping keys to indices via a hash function. They're the single most useful data structure
+      in coding interviews — if you're stuck, ask yourself: "Can I use a hash map to remember
+      something I've already computed?"
+    </p>
+
+    <p>
+      The trade-off: hash maps use more memory than arrays, don't maintain insertion order
+      (in most implementations), and degrade to O(n) in the worst case if many keys hash to
+      the same bucket. In practice, well-designed hash functions make collisions rare enough
+      that the amortized O(1) guarantee holds.
+    </p>
+
+    <pre><code>// Classic: two-sum with a hash map
+function twoSumHashMap(nums: number[], target: number): number[] {'{'}
+  const seen = new Map{'<'}number, number{'>'};();
+
+  for (let i = 0; i {'<'} nums.length; i++) {'{'}
+    const complement = target - nums[i];
+    if (seen.has(complement)) {'{'}
+      return [seen.get(complement)!, i];
+    {'}'}
+    seen.set(nums[i], i);
+  {'}'}
+
+  return [];
+{'}'}</code></pre>
+
+    <h2 id="next-steps">Next Steps</h2>
+
+    <p>
+      You now have a working mental model of the most important data structures. The next step
+      is practice — but <em>deliberate</em> practice, not aimless grinding. Here's a concrete plan:
+    </p>
+
+    <ol>
+      <li>Pick one data structure per week and solve 5–8 problems focused on it</li>
+      <li>After solving each problem, write a one-sentence summary of the key insight</li>
+      <li>Review your summaries weekly to build pattern recognition</li>
+      <li>Move to mixed practice once you've covered all structures individually</li>
+    </ol>
+
+    <Callout variant="tip" title="Consistency over volume">
+      <p>
+        Two focused problems per day, five days a week, beats a weekend binge of twenty problems.
+        Spaced repetition works for algorithms the same way it works for vocabulary — your brain
+        needs time to consolidate.
+      </p>
+    </Callout>
+
+    <hr />
+
+    <p>
+      <strong>Further reading:</strong> The <a href="#">Technical Interview Prep</a> guide
+      covers problem-solving frameworks, and the <a href="#">System Design Fundamentals</a>
+      guide shows how these data structures appear at scale.
+    </p>
+  </div>
+</ContentLayout>

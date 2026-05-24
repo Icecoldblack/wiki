@@ -1,63 +1,22 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
+import Breadcrumb from "../../../components/Breadcrumb.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import Badge from "../../../components/Badge.astro";
 ---
 
 <Layout title="Foundations">
-  <a href="/guides" class="back-link">&larr; guides</a>
-  <p class="page-eyebrow">FOUNDATIONS</p>
-  <h1 class="page-headline">the bedrock<br>of everything.</h1>
-  <p class="page-sub">
-    CS theory, math, and first principles every student should have solid footing in before chasing offers.
-  </p>
-  <p class="coming-soon">guides coming soon.</p>
+  <Breadcrumb items={[
+    { label: "Home", href: "/" },
+    { label: "Guides", href: "/guides" },
+    { label: "Foundations" },
+  ]} />
+
+  <PageHeader
+    eyebrow="Foundations"
+    headline="the bedrock<br>of everything."
+    subline="CS theory, math, and first principles every student should have solid footing in before chasing offers."
+  />
+
+  <Badge text="guides coming soon" />
 </Layout>
-
-<style>
-  .back-link {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .52rem;
-    color: rgba(168,85,247,.6);
-    text-decoration: none;
-    letter-spacing: .12em;
-    display: inline-block;
-    margin-bottom: 2rem;
-    transition: color .2s;
-  }
-  .back-link:hover { color: rgba(168,85,247,.9); }
-
-  .page-eyebrow {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .52rem;
-    color: rgba(216,180,254,.75);
-    letter-spacing: .28em;
-    margin: 0 0 1rem;
-  }
-  .page-headline {
-    font-family: Georgia, serif;
-    font-style: italic;
-    color: #fff;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    line-height: 1.05;
-    letter-spacing: -.01em;
-    text-shadow: 0 2px 24px rgba(0,0,0,.8), 0 0 40px rgba(76,29,149,.35);
-    margin: 0 0 .75rem;
-  }
-  .page-sub {
-    font-family: Georgia, serif;
-    font-size: .72rem;
-    color: rgba(255,255,255,.45);
-    line-height: 1.6;
-    margin: 0 0 2.5rem;
-    max-width: 480px;
-  }
-  .coming-soon {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .5rem;
-    color: rgba(168,85,247,.4);
-    letter-spacing: .2em;
-    border: 1px solid rgba(168,85,247,.15);
-    border-radius: .4rem;
-    padding: .6rem 1rem;
-    display: inline-block;
-  }
-</style>

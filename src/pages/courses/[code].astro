@@ -1,0 +1,1138 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import CourseCard from "../../components/CourseCard.astro";
+import PlanWiring from "../../components/courses/PlanWiring.astro";
+
+export function getStaticPaths() {
+  const courses: Record<string, any> = {
+  "csc-1010": {
+    code: "CSC 1010", title: "Computers and Applications", credits: 3,
+    subject: "CSC", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "Introduction to using computers as problem-solving tools. Covers spreadsheets, databases, web development basics, and computational thinking. No programming experience required.",
+    outcomes: [
+      "Use spreadsheets and databases to organize and analyze data",
+      "Build basic web pages with HTML and CSS",
+      "Apply computational thinking to everyday problems",
+    ],
+    prereqs: [],
+    sections: [
+      { id: "001", professor: "Dr. Raj", days: "TR", time: "9:30–10:45", room: "Aderhold 221", seats: 28, cap: 40 },
+      { id: "002", professor: "Dr. Raj", days: "TR", time: "2:00–3:15", room: "Aderhold 221", seats: 15, cap: 40 },
+      { id: "003", professor: "Staff", days: "MW", time: "6:00–7:15", room: "Petit 230", seats: 20, cap: 35 },
+    ],
+    notes: [
+      { author: "nina_cs27", text: "Easy A if you show up. Good intro if you're not sure about CS yet.", date: "Fall 2025" },
+    ],
+    related: ["csc-1301"],
+  },
+  "csc-1301": {
+    code: "CSC 1301", title: "Principles of Computer Science I", credits: 4,
+    subject: "CSC", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "Introduction to computational thinking and programming using Python. Covers variables, control flow, functions, basic data structures, and file I/O. No prior experience assumed.",
+    outcomes: [
+      "Write Python programs that solve well-defined problems",
+      "Decompose problems into functions and reusable modules",
+      "Use lists, dictionaries, and file I/O effectively",
+      "Debug code systematically using print tracing and error messages",
+    ],
+    prereqs: [],
+    sections: [
+      { id: "001", professor: "Dr. Raj", days: "TR", time: "2:00–3:15", room: "Aderhold 221", seats: 12, cap: 40 },
+      { id: "002", professor: "Dr. Raj", days: "TR", time: "9:30–10:45", room: "Aderhold 221", seats: 0, cap: 40 },
+      { id: "003", professor: "Dr. Gunay", days: "MW", time: "11:00–12:15", room: "Petit 230", seats: 8, cap: 35 },
+    ],
+    notes: [
+      { author: "marcus_t", text: "Raj is the best professor for this. His exams are fair and he actually explains things.", date: "Fall 2025" },
+      { author: "ava.cs26", text: "Take this seriously even though it's intro. The habits you build here carry into 1302.", date: "Spring 2025" },
+    ],
+    related: ["csc-1010", "csc-1302"],
+  },
+  "csc-1302": {
+    code: "CSC 1302", title: "Principles of Computer Science II", credits: 4,
+    subject: "CSC", level: 1000, semesters: ["fall", "spring"],
+    description: "Continuation of CSC 1301. Object-oriented programming in Java: classes, inheritance, polymorphism, interfaces, exception handling, and introductory GUI programming.",
+    outcomes: [
+      "Design and implement Java programs using OOP principles",
+      "Use inheritance, polymorphism, and interfaces effectively",
+      "Handle exceptions and write robust, defensive code",
+    ],
+    prereqs: [{ code: "CSC 1301", slug: "csc-1301" }],
+    sections: [
+      { id: "001", professor: "Dr. Gunay", days: "MW", time: "11:00–12:15", room: "Petit 230", seats: 3, cap: 35 },
+      { id: "002", professor: "Dr. Gunay", days: "MW", time: "2:00–3:15", room: "Petit 230", seats: 18, cap: 35 },
+    ],
+    notes: [],
+    related: ["csc-1301", "csc-2720"],
+  },
+  "csc-2720": {
+    code: "CSC 2720", title: "Data Structures", credits: 4,
+    subject: "CSC", level: 2000, semesters: ["fall", "spring"],
+    description: "Study of fundamental data structures and their applications. Covers linked lists, stacks, queues, trees, heaps, hash tables, and graphs. Emphasizes analysis of algorithms, Big-O notation, and choosing the right structure for the problem.",
+    outcomes: [
+      "Implement and use linked lists, trees, hash maps, and graphs",
+      "Analyze time and space complexity using Big-O notation",
+      "Choose appropriate data structures for given problem constraints",
+      "Write recursive algorithms and understand their trade-offs",
+    ],
+    prereqs: [{ code: "CSC 1302", slug: "csc-1302" }],
+    sections: [
+      { id: "001", professor: "Dr. Phan", days: "MW", time: "2:00–3:15", room: "Aderhold 221", seats: 18, cap: 40 },
+      { id: "002", professor: "Dr. Saquer", days: "TR", time: "11:00–12:15", room: "Petit 130", seats: 5, cap: 35 },
+      { id: "003", professor: "Dr. Phan", days: "TR", time: "6:00–7:15", room: "Aderhold 112", seats: 22, cap: 35 },
+    ],
+    notes: [
+      { author: "jake.dev", text: "This is basically interview prep before you know it. Pay attention to graphs and trees — they come up everywhere.", date: "Fall 2025" },
+      { author: "priya_gsu", text: "Phan's sections fill fast. The homework is hard but you learn a lot. Start problem sets early.", date: "Spring 2025" },
+      { author: "marcus_t", text: "If you're doing LC on the side, this class suddenly makes all those medium problems click.", date: "Fall 2024" },
+    ],
+    related: ["csc-1302", "csc-3320", "csc-4310"],
+  },
+  "csc-3210": {
+    code: "CSC 3210", title: "Computer Organization and Programming", credits: 4,
+    subject: "CSC", level: 3000, semesters: ["fall", "spring"],
+    description: "Introduction to computer organization and assembly language programming. Covers instruction sets, data representation, addressing modes, and the interface between hardware and software.",
+    outcomes: [
+      "Write assembly language programs for a RISC architecture",
+      "Explain how data is represented and manipulated at the hardware level",
+      "Understand the fetch-decode-execute cycle",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Manoussakis", days: "TR", time: "3:30–4:45", room: "Petit 130", seats: 22, cap: 35 },
+      { id: "002", professor: "Dr. Manoussakis", days: "TR", time: "9:30–10:45", room: "Petit 130", seats: 10, cap: 35 },
+    ],
+    notes: [],
+    related: ["csc-2720", "csc-4330"],
+  },
+  "csc-3320": {
+    code: "CSC 3320", title: "System-Level Programming", credits: 4,
+    subject: "CSC", level: 3000, semesters: ["fall", "spring"],
+    description: "Programming in C on Unix/Linux. Covers system calls, process control, signals, pipes, file I/O, and shell scripting.",
+    outcomes: [
+      "Write C programs that use Unix system calls",
+      "Manage processes, signals, and inter-process communication",
+      "Use make, gdb, and valgrind for development and debugging",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Saquer", days: "MW", time: "9:30–10:45", room: "Aderhold 112", seats: 8, cap: 30 },
+      { id: "002", professor: "Dr. Saquer", days: "MW", time: "3:30–4:45", room: "Aderhold 112", seats: 14, cap: 30 },
+    ],
+    notes: [],
+    related: ["csc-2720", "csc-4310"],
+  },
+  "csc-4310": {
+    code: "CSC 4310", title: "Operating Systems", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall", "spring"],
+    description: "Concepts and implementation of modern operating systems. Covers process management, threading, synchronization, memory management, virtual memory, file systems, and I/O.",
+    outcomes: [
+      "Explain how processes, threads, and scheduling work at the OS level",
+      "Implement synchronization primitives and reason about deadlock",
+      "Understand virtual memory, paging, and address translation",
+      "Write systems-level C code that interacts with OS APIs",
+    ],
+    prereqs: [{ code: "CSC 3320", slug: "csc-3320" }],
+    sections: [
+      { id: "001", professor: "Dr. Phan", days: "MW", time: "3:30–4:45", room: "Aderhold 221", seats: 2, cap: 30 },
+      { id: "002", professor: "Dr. Phan", days: "TR", time: "2:00–3:15", room: "Aderhold 221", seats: 11, cap: 30 },
+    ],
+    notes: [
+      { author: "ava.cs26", text: "The hardest required class for most people. Start the projects the day they're assigned — not kidding.", date: "Fall 2025" },
+      { author: "jake.dev", text: "Phan is tough but fair. Office hours are essential. The threading project is where it clicks.", date: "Spring 2025" },
+    ],
+    related: ["csc-3320", "csc-4320"],
+  },
+  "csc-4320": {
+    code: "CSC 4320", title: "Computer Networks", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall"],
+    description: "Fundamentals of computer networking. Covers the TCP/IP stack, socket programming, routing, transport protocols, and application-layer protocols.",
+    outcomes: [
+      "Explain the layered architecture of the Internet",
+      "Write socket-based client-server applications",
+      "Analyze routing algorithms and transport protocol behavior",
+    ],
+    prereqs: [{ code: "CSC 3320", slug: "csc-3320" }],
+    sections: [
+      { id: "001", professor: "Dr. Saquer", days: "TR", time: "2:00–3:15", room: "Petit 130", seats: 20, cap: 35 },
+      { id: "002", professor: "Dr. Saquer", days: "TR", time: "11:00–12:15", room: "Petit 230", seats: 12, cap: 35 },
+    ],
+    notes: [],
+    related: ["csc-3320", "csc-4310"],
+  },
+  "csc-4330": {
+    code: "CSC 4330", title: "Programming Language Concepts", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall", "spring"],
+    description: "Survey of programming language paradigms: imperative, functional, logic, and object-oriented. Covers syntax, semantics, type systems, scoping, and memory management across languages.",
+    outcomes: [
+      "Compare and contrast major programming paradigms",
+      "Write programs in functional and logic programming languages",
+      "Analyze type systems and scoping rules",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Gunay", days: "MW", time: "11:00–12:15", room: "Petit 230", seats: 16, cap: 30 },
+      { id: "002", professor: "Dr. Gunay", days: "MW", time: "2:00–3:15", room: "Petit 230", seats: 9, cap: 30 },
+    ],
+    notes: [
+      { author: "priya_gsu", text: "Really opens your mind if you've only used Java and Python. Haskell is weird at first but worth it.", date: "Spring 2025" },
+    ],
+    related: ["csc-2720", "csc-4350"],
+  },
+  "csc-4350": {
+    code: "CSC 4350", title: "Software Engineering", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall", "spring"],
+    description: "Principles of software engineering: requirements, design, testing, version control, agile methodologies, and team-based development. Semester-long group project.",
+    outcomes: [
+      "Apply agile development practices in a team setting",
+      "Write and review technical requirements and design documents",
+      "Use version control, CI/CD, and testing frameworks effectively",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Raj", days: "TR", time: "2:00–3:15", room: "Aderhold 221", seats: 6, cap: 30 },
+      { id: "002", professor: "Dr. Raj", days: "TR", time: "3:30–4:45", room: "Aderhold 221", seats: 19, cap: 30 },
+    ],
+    notes: [
+      { author: "marcus_t", text: "Pick your teammates carefully. This class is 80% about working with other people.", date: "Fall 2025" },
+    ],
+    related: ["csc-2720", "csc-4360"],
+  },
+  "csc-4360": {
+    code: "CSC 4360", title: "Mobile Application Development", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall"],
+    description: "Design and development of mobile applications. Covers Android and iOS development, UI frameworks, data persistence, API integration, and app distribution.",
+    outcomes: [
+      "Build and deploy native mobile applications",
+      "Design user interfaces following platform conventions",
+      "Integrate REST APIs and local storage into mobile apps",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Raj", days: "MW", time: "11:00–12:15", room: "Aderhold 112", seats: 10, cap: 25 },
+      { id: "002", professor: "Dr. Raj", days: "MW", time: "3:30–4:45", room: "Aderhold 112", seats: 17, cap: 25 },
+    ],
+    notes: [
+      { author: "jake.dev", text: "Super practical. You actually ship an app. Portfolio gold for internship apps.", date: "Fall 2025" },
+    ],
+    related: ["csc-4350", "csc-4720"],
+  },
+  "csc-4720": {
+    code: "CSC 4720", title: "Human-Computer Interaction", credits: 3,
+    subject: "CSC", level: 4000, semesters: ["fall", "spring"],
+    description: "Principles of user interface design, usability evaluation, and user experience research. Covers heuristic evaluation, user testing, prototyping, and accessibility.",
+    outcomes: [
+      "Apply design heuristics to evaluate and improve interfaces",
+      "Conduct user studies and interpret usability data",
+      "Build and test interactive prototypes",
+    ],
+    prereqs: [{ code: "CSC 2720", slug: "csc-2720" }],
+    sections: [
+      { id: "001", professor: "Dr. Manoussakis", days: "TR", time: "11:00–12:15", room: "Petit 130", seats: 13, cap: 30 },
+      { id: "002", professor: "Dr. Manoussakis", days: "TR", time: "3:30–4:45", room: "Petit 130", seats: 21, cap: 30 },
+    ],
+    notes: [],
+    related: ["csc-4350", "csc-4360"],
+  },
+  "math-1111": {
+    code: "MATH 1111", title: "College Algebra", credits: 3,
+    subject: "MATH", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "Polynomial, rational, exponential, and logarithmic functions. Covers equations, inequalities, systems of equations, and an introduction to analytic geometry.",
+    outcomes: [
+      "Solve polynomial, rational, exponential, and logarithmic equations",
+      "Graph and analyze functions and their transformations",
+      "Solve systems of linear and nonlinear equations",
+    ],
+    prereqs: [],
+    sections: [
+      { id: "001", professor: "Dr. Park", days: "MWF", time: "9:00–9:50", room: "Classroom S 134", seats: 32, cap: 45 },
+      { id: "002", professor: "Dr. Park", days: "MWF", time: "1:00–1:50", room: "Classroom S 134", seats: 20, cap: 45 },
+      { id: "003", professor: "Staff", days: "TR", time: "6:00–7:15", room: "Classroom S 210", seats: 25, cap: 40 },
+    ],
+    notes: [],
+    related: ["math-1113", "math-1401"],
+  },
+  "math-1113": {
+    code: "MATH 1113", title: "Precalculus", credits: 3,
+    subject: "MATH", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "Trigonometric functions, identities, equations, and applications. Polar coordinates, vectors, parametric equations, and conic sections.",
+    outcomes: [
+      "Evaluate trigonometric functions and verify identities",
+      "Solve trigonometric equations and applications",
+      "Work with polar coordinates and parametric equations",
+    ],
+    prereqs: [{ code: "MATH 1111", slug: "math-1111" }],
+    sections: [
+      { id: "001", professor: "Dr. Kim", days: "MWF", time: "10:00–10:50", room: "Classroom S 134", seats: 18, cap: 45 },
+      { id: "002", professor: "Dr. Kim", days: "MWF", time: "2:00–2:50", room: "Classroom S 134", seats: 30, cap: 45 },
+    ],
+    notes: [],
+    related: ["math-1111", "math-2211"],
+  },
+  "math-1220": {
+    code: "MATH 1220", title: "Survey of Calculus", credits: 3,
+    subject: "MATH", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "A one-semester overview of differential and integral calculus for non-science majors. Covers limits, derivatives, integrals, and applications to business and life sciences.",
+    outcomes: [
+      "Compute derivatives and integrals of basic functions",
+      "Apply calculus to optimization and rate-of-change problems",
+      "Interpret derivatives and integrals in applied contexts",
+    ],
+    prereqs: [{ code: "MATH 1111", slug: "math-1111" }],
+    sections: [
+      { id: "001", professor: "Dr. Gupta", days: "MW", time: "11:00–12:15", room: "Classroom S 210", seats: 22, cap: 40 },
+      { id: "002", professor: "Dr. Gupta", days: "MW", time: "2:00–3:15", room: "Classroom S 210", seats: 14, cap: 40 },
+    ],
+    notes: [],
+    related: ["math-1111", "math-2211"],
+  },
+  "math-1401": {
+    code: "MATH 1401", title: "Elementary Statistics", credits: 3,
+    subject: "MATH", level: 1000, semesters: ["fall", "spring", "summer"],
+    description: "Descriptive statistics, probability, sampling distributions, confidence intervals, hypothesis testing, correlation, and regression.",
+    outcomes: [
+      "Summarize data using descriptive statistics and visualizations",
+      "Construct and interpret confidence intervals",
+      "Perform hypothesis tests and draw valid conclusions",
+    ],
+    prereqs: [{ code: "MATH 1111", slug: "math-1111" }],
+    sections: [
+      { id: "001", professor: "Dr. Park", days: "TR", time: "9:30–10:45", room: "Classroom S 134", seats: 25, cap: 45 },
+      { id: "002", professor: "Dr. Park", days: "TR", time: "12:30–1:45", room: "Classroom S 134", seats: 10, cap: 45 },
+      { id: "003", professor: "Staff", days: "MW", time: "6:00–7:15", room: "Classroom S 210", seats: 30, cap: 40 },
+    ],
+    notes: [
+      { author: "nina_cs27", text: "If you need a math credit and don't love proofs, this is it. Park makes it approachable.", date: "Spring 2025" },
+    ],
+    related: ["math-1111", "math-2420"],
+  },
+  "math-2211": {
+    code: "MATH 2211", title: "Calculus of One Variable I", credits: 4,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring", "summer"],
+    description: "Limits, continuity, differentiation, and integration of single-variable functions. Applications to rates of change, optimization, and area.",
+    outcomes: [
+      "Evaluate limits and determine continuity",
+      "Differentiate functions using standard rules and the chain rule",
+      "Apply integration to compute areas and accumulated quantities",
+    ],
+    prereqs: [{ code: "MATH 1113", slug: "math-1113" }],
+    sections: [
+      { id: "001", professor: "Dr. Kim", days: "MWF", time: "10:00–10:50", room: "Classroom S 134", seats: 30, cap: 45 },
+      { id: "002", professor: "Dr. Kim", days: "MWF", time: "2:00–2:50", room: "Classroom S 134", seats: 18, cap: 45 },
+    ],
+    notes: [
+      { author: "marcus_t", text: "Get a good professor or plan to self-study. Kim is solid — explains things clearly.", date: "Fall 2025" },
+    ],
+    related: ["math-1113", "math-2212"],
+  },
+  "math-2212": {
+    code: "MATH 2212", title: "Calculus of One Variable II", credits: 4,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring"],
+    description: "Techniques of integration, sequences, series, Taylor and Maclaurin series, parametric equations, and polar coordinates.",
+    outcomes: [
+      "Apply advanced integration techniques including substitution and parts",
+      "Determine convergence of sequences and series",
+      "Construct Taylor series for standard functions",
+    ],
+    prereqs: [{ code: "MATH 2211", slug: "math-2211" }],
+    sections: [
+      { id: "001", professor: "Dr. Gupta", days: "MWF", time: "1:00–1:50", room: "Classroom S 210", seats: 5, cap: 40 },
+      { id: "002", professor: "Dr. Gupta", days: "MWF", time: "10:00–10:50", room: "Classroom S 210", seats: 19, cap: 40 },
+    ],
+    notes: [],
+    related: ["math-2211", "math-2215"],
+  },
+  "math-2215": {
+    code: "MATH 2215", title: "Multivariate Calculus", credits: 4,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring"],
+    description: "Vector-valued functions, partial derivatives, multiple integrals, line and surface integrals. Green's, Stokes', and the Divergence theorem.",
+    outcomes: [
+      "Compute partial derivatives and gradients",
+      "Evaluate double and triple integrals",
+      "Apply Green's and Stokes' theorems",
+    ],
+    prereqs: [{ code: "MATH 2212", slug: "math-2212" }],
+    sections: [
+      { id: "001", professor: "Dr. Kim", days: "MWF", time: "11:00–11:50", room: "Classroom S 134", seats: 12, cap: 35 },
+      { id: "002", professor: "Dr. Kim", days: "MWF", time: "3:00–3:50", room: "Classroom S 134", seats: 20, cap: 35 },
+    ],
+    notes: [],
+    related: ["math-2212", "math-2641"],
+  },
+  "math-2420": {
+    code: "MATH 2420", title: "Discrete Mathematics", credits: 3,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring"],
+    description: "Logic, proof techniques, sets, relations, functions, counting, graphs, and trees. The math course most directly useful for computer science.",
+    outcomes: [
+      "Construct direct, contrapositive, and contradiction proofs",
+      "Apply counting principles and combinatorial arguments",
+      "Analyze properties of graphs and trees",
+    ],
+    prereqs: [],
+    sections: [
+      { id: "001", professor: "Dr. Kim", days: "TR", time: "12:30–1:45", room: "Classroom S 134", seats: 14, cap: 30 },
+      { id: "002", professor: "Dr. Park", days: "TR", time: "3:30–4:45", room: "Classroom S 210", seats: 22, cap: 30 },
+    ],
+    notes: [
+      { author: "jake.dev", text: "Directly useful for CS — take this early. Proofs feel abstract at first but they teach you to think precisely.", date: "Fall 2025" },
+    ],
+    related: ["math-2211", "csc-2720"],
+  },
+  "math-2641": {
+    code: "MATH 2641", title: "Linear Algebra I", credits: 3,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring"],
+    description: "Systems of linear equations, matrices, determinants, vector spaces, linear transformations, eigenvalues, and eigenvectors.",
+    outcomes: [
+      "Solve systems of linear equations using Gaussian elimination",
+      "Compute eigenvalues and eigenvectors",
+      "Understand vector spaces and linear transformations",
+    ],
+    prereqs: [{ code: "MATH 2211", slug: "math-2211" }],
+    sections: [
+      { id: "001", professor: "Dr. Gupta", days: "MW", time: "9:30–10:45", room: "Classroom S 210", seats: 16, cap: 35 },
+      { id: "002", professor: "Dr. Gupta", days: "MW", time: "2:00–3:15", room: "Classroom S 210", seats: 8, cap: 35 },
+    ],
+    notes: [
+      { author: "priya_gsu", text: "Essential if you're interested in ML or graphics. Eigenvectors show up everywhere later.", date: "Fall 2025" },
+    ],
+    related: ["math-2211", "math-2652"],
+  },
+  "math-2652": {
+    code: "MATH 2652", title: "Differential Equations", credits: 3,
+    subject: "MATH", level: 2000, semesters: ["fall", "spring"],
+    description: "First-order and higher-order differential equations, Laplace transforms, systems of differential equations, and numerical methods.",
+    outcomes: [
+      "Solve first-order and second-order linear ODEs",
+      "Apply Laplace transforms to solve initial value problems",
+      "Analyze systems of differential equations",
+    ],
+    prereqs: [{ code: "MATH 2212", slug: "math-2212" }],
+    sections: [
+      { id: "001", professor: "Dr. Park", days: "TR", time: "9:30–10:45", room: "Classroom S 134", seats: 18, cap: 30 },
+      { id: "002", professor: "Dr. Park", days: "TR", time: "2:00–3:15", room: "Classroom S 134", seats: 24, cap: 30 },
+    ],
+    notes: [],
+    related: ["math-2212", "math-2641"],
+  },
+  "math-3030": {
+    code: "MATH 3030", title: "Mathematical Models for Computer Science", credits: 3,
+    subject: "MATH", level: 3000, semesters: ["fall"],
+    description: "Mathematical modeling techniques relevant to computing: probability, Markov chains, queuing theory, graph algorithms, and computational complexity.",
+    outcomes: [
+      "Build and analyze probabilistic models",
+      "Apply Markov chains to model stochastic processes",
+      "Use graph-theoretic models for computational problems",
+    ],
+    prereqs: [{ code: "MATH 2420", slug: "math-2420" }],
+    sections: [
+      { id: "001", professor: "Dr. Kim", days: "TR", time: "11:00–12:15", room: "Classroom S 134", seats: 10, cap: 25 },
+      { id: "002", professor: "Dr. Kim", days: "TR", time: "2:00–3:15", room: "Classroom S 134", seats: 15, cap: 25 },
+    ],
+    notes: [
+      { author: "ava.cs26", text: "Bridges the gap between math and CS. The Markov chain material came up in my ML class the next semester.", date: "Fall 2025" },
+    ],
+    related: ["math-2420", "csc-2720"],
+  },
+  "math-3350": {
+    code: "MATH 3350", title: "Scientific Computing", credits: 3,
+    subject: "MATH", level: 3000, semesters: ["fall", "spring"],
+    description: "Numerical methods for solving scientific and engineering problems. Covers root-finding, interpolation, numerical integration, and differential equation solvers.",
+    outcomes: [
+      "Implement numerical algorithms for root-finding and interpolation",
+      "Analyze error and convergence of numerical methods",
+      "Solve differential equations numerically",
+    ],
+    prereqs: [{ code: "MATH 2212", slug: "math-2212" }],
+    sections: [
+      { id: "001", professor: "Dr. Gupta", days: "MW", time: "11:00–12:15", room: "Classroom S 210", seats: 14, cap: 25 },
+      { id: "002", professor: "Dr. Gupta", days: "MW", time: "3:30–4:45", room: "Classroom S 210", seats: 18, cap: 25 },
+    ],
+    notes: [],
+    related: ["math-2212", "math-2641"],
+  },
+};
+  return Object.keys(courses).map(key => ({
+    params: { code: key },
+    props: { course: courses[key], courses },
+  }));
+}
+
+const { course, courses: all } = Astro.props as any;
+
+function deriveTimeOfDay(time: string): string {
+  const match = time.match(/(\d{1,2}):/);
+  if (!match) return 'morning';
+  const hour = Number(match[1]);
+  if (hour < 12) return 'morning';
+  if (hour < 17) return 'afternoon';
+  return 'evening';
+}
+
+const subjectLabel = course.subject;
+const relatedCourses = (course.related ?? [])
+  .map((slug: string) => all[slug])
+  .filter(Boolean)
+  .slice(0, 3);
+
+---
+
+<Layout title={`${course.code} — ${course.title}`}>
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: subjectLabel, href: "/courses" },
+    { label: course.code },
+  ]} />
+
+  <!-- ── Hero ── -->
+  <header class="course-hero">
+    <span class="hero__code">{course.code}</span>
+    <h1 class="hero__title">{course.title}</h1>
+    <p class="hero__desc">{course.description.split('.')[0]}.</p>
+    <div class="hero__actions">
+      <button class="hero__cta hero__cta--primary surface-glass">add to schedule</button>
+      <button class="hero__cta hero__cta--secondary surface-glass" data-save-code={course.code} aria-pressed="false">save for later</button>
+    </div>
+    <div class="hero__meta">
+      <span class="hero__pill">{course.credits} credits</span>
+      <span class="hero__pill">{course.level}-level</span>
+      <span class="hero__pill">offered {(course.semesters ?? []).join(' · ')}</span>
+      {course.notes.length > 0 && <span class="hero__pill hero__pill--accent">ProgSU notes</span>}
+    </div>
+  </header>
+
+  <!-- ── What is this? ── -->
+  <section class="detail-section">
+    <h2 class="section-heading">about</h2>
+    <p class="section-body">{course.description}</p>
+    {course.outcomes.length > 0 && (
+      <ul class="outcomes">
+        {course.outcomes.map((o: string) => <li>{o}</li>)}
+      </ul>
+    )}
+  </section>
+
+  <!-- ── Can I take it? ── -->
+  <section class="detail-section">
+    <h2 class="section-heading">prerequisites</h2>
+    {course.prereqs.length === 0 ? (
+      <p class="section-body section-body--calm">none — register directly.</p>
+    ) : (
+      <div class="prereq-chips">
+        {course.prereqs.map((p: any) => (
+          <a href={`/courses/${p.slug}`} class="prereq-chip surface-glass">{p.code}</a>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <!-- ── When? ── -->
+  <section class="detail-section">
+    <h2 class="section-heading">sections</h2>
+
+    <div class="sec-filters" role="group" aria-label="Section filters">
+      <div class="sec-filter-group" role="group" aria-label="Time of day">
+        <button class="sec-filter-chip" data-filter-time="morning">morning</button>
+        <button class="sec-filter-chip" data-filter-time="afternoon">afternoon</button>
+        <button class="sec-filter-chip" data-filter-time="evening">evening</button>
+      </div>
+      <label class="sec-filter-toggle">
+        <input type="checkbox" id="sec-open-only" />
+        <span class="sec-filter-toggle__label">open only</span>
+      </label>
+    </div>
+
+    <div class="sections-table-wrap">
+      <table class="sections-table" id="sections-table">
+        <thead>
+          <tr>
+            <th>section</th>
+            <th>professor</th>
+            <th>days</th>
+            <th>time</th>
+            <th>room</th>
+            <th>seats</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {course.sections.map((s: any) => (
+              <tr data-section-row data-time={deriveTimeOfDay(s.time)} data-days={s.days} data-seats={String(s.seats)}>
+                <td class="cell-mono">{s.id}</td>
+                <td>{s.professor}</td>
+                <td class="cell-mono">{s.days}</td>
+                <td class="cell-mono">{s.time}</td>
+                <td>{s.room}</td>
+                <td>
+                  <span class="seat-badge">
+                    <span class:list={['seat-dot', s.seats <= 0 ? 'seat-dot--full' : s.seats <= 5 ? 'seat-dot--low' : 'seat-dot--open']} aria-hidden="true"></span>
+                    {s.seats}/{s.cap}
+                    <span class="sr-only">{s.seats <= 0 ? 'section full' : s.seats <= 5 ? 'seats low' : 'seats available'}</span>
+                  </span>
+                </td>
+                <td>
+                  {s.seats <= 0
+                    ? <button class="add-btn" disabled>full</button>
+                    : <button class="add-btn">+ add</button>
+                  }
+                </td>
+              </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="sec-empty" id="sec-empty" style="display:none">no sections match these filters.</p>
+  </section>
+
+  <!-- ── Is it good? ── -->
+  <section class="detail-section">
+    <h2 class="section-heading">member notes</h2>
+    {course.notes.length > 0 ? (
+      <div class="notes-grid">
+        {course.notes.map((n: any) => (
+          <div class="note-card surface-glass">
+            <p class="note-card__text">"{n.text}"</p>
+            <div class="note-card__footer">
+              <span class="note-card__author">{n.author}</span>
+              <span class="note-card__date">{n.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-notes surface-glass">
+        <p class="empty-notes__text">no notes yet.</p>
+        <p class="empty-notes__invite">taken it? your experience helps the next student.</p>
+      </div>
+    )}
+  </section>
+
+  <!-- ── What's similar? ── -->
+  {relatedCourses.length > 0 && (
+    <section class="detail-section">
+      <h2 class="section-heading">related</h2>
+      <div class="related-grid">
+        {relatedCourses.map((r: any) => (
+          <a href={`/courses/${r.code.toLowerCase().replace(' ', '-')}`} class="related-card surface-glass">
+            <span class="related-card__code">{r.code}</span>
+            <span class="related-card__title">{r.title}</span>
+            <span class="related-card__credits">{r.credits} credits</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+  <footer class="course-footer">
+    <span class="course-footer__text">missing a professor or note?</span>
+    <a href="https://github.com/ProgSU/wiki" class="course-footer__link">edit on github &rarr;</a>
+  </footer>
+
+  <PlanWiring />
+</Layout>
+
+<style>
+  /* ── Hero ── */
+  .course-hero {
+    margin-bottom: var(--space-16);
+  }
+
+  .hero__code {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+    margin-bottom: var(--space-2);
+  }
+
+  .hero__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-4xl);
+    color: #fff;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-glow);
+    margin: 0 0 var(--space-4);
+  }
+
+  .hero__desc {
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-normal);
+    margin: 0 0 var(--space-6);
+    max-width: 520px;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  .hero__cta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease),
+      color var(--duration-normal) var(--ease);
+  }
+
+  .hero__cta--primary {
+    color: #fff;
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+  }
+  .hero__cta--primary:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent-border-hover);
+  }
+
+  .hero__cta--secondary {
+    color: var(--color-text-tertiary);
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease),
+      color var(--duration-normal) var(--ease);
+  }
+  .hero__cta--secondary:hover {
+    color: var(--color-text-primary);
+    border-color: var(--glass-border-hi);
+  }
+  .hero__cta--secondary.saved {
+    color: var(--accent-light);
+    border-color: var(--accent-border);
+    background: var(--accent-faint);
+  }
+
+  .hero__meta {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .hero__pill {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+  }
+
+  .hero__pill--accent {
+    color: var(--accent-light);
+    border-color: var(--accent-border);
+  }
+
+  /* ── Sections ── */
+  .detail-section {
+    margin-bottom: var(--space-16);
+  }
+
+  .section-heading {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-5);
+  }
+
+  .section-body {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  .section-body--calm {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .outcomes {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+  }
+
+  .outcomes li {
+    position: relative;
+    padding-left: var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+    margin-top: var(--space-3);
+  }
+  .outcomes li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: var(--accent-dim);
+  }
+
+  /* ── Prerequisites ── */
+  .prereq-chips {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .prereq-chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent-text);
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease);
+  }
+  .prereq-chip:hover {
+    background: var(--accent-faint);
+    border-color: var(--glass-border-hi);
+    color: var(--accent-light);
+  }
+
+  /* ── Section filters ── */
+  .sec-filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .sec-filter-group {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .sec-filter-chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    letter-spacing: var(--tracking-wider);
+    transition: color var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
+  }
+  .sec-filter-chip:hover {
+    color: var(--color-text-secondary);
+    border-color: var(--glass-border-hi);
+  }
+  .sec-filter-chip.active {
+    color: var(--accent-text);
+    border-color: var(--accent-border);
+  }
+  .sec-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+  }
+  .sec-filter-toggle input { accent-color: var(--accent-text); }
+  .sec-filter-toggle__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+  .sec-empty {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    padding: var(--space-5) 0;
+    margin: 0;
+  }
+
+  /* ── Course footer ── */
+  .course-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--glass-border);
+    margin-bottom: var(--space-8);
+  }
+  .course-footer__text {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+  .course-footer__link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-dim);
+    letter-spacing: var(--tracking-wider);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .course-footer__link:hover { color: var(--accent-text); }
+
+  /* ── Sections table ── */
+  .sections-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+  }
+
+  .sections-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  .sections-table th {
+    position: sticky;
+    top: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--color-text-muted);
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
+    white-space: nowrap;
+  }
+
+  .sections-table td {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-subtle);
+    white-space: nowrap;
+  }
+
+  .sections-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .cell-mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .seat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .seat-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+  }
+  .seat-dot--open { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.5); }
+  .seat-dot--low  { background: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.5); }
+  .seat-dot--full { background: #f87171; box-shadow: 0 0 6px rgba(248, 113, 113, 0.5); }
+
+  .add-btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    color: var(--accent-text);
+    background: none;
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    transition:
+      background var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease);
+  }
+  .add-btn:hover:not(:disabled) {
+    background: var(--accent-faint);
+    border-color: var(--accent-border-hover);
+  }
+  .add-btn:disabled {
+    color: var(--color-text-muted);
+    border-color: var(--glass-border);
+    cursor: not-allowed;
+  }
+
+  /* ── Notes ── */
+  .notes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .note-card {
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+
+  .note-card__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin: 0 0 var(--space-3);
+  }
+
+  .note-card__footer {
+    display: flex;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+
+  .note-card__author {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-dim);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .note-card__date {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .empty-notes {
+    padding: var(--space-8) var(--space-6);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+
+  .empty-notes__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-2);
+  }
+
+  .empty-notes__invite {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+
+  /* ── Related ── */
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease);
+  }
+  .related-card:hover {
+    background: var(--accent-faint);
+    border-color: var(--glass-border-hi);
+  }
+
+  .related-card__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .related-card__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+  }
+
+  .related-card__credits {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .hero__code { font-size: var(--text-xl); }
+    .hero__title { font-size: var(--text-3xl); }
+
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero__actions {
+      flex-direction: column;
+    }
+    .hero__cta {
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+
+  // ── Section filters ──
+  const timeChips = document.querySelectorAll<HTMLButtonElement>('[data-filter-time]');
+  const openOnlyCheck = document.getElementById('sec-open-only') as HTMLInputElement | null;
+  const sectionRows = document.querySelectorAll<HTMLElement>('[data-section-row]');
+  const secEmpty = document.getElementById('sec-empty');
+
+  function applySectionFilters() {
+    const activeTimes = new Set<string>();
+    timeChips.forEach(c => { if (c.classList.contains('active')) activeTimes.add(c.dataset.filterTime!); });
+    const filterByTime = activeTimes.size > 0;
+    const onlyOpen = openOnlyCheck?.checked ?? false;
+
+    let visible = 0;
+    sectionRows.forEach(row => {
+      let show = true;
+      if (filterByTime && !activeTimes.has(row.dataset.time ?? '')) show = false;
+      if (onlyOpen && Number(row.dataset.seats ?? '0') <= 0) show = false;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (secEmpty) secEmpty.style.display = visible === 0 ? '' : 'none';
+  }
+
+  timeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      applySectionFilters();
+    });
+  });
+  openOnlyCheck?.addEventListener('change', applySectionFilters);
+</script>

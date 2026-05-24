@@ -2,18 +2,20 @@
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 
 interface Props {
   title: string;
   description?: string;
+  wide?: boolean;
+  accent?: 'purple' | 'cyan';
 }
 
-const { title, description } = Astro.props;
-import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+const { title, description, wide = false, accent } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-accent={accent}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,41 +24,139 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <title>{title} | {SITE_TITLE}</title>
   </head>
   <body>
-    <!-- Cosmic background layers -->
-    <div class="bg-nebula"></div>
-    <div class="bg-stars bg-stars--far"></div>
-    <div class="bg-stars bg-stars--mid"></div>
-    <div class="bg-vignette"></div>
+    <!-- Cosmic background -->
+    <div class="bg-nebula" aria-hidden="true"></div>
+    <div class="bg-stars bg-stars--far" aria-hidden="true"></div>
+    <div class="bg-stars bg-stars--mid" aria-hidden="true"></div>
+    <div class="bg-vignette" aria-hidden="true"></div>
 
     <Navbar />
-    <main class="layout-main">
+
+    <main id="main-content" class:list={['layout-main', { 'layout-main--wide': wide }]}>
       <slot />
     </main>
+
     <Footer />
+
+    <!-- Keyboard shortcuts modal -->
+    <div class="kbd-modal-backdrop" id="kbd-modal-backdrop" role="dialog" aria-label="Keyboard shortcuts" aria-modal="true">
+      <div class="kbd-modal">
+        <h2 class="kbd-modal__title">keyboard shortcuts</h2>
+
+        <div class="kbd-modal__group">
+          <h3 class="kbd-modal__group-label">navigation</h3>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">go to courses</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">g</kbd><kbd class="kbd-modal__key">c</kbd></span>
+          </div>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">go to scheduler</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">g</kbd><kbd class="kbd-modal__key">s</kbd></span>
+          </div>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">focus search</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">/</kbd></span>
+          </div>
+        </div>
+
+        <div class="kbd-modal__group">
+          <h3 class="kbd-modal__group-label">scheduler</h3>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">open course block</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">Enter</kbd></span>
+          </div>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">remove course</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">Delete</kbd></span>
+          </div>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">close popover / panel</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">Esc</kbd></span>
+          </div>
+        </div>
+
+        <div class="kbd-modal__group">
+          <h3 class="kbd-modal__group-label">general</h3>
+          <div class="kbd-modal__row">
+            <span class="kbd-modal__action">show this dialog</span>
+            <span class="kbd-modal__keys"><kbd class="kbd-modal__key">?</kbd></span>
+          </div>
+        </div>
+
+        <button class="kbd-modal__close" id="kbd-modal-close">close (esc)</button>
+      </div>
+    </div>
+
+    <script>
+      const kbdBackdrop = document.getElementById('kbd-modal-backdrop')!;
+      const kbdClose = document.getElementById('kbd-modal-close')!;
+      let gPending = false;
+
+      function openKbdModal() {
+        kbdBackdrop.classList.add('open');
+        kbdClose.focus();
+      }
+      function closeKbdModal() {
+        kbdBackdrop.classList.remove('open');
+      }
+
+      kbdClose.addEventListener('click', closeKbdModal);
+      kbdBackdrop.addEventListener('click', (e) => {
+        if (e.target === kbdBackdrop) closeKbdModal();
+      });
+
+      window.addEventListener('keydown', (e: KeyboardEvent) => {
+        const tag = (document.activeElement as HTMLElement)?.tagName;
+        const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+          (document.activeElement as HTMLElement)?.isContentEditable;
+
+        if (e.key === 'Escape' && kbdBackdrop.classList.contains('open')) {
+          e.preventDefault();
+          closeKbdModal();
+          return;
+        }
+
+        if (inInput) { gPending = false; return; }
+
+        if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          if (kbdBackdrop.classList.contains('open')) closeKbdModal();
+          else openKbdModal();
+          return;
+        }
+
+        if (gPending) {
+          gPending = false;
+          if (e.key === 'c') { e.preventDefault(); window.location.href = '/courses'; return; }
+          if (e.key === 's') { e.preventDefault(); window.location.href = '/courses/scheduler'; return; }
+        }
+
+        if (e.key === 'g' && !e.ctrlKey && !e.metaKey) {
+          gPending = true;
+          setTimeout(() => { gPending = false; }, 800);
+        }
+      });
+    </script>
   </body>
 </html>
 
 <style>
   body {
-    margin: 0;
-    padding: 0;
-    background: #02020a;
-    color: rgba(255,255,255,.85);
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
     overflow-x: hidden;
   }
 
+  /* ── Cosmic layers ── */
   .bg-nebula {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76,29,149,.25), transparent 70%),
-      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30,27,75,.35), transparent 65%),
-      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.3), transparent 65%),
-      linear-gradient(180deg, #02020a 0%, #050516 50%, #02020a 100%);
+      radial-gradient(ellipse 70% 50% at 50% 45%, rgba(76, 29, 149, 0.32), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 75%, rgba(30, 27, 75, 0.42), transparent 65%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13, 42, 90, 0.38), transparent 65%),
+      linear-gradient(180deg, #060614 0%, #09091e 50%, #060614 100%);
     pointer-events: none;
     z-index: 0;
   }
@@ -69,47 +169,59 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
   }
   .bg-stars--far {
     background-image:
-      radial-gradient(1px 1px at 12% 23%, rgba(255,255,255,.4), transparent),
-      radial-gradient(1px 1px at 78% 67%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1px 1px at 34% 81%, rgba(255,255,255,.4), transparent),
-      radial-gradient(1px 1px at 88% 14%, rgba(255,255,255,.45), transparent),
-      radial-gradient(1px 1px at 5%  55%, rgba(255,255,255,.3),  transparent),
-      radial-gradient(1px 1px at 65% 30%, rgba(255,255,255,.25), transparent),
-      radial-gradient(1px 1px at 25%  8%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1px 1px at 95% 88%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1px 1px at 45% 18%, rgba(255,255,255,.25), transparent),
-      radial-gradient(1px 1px at 55% 92%, rgba(255,255,255,.3),  transparent);
+      radial-gradient(1px 1px at 12% 23%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(1px 1px at 78% 67%, rgba(255, 255, 255, 0.35), transparent),
+      radial-gradient(1px 1px at 34% 81%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(1px 1px at 88% 14%, rgba(255, 255, 255, 0.45), transparent),
+      radial-gradient(1px 1px at 5% 55%, rgba(255, 255, 255, 0.3), transparent),
+      radial-gradient(1px 1px at 65% 30%, rgba(255, 255, 255, 0.25), transparent),
+      radial-gradient(1px 1px at 25% 8%, rgba(255, 255, 255, 0.35), transparent),
+      radial-gradient(1px 1px at 95% 88%, rgba(255, 255, 255, 0.35), transparent),
+      radial-gradient(1px 1px at 45% 18%, rgba(255, 255, 255, 0.25), transparent),
+      radial-gradient(1px 1px at 55% 92%, rgba(255, 255, 255, 0.3), transparent);
     background-size: 280px 280px;
-    opacity: .55;
+    opacity: 0.65;
   }
   .bg-stars--mid {
     background-image:
-      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255,255,255,.6),  transparent),
-      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216,180,254,.5),  transparent),
-      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255,255,255,.55), transparent),
-      radial-gradient(1.5px 1.5px at 8%  65%, rgba(255,255,255,.5),  transparent),
-      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186,230,253,.45), transparent),
-      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255,255,255,.45), transparent),
-      radial-gradient(1.5px 1.5px at 72%  8%, rgba(216,180,254,.4),  transparent);
+      radial-gradient(1.5px 1.5px at 22% 33%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1.5px 1.5px at 68% 57%, rgba(216, 180, 254, 0.5), transparent),
+      radial-gradient(1.5px 1.5px at 84% 31%, rgba(255, 255, 255, 0.55), transparent),
+      radial-gradient(1.5px 1.5px at 8% 65%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1.5px 1.5px at 92% 78%, rgba(186, 230, 253, 0.45), transparent),
+      radial-gradient(1.5px 1.5px at 33% 12%, rgba(255, 255, 255, 0.45), transparent),
+      radial-gradient(1.5px 1.5px at 72% 8%, rgba(216, 180, 254, 0.4), transparent);
     background-size: 380px 380px;
-    opacity: .7;
+    opacity: 0.8;
   }
 
   .bg-vignette {
     position: fixed;
     inset: 0;
-    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 45%, rgba(0,0,0,.5) 100%);
+    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 45%, rgba(0, 0, 0, 0.4) 100%);
     pointer-events: none;
     z-index: 0;
   }
 
+  /* ── Main content ── */
   .layout-main {
     position: relative;
-    z-index: 1;
+    z-index: var(--z-base);
     flex: 1;
-    max-width: 760px;
+    max-width: var(--page-width);
     margin: 0 auto;
     width: 100%;
-    padding: 6rem 1.5rem 4rem;
+    padding: var(--space-24) var(--page-gutter) var(--space-16);
+  }
+
+  .layout-main--wide {
+    max-width: var(--page-width-wide);
+  }
+
+  @media (max-width: 768px) {
+    .layout-main {
+      padding-top: var(--space-20);
+      padding-bottom: var(--space-12);
+    }
   }
 </style>

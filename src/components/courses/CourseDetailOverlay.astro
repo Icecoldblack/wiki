@@ -1,0 +1,74 @@
+---
+import Zone from "./Zone.astro";
+---
+
+<div class="overlay-backdrop" id="course-detail-overlay" style="display:none">
+  <div class="overlay surface-glass surface-glass--strong">
+    <button class="overlay__close" aria-label="Close">&times;</button>
+
+    <div class="overlay__layout">
+      <Zone label="course title &middot; number &middot; credits" height="60px" />
+      <Zone label="student-written description" height="100px" />
+      <Zone label="prerequisite chain visualization" height="140px" />
+      <Zone label="semesters offered &middot; typical availability" height="60px" />
+      <Zone label="member notes &middot; workload &middot; honest takes" height="160px" />
+      <Zone label="add to schedule button" height="50px" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    background: rgba(2, 2, 10, 0.6);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--space-6);
+  }
+
+  .overlay {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+  }
+
+  .overlay__close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-xl);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .overlay__close:hover {
+    color: var(--color-text-primary);
+  }
+
+  .overlay__layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .overlay-backdrop {
+      align-items: center;
+    }
+  }
+</style>

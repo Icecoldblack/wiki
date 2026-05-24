@@ -1,0 +1,750 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import CoursesSubnav from "../../components/CoursesSubnav.astro";
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const;
+const START_HOUR = 7;
+const END_HOUR = 21;
+const SLOTS = (END_HOUR - START_HOUR) * 2;
+
+function timeLabel(slot: number) {
+  const totalMin = START_HOUR * 60 + slot * 30;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  const suffix = h >= 12 ? 'p' : 'a';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return m === 0 ? `${h12}${suffix}` : '';
+}
+function isHourSlot(slot: number) { return slot % 2 === 0; }
+---
+
+<Layout title="Compare Schedules — Courses" wide>
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: "scheduler", href: "/courses/scheduler" },
+    { label: "compare" },
+  ]} />
+
+  <CoursesSubnav active="compare" />
+
+  <!-- ── Header ── -->
+  <div class="compare-header">
+    <h1 class="compare-title">compare schedules</h1>
+    <p class="compare-subtitle">pick two to see them side by side.</p>
+  </div>
+
+  <!-- ── Picker row ── -->
+  <div class="compare-pickers">
+    <div class="picker">
+      <label class="picker__label" for="pick-a">A</label>
+      <select class="picker__select surface-glass" id="pick-a"></select>
+    </div>
+    <div class="picker__vs">vs</div>
+    <div class="picker">
+      <label class="picker__label" for="pick-b">B</label>
+      <select class="picker__select surface-glass" id="pick-b"></select>
+    </div>
+  </div>
+
+  <!-- ── Empty state ── -->
+  <div class="compare-empty surface-glass" id="compare-empty">
+    <p class="compare-empty__text">nothing to compare yet.</p>
+    <p class="compare-empty__hint">create at least two schedules in the <a href="/courses/scheduler">scheduler</a>, then come back.</p>
+  </div>
+
+  <!-- ── Side-by-side grids ── -->
+  <div class="compare-grids" id="compare-grids">
+    <!-- Grid A -->
+    <div class="compare-grid-col">
+      <div class="compare-grid-label" id="label-a">Schedule A</div>
+      <div class="compare-grid-wrap">
+        <div class="compare-grid" id="grid-a" style={`--rows: ${SLOTS}; --cols: ${DAYS.length}`}>
+          <div class="grid-corner"></div>
+          {DAYS.map(d => <div class="grid-day-header">{d}</div>)}
+          {Array.from({ length: SLOTS }).map((_, slot) => (
+            <Fragment>
+              <div class:list={['grid-time', { 'grid-time--labeled': timeLabel(slot), 'grid-time--hour': isHourSlot(slot) }]}>
+                {timeLabel(slot) && <span>{timeLabel(slot)}</span>}
+              </div>
+              {DAYS.map(day => (
+                <div class:list={['grid-cell', { 'grid-cell--hour': isHourSlot(slot) }]} data-day={day} data-slot={slot}></div>
+              ))}
+            </Fragment>
+          ))}
+        </div>
+        <div class="block-overlay" id="overlay-a"></div>
+      </div>
+    </div>
+
+    <!-- Grid B -->
+    <div class="compare-grid-col">
+      <div class="compare-grid-label" id="label-b">Schedule B</div>
+      <div class="compare-grid-wrap">
+        <div class="compare-grid" id="grid-b" style={`--rows: ${SLOTS}; --cols: ${DAYS.length}`}>
+          <div class="grid-corner"></div>
+          {DAYS.map(d => <div class="grid-day-header">{d}</div>)}
+          {Array.from({ length: SLOTS }).map((_, slot) => (
+            <Fragment>
+              <div class:list={['grid-time', { 'grid-time--labeled': timeLabel(slot), 'grid-time--hour': isHourSlot(slot) }]}>
+                {timeLabel(slot) && <span>{timeLabel(slot)}</span>}
+              </div>
+              {DAYS.map(day => (
+                <div class:list={['grid-cell', { 'grid-cell--hour': isHourSlot(slot) }]} data-day={day} data-slot={slot}></div>
+              ))}
+            </Fragment>
+          ))}
+        </div>
+        <div class="block-overlay" id="overlay-b"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Skeleton (visible until JS hydrates) ── -->
+  <div class="compare-skel skel-wrap" id="compare-skel">
+    <div class="compare-skel__summary surface-glass">
+      <div class="skel skel-line" style="width: 90px; margin-bottom: var(--space-5)"></div>
+      {Array.from({ length: 5 }).map(() => (
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--space-6);margin-bottom:var(--space-3)">
+          <div class="skel skel-line" style="width: 60px"></div>
+          <div class="skel skel-line" style="width: 100px"></div>
+          <div class="skel skel-line" style="width: 60px"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ── Comparison summary ── -->
+  <div class="compare-summary surface-glass" id="compare-summary">
+    <h3 class="compare-summary__title">comparison</h3>
+    <div class="compare-summary__grid" id="summary-grid"></div>
+  </div>
+</Layout>
+
+<style>
+  /* ── Header ── */
+  .compare-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .compare-title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-1);
+  }
+
+  .compare-subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+
+  /* ── Pickers ── */
+  .compare-pickers {
+    display: flex;
+    align-items: end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .picker__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+  }
+
+  .picker__select {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+  }
+  .picker__select option {
+    background: var(--color-bg-raised);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-style: normal;
+  }
+
+  .picker__vs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    padding-bottom: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  /* ── Empty state ── */
+  .compare-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-8);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+  }
+
+  .compare-empty__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-2);
+  }
+
+  .compare-empty__hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+    line-height: var(--leading-normal);
+  }
+
+  .compare-empty__hint a {
+    color: var(--accent-text);
+    text-decoration: none;
+  }
+  .compare-empty__hint a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Skeleton ── */
+  .skel-wrap.hidden {
+    display: none;
+  }
+  .compare-skel__summary {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+  }
+
+  /* ── Side-by-side grids ── */
+  .compare-grids {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .compare-grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .compare-grid-label {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+  }
+
+  .compare-grid-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    position: relative;
+  }
+
+  .block-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+  .block-overlay :global(.cmp-block) {
+    pointer-events: auto;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 32px repeat(var(--cols), 1fr);
+    grid-template-rows: 28px repeat(var(--rows), 16px);
+    position: relative;
+    min-width: 300px;
+  }
+
+  .grid-corner {
+    grid-column: 1;
+    grid-row: 1;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid var(--color-border-subtle);
+  }
+
+  .grid-day-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .grid-day-header:last-of-type {
+    border-right: none;
+  }
+
+  .grid-time {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-right: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    border-right: 1px solid var(--color-border-subtle);
+    position: relative;
+  }
+  .grid-time > span {
+    transform: translateY(-0.35em);
+  }
+  .grid-time--hour {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .grid-cell {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .grid-cell--hour {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  /* ── Course blocks (dynamically created — :global needed) ── */
+  :global(.cmp-block) {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 0;
+    border: 1px solid;
+    padding: 1px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+    overflow: hidden;
+    z-index: 2;
+    transition: opacity var(--duration-fast) var(--ease);
+  }
+
+  :global(.cmp-block--shared) {
+    opacity: 0.35;
+  }
+
+  :global(.cmp-block--unique) {
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.2);
+  }
+
+  :global(.cmp-block__code) {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 600;
+    color: var(--block-text);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* ── Comparison summary ── */
+  .compare-summary {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+  }
+
+  .compare-summary__title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-5);
+  }
+
+  .compare-summary__grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-4) var(--space-6);
+    align-items: center;
+  }
+
+  :global(.cmp-row__label) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-align: center;
+    grid-column: 1 / -1;
+    padding-top: var(--space-2);
+  }
+  :global(.cmp-row__label):first-child {
+    padding-top: 0;
+  }
+
+  :global(.cmp-val) {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--tracking-wider);
+  }
+  :global(.cmp-val--a) {
+    text-align: right;
+  }
+  :global(.cmp-val--b) {
+    text-align: left;
+  }
+  :global(.cmp-val--winner) {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  :global(.cmp-indicator) {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--accent-text);
+    letter-spacing: var(--tracking-wide);
+    text-align: center;
+    white-space: nowrap;
+    min-width: 100px;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+  }
+
+  :global(.cmp-indicator--neutral) {
+    color: var(--color-text-muted);
+    background: transparent;
+    border-color: transparent;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .compare-grids {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .compare-pickers {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .picker__vs {
+      text-align: center;
+      padding: 0;
+    }
+  }
+</style>
+
+<script>
+  import { DAYS, START_HOUR, subjectColors, courseColor, toSlot, fmtTime } from "../../scripts/courseCatalog";
+  import * as store from "../../scripts/scheduleStore";
+  import type { ResolvedEntry, ScheduleData } from "../../scripts/scheduleStore";
+
+  const pickA = document.getElementById('pick-a') as HTMLSelectElement;
+  const pickB = document.getElementById('pick-b') as HTMLSelectElement;
+  const gridA = document.getElementById('grid-a') as HTMLElement;
+  const gridB = document.getElementById('grid-b') as HTMLElement;
+  const overlayA = document.getElementById('overlay-a')!;
+  const overlayB = document.getElementById('overlay-b')!;
+  const labelA = document.getElementById('label-a')!;
+  const labelB = document.getElementById('label-b')!;
+  const summaryGrid = document.getElementById('summary-grid')!;
+  const gridsWrap = document.getElementById('compare-grids')!;
+  const summaryWrap = document.getElementById('compare-summary')!;
+  const emptyState = document.getElementById('compare-empty')!;
+  const compareSkel = document.getElementById('compare-skel')!;
+
+  function fmtT(h: number, m: number) { return fmtTime(h, m); }
+  function fmtMins(mins: number) { return fmtT(Math.floor(mins / 60), mins % 60); }
+
+  function init() {
+    compareSkel.classList.add('hidden');
+    const all = store.getAllSchedules();
+
+    if (all.length < 2) {
+      emptyState.style.display = '';
+      gridsWrap.style.display = 'none';
+      summaryWrap.style.display = 'none';
+      pickA.innerHTML = '';
+      pickB.innerHTML = '';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    gridsWrap.style.display = '';
+    summaryWrap.style.display = '';
+
+    const prevA = pickA.value;
+    const prevB = pickB.value;
+
+    pickA.innerHTML = '';
+    pickB.innerHTML = '';
+    for (const s of all) {
+      pickA.appendChild(new Option(s.name, s.id));
+      pickB.appendChild(new Option(s.name, s.id));
+    }
+
+    if (prevA && all.some(s => s.id === prevA)) pickA.value = prevA;
+    else pickA.value = all[0].id;
+
+    if (prevB && all.some(s => s.id === prevB)) pickB.value = prevB;
+    else pickB.value = all.length > 1 ? all[1].id : all[0].id;
+
+    render();
+  }
+
+  function render() {
+    const schedA = store.getScheduleById(pickA.value);
+    const schedB = store.getScheduleById(pickB.value);
+    if (!schedA || !schedB) return;
+
+    const entriesA = store.resolve(schedA.courses);
+    const entriesB = store.resolve(schedB.courses);
+
+    labelA.textContent = schedA.name;
+    labelB.textContent = schedB.name;
+
+    const codesA = new Set(entriesA.map(e => e.code));
+    const codesB = new Set(entriesB.map(e => e.code));
+    const sharedCodes = new Set([...codesA].filter(c => codesB.has(c)));
+
+    renderGrid(gridA, overlayA, entriesA, sharedCodes);
+    renderGrid(gridB, overlayB, entriesB, sharedCodes);
+    renderSummary(schedA, schedB, entriesA, entriesB, sharedCodes);
+  }
+
+  const CMP_GUTTER = 32;
+  const CMP_HEADER = 28;
+  const CMP_SLOT = 16;
+
+  function renderGrid(grid: HTMLElement, overlay: HTMLElement, entries: ResolvedEntry[], shared: Set<string>) {
+    overlay.innerHTML = '';
+    const gridW = grid.offsetWidth;
+    const colW = (gridW - CMP_GUTTER) / DAYS.length;
+
+    interface CmpBlock {
+      entry: ResolvedEntry;
+      day: string;
+      dayIdx: number;
+      startSlot: number;
+      endSlot: number;
+      isShared: boolean;
+      color: ReturnType<typeof courseColor>;
+      overlapIdx: number;
+      overlapTotal: number;
+    }
+
+    const blocks: CmpBlock[] = [];
+    for (const e of entries) {
+      const c = courseColor(e.code);
+      const isShared = shared.has(e.code);
+      const startSlot = toSlot(e.section.startH, e.section.startM);
+      const endSlot = toSlot(e.section.endH, e.section.endM);
+      for (const day of e.section.days) {
+        blocks.push({ entry: e, day, dayIdx: DAYS.indexOf(day as any), startSlot, endSlot, isShared, color: c, overlapIdx: 0, overlapTotal: 1 });
+      }
+    }
+
+    for (let d = 0; d < DAYS.length; d++) {
+      const dayBlocks = blocks.filter(b => b.dayIdx === d).sort((a, b) => a.startSlot - b.startSlot);
+      for (let i = 0; i < dayBlocks.length; i++) {
+        const group = [dayBlocks[i]];
+        let groupEnd = dayBlocks[i].endSlot;
+        for (let j = i + 1; j < dayBlocks.length; j++) {
+          if (dayBlocks[j].startSlot < groupEnd) {
+            group.push(dayBlocks[j]);
+            groupEnd = Math.max(groupEnd, dayBlocks[j].endSlot);
+          }
+        }
+        if (group.length > 1) {
+          for (let k = 0; k < group.length; k++) {
+            group[k].overlapIdx = k;
+            group[k].overlapTotal = group.length;
+          }
+        }
+      }
+    }
+
+    for (const b of blocks) {
+      const x = CMP_GUTTER + b.dayIdx * colW + (b.overlapIdx * colW / b.overlapTotal);
+      const w = colW / b.overlapTotal;
+      const y = CMP_HEADER + b.startSlot * CMP_SLOT;
+      const h = (b.endSlot - b.startSlot) * CMP_SLOT;
+
+      const el = document.createElement('div');
+      el.className = `cmp-block ${b.isShared ? 'cmp-block--shared' : 'cmp-block--unique'}`;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.width = `${w}px`;
+      el.style.height = `${h}px`;
+      el.style.background = b.color.bg;
+      el.style.borderColor = b.color.border;
+      el.style.setProperty('--block-text', b.color.text);
+      el.setAttribute('aria-label', `${b.entry.code}${b.isShared ? ' (in both schedules)' : ' (unique to this schedule)'}`);
+      el.innerHTML = `<span class="cmp-block__code">${b.entry.code}</span>`;
+      overlay.appendChild(el);
+    }
+  }
+
+  function renderSummary(
+    schedA: ScheduleData,
+    schedB: ScheduleData,
+    entriesA: ResolvedEntry[],
+    entriesB: ResolvedEntry[],
+    shared: Set<string>,
+  ) {
+    const statsA = store.computeStats(entriesA);
+    const statsB = store.computeStats(entriesB);
+
+    const onlyA = entriesA.filter(e => !shared.has(e.code));
+    const onlyB = entriesB.filter(e => !shared.has(e.code));
+
+    summaryGrid.innerHTML = '';
+
+    function addRow(
+      label: string,
+      valA: string,
+      valB: string,
+      indicator: string,
+      winA: boolean,
+      winB: boolean,
+    ) {
+      const lbl = document.createElement('div');
+      lbl.className = 'cmp-row__label';
+      lbl.textContent = label;
+      summaryGrid.appendChild(lbl);
+
+      const a = document.createElement('div');
+      a.className = `cmp-val cmp-val--a${winA ? ' cmp-val--winner' : ''}`;
+      a.textContent = valA;
+      summaryGrid.appendChild(a);
+
+      const ind = document.createElement('div');
+      ind.className = `cmp-indicator${indicator === 'same' ? ' cmp-indicator--neutral' : ''}`;
+      ind.textContent = indicator;
+      summaryGrid.appendChild(ind);
+
+      const b = document.createElement('div');
+      b.className = `cmp-val cmp-val--b${winB ? ' cmp-val--winner' : ''}`;
+      b.textContent = valB;
+      summaryGrid.appendChild(b);
+    }
+
+    // Credits
+    const crDiff = statsA.credits - statsB.credits;
+    const crInd = crDiff === 0 ? 'same'
+      : crDiff > 0 ? `${crDiff} more credit${crDiff !== 1 ? 's' : ''}`
+      : `${-crDiff} fewer credit${crDiff !== -1 ? 's' : ''}`;
+    addRow('credits', String(statsA.credits), String(statsB.credits), crInd, crDiff > 0, crDiff < 0);
+
+    // Contact hours
+    const chDiff = Math.round((statsA.contactHours - statsB.contactHours) * 10) / 10;
+    const chInd = chDiff === 0 ? 'same'
+      : chDiff > 0 ? `${chDiff} more hr${chDiff !== 1 ? 's' : ''}/wk`
+      : `${-chDiff} fewer hr${chDiff !== -1 ? 's' : ''}/wk`;
+    addRow(
+      'contact',
+      `${statsA.contactHours}h/wk`,
+      `${statsB.contactHours}h/wk`,
+      chInd,
+      false, false,
+    );
+
+    // Days off
+    const doffA = statsA.daysOff.length;
+    const doffB = statsB.daysOff.length;
+    const doffDiff = doffA - doffB;
+    const doffInd = doffDiff === 0 ? 'same'
+      : doffDiff > 0 ? `${doffDiff} more day${doffDiff !== 1 ? 's' : ''} off`
+      : `${-doffDiff} fewer day${doffDiff !== -1 ? 's' : ''} off`;
+    addRow(
+      'days off',
+      doffA > 0 ? statsA.daysOff.join(', ') : 'none',
+      doffB > 0 ? statsB.daysOff.join(', ') : 'none',
+      doffInd,
+      doffDiff > 0, doffDiff < 0,
+    );
+
+    // Earliest start
+    if (entriesA.length && entriesB.length) {
+      const earlyDiff = statsA.earliestMin - statsB.earliestMin;
+      const earlyInd = earlyDiff === 0 ? 'same'
+        : earlyDiff > 0 ? `starts ${Math.round(earlyDiff / 60 * 10) / 10}h later`
+        : `starts ${Math.round(-earlyDiff / 60 * 10) / 10}h earlier`;
+      addRow(
+        'earliest class',
+        fmtMins(statsA.earliestMin),
+        fmtMins(statsB.earliestMin),
+        earlyInd,
+        false, false,
+      );
+
+      // Latest end
+      const lateDiff = statsA.latestMin - statsB.latestMin;
+      const lateInd = lateDiff === 0 ? 'same'
+        : lateDiff > 0 ? `ends ${Math.round(lateDiff / 60 * 10) / 10}h later`
+        : `ends ${Math.round(-lateDiff / 60 * 10) / 10}h earlier`;
+      addRow(
+        'latest class',
+        fmtMins(statsA.latestMin),
+        fmtMins(statsB.latestMin),
+        lateInd,
+        false, false,
+      );
+    }
+
+    // Unique courses
+    const uniqueA = onlyA.map(e => e.code).join(', ') || '—';
+    const uniqueB = onlyB.map(e => e.code).join(', ') || '—';
+    const uniqueInd = shared.size > 0
+      ? `${shared.size} shared`
+      : 'no overlap';
+    addRow('unique courses', uniqueA, uniqueB, uniqueInd, false, false);
+  }
+
+  pickA.addEventListener('change', render);
+  pickB.addEventListener('change', render);
+
+  init();
+
+  window.addEventListener('resize', () => { if (gridsWrap.style.display !== 'none') render(); });
+</script>

@@ -1,0 +1,32 @@
+---
+interface Props {
+  label: string;
+  height?: string;
+}
+
+const { label, height = '120px' } = Astro.props;
+---
+
+<div class="zone surface-glass" style={`min-height: ${height}`}>
+  <span class="zone__label">{label}</span>
+</div>
+
+<style>
+  .zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    border-style: dashed;
+  }
+
+  .zone__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    text-align: center;
+    padding: var(--space-4);
+  }
+</style>

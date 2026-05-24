@@ -1,0 +1,292 @@
+---
+interface Props {
+  code: string;
+  title: string;
+  credits: number;
+  professor?: string;
+  meeting?: string;
+  room?: string;
+  seats?: number;
+  seatsCap?: number;
+  pick?: boolean;
+  variant?: 'default' | 'compact' | 'summary' | 'code-only';
+  sectionCount?: number;
+}
+
+const { code, title, credits, professor, meeting, room, seats, seatsCap, pick = false, variant = 'default', sectionCount } = Astro.props;
+
+const seatStatus: 'open' | 'low' | 'full' =
+  seats == null ? 'open'
+  : seats <= 0  ? 'full'
+  : seats <= 5  ? 'low'
+  :               'open';
+
+const slug = code.toLowerCase().replace(' ', '-');
+---
+
+{variant === 'code-only' ? (
+<div class="cc cc--code-only surface-glass" data-course-tile={code} role="button" tabindex="0">
+  <span class="cc__code">{code}</span>
+</div>
+) : variant === 'summary' ? (
+<div class:list={['cc', 'surface-glass', 'cc--summary']} data-course-tile={code} role="button" tabindex="0">
+  {pick && <span class="cc__pick">ProgSU pick</span>}
+  <div class="cc__code-row">
+    <span class="cc__code">{code}</span>
+    <span class="cc__credits">{credits} cr</span>
+  </div>
+  <span class="cc__title">{title}</span>
+  {sectionCount != null && (
+    <span class="cc__meta">{sectionCount} section{sectionCount !== 1 ? 's' : ''}</span>
+  )}
+</div>
+) : (
+<a href={`/courses/${slug}`} class:list={['cc', 'surface-glass', `cc--${variant}`]} data-cc-link>
+
+  {pick && (
+    <span class="cc__pick">ProgSU pick</span>
+  )}
+
+  <div class="cc__code-row">
+    <span class="cc__code">{code}</span>
+    <span class="cc__credits">{credits} cr</span>
+    <span class:list={['cc__dot', `cc__dot--${seatStatus}`]} aria-hidden="true"></span>
+    {seats != null && (
+      <span class="cc__seats">{seats}/{seatsCap} {seatStatus === 'full' ? 'full' : 'open'}</span>
+    )}
+  </div>
+
+  <span class="cc__title">{title}</span>
+
+  {(professor || meeting || room) && (
+    <span class="cc__meta">
+      {[professor, meeting, room].filter(Boolean).join(' · ')}
+    </span>
+  )}
+
+  <div class="cc__footer">
+    <button class="cc__star" aria-label={`Star ${code}`} aria-pressed="false" type="button" data-star-code={code}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    </button>
+    <span class="cc__details">&rarr;</span>
+  </div>
+
+</a>
+)}
+
+<style>
+  .cc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease),
+      box-shadow var(--duration-normal) var(--ease);
+  }
+  .cc:hover {
+    background: var(--accent-faint);
+    border-color: var(--glass-border-hi);
+    box-shadow: var(--glass-shadow), var(--shadow-glow);
+  }
+
+  /* ── Pick eyebrow ── */
+  .cc__pick {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--accent-light);
+    opacity: 0.7;
+  }
+
+  /* ── Code row ── */
+  .cc__code-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .cc__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .cc__credits {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .cc__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+  }
+  .cc__dot--open  { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.5); }
+  .cc__dot--low   { background: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.5); }
+  .cc__dot--full  { background: #f87171; box-shadow: 0 0 6px rgba(248, 113, 113, 0.5); }
+
+  .cc__seats {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* ── Title ── */
+  .cc__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+  }
+
+  /* ── Meta ── */
+  .cc__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-normal);
+  }
+
+  /* ── Footer ── */
+  .cc__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-1);
+  }
+
+  .cc__star {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 0;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .cc__star:hover {
+    color: var(--accent-light);
+  }
+  .cc__star.starred {
+    color: var(--accent-light);
+  }
+  .cc__star.starred svg {
+    fill: var(--accent-light);
+  }
+  .cc__star.pop {
+    animation: starPop 0.3s var(--ease-out);
+  }
+
+  @keyframes starPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  .cc__details {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-dim);
+    letter-spacing: var(--tracking-wider);
+    transition:
+      color var(--duration-normal) var(--ease),
+      transform var(--duration-normal) var(--ease);
+  }
+  .cc:hover .cc__details {
+    color: var(--accent-text);
+  }
+
+  /* ── Compact variant ── */
+  .cc--compact {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .cc--compact .cc__pick {
+    width: 100%;
+  }
+
+  .cc--compact .cc__code-row {
+    flex-shrink: 0;
+  }
+
+  .cc--compact .cc__title {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cc--compact .cc__meta {
+    width: 100%;
+  }
+
+  .cc--compact .cc__footer {
+    margin-top: 0;
+    margin-left: auto;
+    gap: var(--space-3);
+  }
+
+  /* ── Code-only variant (minimal tile) ── */
+  .cc--code-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+  }
+  .cc--code-only .cc__code {
+    font-size: var(--text-xs);
+  }
+
+  /* ── Summary variant (course picker tile) ── */
+  .cc--summary {
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+  }
+  .cc--summary .cc__title {
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 480px) {
+    .cc {
+      padding: var(--space-4) var(--space-5);
+    }
+    .cc--compact {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cc--compact .cc__title {
+      white-space: normal;
+    }
+    .cc--compact .cc__footer {
+      margin-left: 0;
+    }
+  }
+</style>

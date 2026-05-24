@@ -17,7 +17,7 @@
   <div id="label-layer"></div>
 
   <!-- Hover tooltip -->
-  <div id="node-tooltip" class="tooltip" aria-hidden="true">
+  <div id="node-tooltip" class="tooltip surface-glass surface-glass--strong" aria-hidden="true">
     <span class="tooltip__name"></span>
     <span class="tooltip__desc"></span>
     <span class="tooltip__count"></span>
@@ -38,12 +38,12 @@
 
   <!-- Search bar — lower third, expands inline on activation -->
   <div class="hero-search-wrap">
-    <div id="search-bar" class="search-bar">
+    <div id="search-bar" class="search-bar surface-glass">
       <div class="search-icon"><div class="search-handle"></div></div>
       <input id="search-input" class="search-bar__input" type="text" placeholder="search guides &amp; resources" autocomplete="off" spellcheck="false" />
       <span id="search-kbd" class="search-kbd">/</span>
     </div>
-    <ul id="search-results" class="search-bar__results"></ul>
+    <ul id="search-results" class="search-bar__results surface-glass surface-glass--strong"></ul>
     <p class="search-proof">GROWING WIKI &middot; BY PROGSU &middot; OPEN ON GITHUB</p>
   </div>
 
@@ -60,7 +60,7 @@
   </div>
 
   <!-- View toggle button -->
-  <button id="view-toggle" class="view-toggle" aria-label="Switch to 2D view" title="Switch to 2D view">
+  <button id="view-toggle" class="view-toggle surface-glass" aria-label="Switch to 2D view" title="Switch to 2D view">
     <span id="view-toggle-label">2D</span>
   </button>
 </div>
@@ -164,9 +164,6 @@
   .tooltip {
     position: fixed;
     padding: .65rem .9rem;
-    background: rgba(6,6,18,.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(168,85,247,.4);
     border-radius: .5rem;
     pointer-events: none;
     opacity: 0;
@@ -175,7 +172,6 @@
     display: flex;
     flex-direction: column;
     gap: .2rem;
-    box-shadow: 0 0 24px rgba(168,85,247,.2), 0 8px 32px rgba(0,0,0,.6);
   }
   .tooltip.visible { opacity: 1; }
   .tooltip__name {
@@ -287,13 +283,9 @@
     display: flex;
     align-items: center;
     gap: .6rem;
-    background: rgba(8,8,18,.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(168,85,247,.35);
     border-radius: .55rem;
     padding: .65rem .9rem;
     width: 100%;
-    box-shadow: 0 0 32px rgba(168,85,247,.15), 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
     pointer-events: all;
     cursor: text;
   }
@@ -348,10 +340,7 @@
     list-style: none;
     margin: .35rem 0 0;
     padding: .3rem 0;
-    background: rgba(8,6,20,.95);
-    border: 1px solid rgba(168,85,247,.3);
     border-radius: .55rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,.6), 0 0 24px rgba(168,85,247,.1);
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -411,9 +400,6 @@
     bottom: 2.8rem;
     right: 1.2rem;
     z-index: 30;
-    background: rgba(8,8,18,.7);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(168,85,247,.45);
     border-radius: .4rem;
     padding: .35rem .7rem;
     font-family: 'SF Mono', Menlo, monospace;
@@ -422,14 +408,12 @@
     letter-spacing: .15em;
     cursor: pointer;
     transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
-    box-shadow: 0 0 12px rgba(168,85,247,.12);
     pointer-events: all;
   }
   .view-toggle:hover {
     background: rgba(168,85,247,.18);
-    border-color: rgba(168,85,247,.8);
+    border-color: var(--glass-border-hi);
     color: #fff;
-    box-shadow: 0 0 20px rgba(168,85,247,.3);
   }
 </style>
 
@@ -505,15 +489,20 @@
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
   import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
   import * as d3 from "d3";
+  import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+  import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+  import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
   // ── node data ──────────────────────────────────────────────────
   const NODE_DEFS = [
     { id: "wiki",        label: "progsu / wiki", desc: "",                                          central: true,  guides: 0,  color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 0,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee, accent: true },
-    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 0,  route: "/guides/career",       color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 0,  route: "/guides/networking",   color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 0,  route: "/guides/technical",    color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "misc",        label: "misc",            desc: "Everything else worth knowing",            guides: 0,  route: "/guides/misc",         color: 0xd8b4fe, emissive: 0xa855f7 },
+    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 0,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee },
+    { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 0,  route: "/guides/career",       color: 0xbbf7d0, emissive: 0x34d399 },
+    { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 0,  route: "/guides/networking",   color: 0xfecdd3, emissive: 0xfb7185 },
+    { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 0,  route: "/guides/technical",    color: 0xfde68a, emissive: 0xfbbf24 },
+    { id: "misc",        label: "misc",            desc: "Everything else worth knowing",            guides: 0,  route: "/guides/misc",         color: 0xfed7aa, emissive: 0xfb923c },
   ] as const;
 
   type NodeDef   = typeof NODE_DEFS[number];
@@ -547,39 +536,27 @@
   renderer.setSize(W, H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.95;
 
   // Scene & camera
   const scene  = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 2000);
   camera.position.set(0, 0, 420);
 
-  // Ambient: very dim so shadow side is nearly black, not washed
-  const ambient = new THREE.AmbientLight(0x080210, 0.6);
+  const ambient = new THREE.AmbientLight(0x0a0618, 0.3);
   scene.add(ambient);
 
-  // Key: soft white from top-left — lowered intensity so the hotspot is subtle, not blinding
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+  const keyLight = new THREE.DirectionalLight(0xfff0e6, 1.0);
   keyLight.position.set(-1.4, 1.4, 2.0);
   scene.add(keyLight);
 
-  // Secondary key: lavender-white, slightly different angle — widens and softens the lit zone
-  const key2Light = new THREE.DirectionalLight(0xe8d8ff, 0.7);
-  key2Light.position.set(-0.5, 0.6, 1.8);
-  scene.add(key2Light);
-
-  // Mid fill: dim purple from the right — creates gradual colour gradient in the penumbra
-  // instead of a hard jump from lit → black
-  const fillLight = new THREE.DirectionalLight(0x4c1d95, 0.55);
+  const fillLight = new THREE.DirectionalLight(0x4060a0, 0.25);
   fillLight.position.set(1.2, 0.2, 0.6);
   scene.add(fillLight);
 
-  // Deep fill: even dimmer violet from below-right — stretches the shadow gradient darker
-  const deepFill = new THREE.DirectionalLight(0x1e0a3c, 0.8);
-  deepFill.position.set(0.8, -1.0, 0.3);
-  scene.add(deepFill);
-
-  // Rim: faint cyan from behind — edge light only, no fill
-  const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.18);
+  const rimLight = new THREE.DirectionalLight(0x22d3ee, 0.35);
   rimLight.position.set(0.3, -1.0, -1.0);
   scene.add(rimLight);
 
@@ -649,6 +626,98 @@
   centerSim.fx = 0;
   centerSim.fy = 0;
 
+  // ── environment map & procedural textures ──────────────────────
+  const pmremGen = new THREE.PMREMGenerator(renderer);
+  const envMap = pmremGen.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environment = envMap;
+  pmremGen.dispose();
+
+  const supportsTransmission = renderer.capabilities.isWebGL2;
+
+  function generateNoiseNormalMap(size = 128): THREE.DataTexture {
+    const heights = new Float32Array(size * size);
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const u = x / size, v = y / size;
+        heights[y * size + x] =
+          Math.sin(u * 6.28 * 3 + v * 2.1) * 0.3 +
+          Math.cos(u * 1.7 + v * 6.28 * 2) * 0.3 +
+          Math.sin((u + v) * 6.28 * 5) * 0.15 +
+          Math.sin(u * 6.28 * 7 - v * 3.3) * 0.1 +
+          Math.sin(u * 43.7) * Math.sin(v * 37.3) * 0.15;
+      }
+    }
+    const data = new Uint8Array(size * size * 4);
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const i = y * size + x;
+        const dx = heights[y * size + (x + 1) % size] - heights[y * size + (x - 1 + size) % size];
+        const dy = heights[((y + 1) % size) * size + x] - heights[((y - 1 + size) % size) * size + x];
+        const len = Math.sqrt(dx * dx + dy * dy + 1);
+        data[i * 4]     = Math.round((-dx / len * 0.5 + 0.5) * 255);
+        data[i * 4 + 1] = Math.round((-dy / len * 0.5 + 0.5) * 255);
+        data[i * 4 + 2] = Math.round((1.0 / len * 0.5 + 0.5) * 255);
+        data[i * 4 + 3] = 255;
+      }
+    }
+    const tex = new THREE.DataTexture(data, size, size);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.needsUpdate = true;
+    return tex;
+  }
+  const normalMap = generateNoiseNormalMap();
+
+  // ── nebula cloud textures (fbm noise × radial falloff) ──────────
+  function hash(x: number, y: number): number {
+    let n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return n - Math.floor(n);
+  }
+  function smoothNoise(x: number, y: number): number {
+    const ix = Math.floor(x), iy = Math.floor(y);
+    const fx = x - ix, fy = y - iy;
+    const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+    const a = hash(ix, iy), b = hash(ix + 1, iy);
+    const c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
+    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+  }
+  function fbm(x: number, y: number, octaves = 4): number {
+    let v = 0, amp = 0.5, freq = 1;
+    for (let i = 0; i < octaves; i++) {
+      v += amp * smoothNoise(x * freq, y * freq);
+      amp *= 0.5; freq *= 2.0;
+    }
+    return v;
+  }
+
+  function generateCloudTexture(size = 192, seed = 0): THREE.CanvasTexture {
+    const c = document.createElement("canvas");
+    c.width = size; c.height = size;
+    const ctx = c.getContext("2d")!;
+    const img = ctx.createImageData(size, size);
+    const half = size / 2;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const u = (x - half) / half;
+        const v = (y - half) / half;
+        const dist = Math.sqrt(u * u + v * v);
+        const falloff = Math.max(0, 1 - dist);
+        const soft = falloff * falloff * (3 - 2 * falloff);
+        const n = fbm(u * 3 + seed * 13.7, v * 3 + seed * 7.3, 4);
+        const wisp = Math.max(0, n - 0.25) * 2.0;
+        const alpha = Math.min(1, wisp * soft * 1.6);
+        const i = (y * size + x) * 4;
+        img.data[i] = 255; img.data[i + 1] = 255; img.data[i + 2] = 255;
+        img.data[i + 3] = Math.round(alpha * 255);
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }
+  const cloudPool: THREE.CanvasTexture[] = [];
+  for (let i = 0; i < 5; i++) cloudPool.push(generateCloudTexture(192, i));
+
   // ── build Three.js objects ─────────────────────────────────────
   const nodeGroup = new THREE.Group();
   scene.add(nodeGroup);
@@ -659,15 +728,18 @@
   // Shared geometry
   const sphereGeo = new THREE.SphereGeometry(1, 48, 48);
 
-  // Store refs per node
+  interface CloudLayer {
+    sprite:    THREE.Sprite;
+    baseScale: number;
+    baseOp:    number;
+    rotSpeed:  number;
+  }
+
   interface NodeObj {
     sim:       NodeSim;
     mesh:      THREE.Mesh;
-    innerGlow: THREE.Mesh;
-    midGlow:   THREE.Mesh;
-    glow:      THREE.Mesh;
+    clouds:    CloudLayer[];
     labelEl:   HTMLDivElement;
-    rings?:    THREE.Mesh[];
   }
 
   const nodeObjs: NodeObj[] = [];
@@ -677,44 +749,74 @@
     const isCentral = n.id === "wiki";
     const radius    = isCentral ? 22 : 12;
 
-    // Main sphere — very high shininess for tight white hotspot, dark emissive so shadow goes deep
-    // Matches reference: radial-gradient(circle at 35% 30%, white → lavender → purple → #1a0a2e)
-    const mat = new THREE.MeshPhongMaterial({
-      color:             n.color,
-      emissive:          new THREE.Color(n.emissive).multiplyScalar(0.15),
-      emissiveIntensity: 1.0,
-      shininess:         isCentral ? 180 : 140,
-      specular:          new THREE.Color(0xddd0ff),
+    const mat = new THREE.MeshPhysicalMaterial({
+      color:              new THREE.Color(n.color).multiplyScalar(0.45),
+      emissive:           new THREE.Color(n.emissive).multiplyScalar(0.4),
+      emissiveIntensity:  isCentral ? 0.55 : 0.45,
+      roughness:          1.0,
+      metalness:          0.0,
     });
     const mesh = new THREE.Mesh(sphereGeo, mat);
     mesh.scale.setScalar(radius);
+    mesh.userData.hoverT = 0;
+    mesh.userData.hoverTarget = 0;
     nodeGroup.add(mesh);
 
-    // Inner bloom — tight halo just over the surface (like box-shadow 0 0 24px)
-    const innerGlowMat = new THREE.MeshBasicMaterial({
-      color:       n.emissive,
-      transparent: true,
-      opacity:     isCentral ? 0.35 : 0.22,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
-    });
-    const innerGlow = new THREE.Mesh(sphereGeo, innerGlowMat);
-    innerGlow.scale.setScalar(radius * 1.4);
-    nodeGroup.add(innerGlow);
+    // Central node keeps neighbor-blended outer tint; satellites stay pure color
+    let outerTint: THREE.Color;
+    if (isCentral) {
+      const neighborColors: THREE.Color[] = [];
+      for (const link of links) {
+        const srcId = typeof link.source === "string" ? link.source : (link.source as any).id;
+        const tgtId = typeof link.target === "string" ? link.target : (link.target as any).id;
+        if (srcId === n.id) {
+          const nb = simNodes.find(s => s.id === tgtId);
+          if (nb) neighborColors.push(new THREE.Color(nb.emissive));
+        } else if (tgtId === n.id) {
+          const nb = simNodes.find(s => s.id === srcId);
+          if (nb) neighborColors.push(new THREE.Color(nb.emissive));
+        }
+      }
+      outerTint = new THREE.Color(n.emissive);
+      if (neighborColors.length > 0) {
+        const avg = new THREE.Color(0, 0, 0);
+        for (const c of neighborColors) avg.add(c);
+        avg.multiplyScalar(1 / neighborColors.length);
+        outerTint.lerp(avg, 0.35);
+      }
+    } else {
+      outerTint = new THREE.Color(n.emissive);
+    }
 
-    // Mid bloom (like box-shadow 0 0 48-100px)
-    const midGlowMat = new THREE.MeshBasicMaterial({
-      color:       n.emissive,
-      transparent: true,
-      opacity:     isCentral ? 0.14 : 0.09,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
-    });
-    const midGlow = new THREE.Mesh(sphereGeo, midGlowMat);
-    midGlow.scale.setScalar(radius * (isCentral ? 2.8 : 2.2));
-    nodeGroup.add(midGlow);
-
-    const glow = midGlow; // alias — outer bloom removed, midGlow is the widest layer
+    const layerDefs = isCentral ? [
+      { scale: 2.8, op: 0.22, speed:  0.06 },
+      { scale: 4.2, op: 0.14, speed: -0.04 },
+      { scale: 6.0, op: 0.08, speed:  0.025 },
+    ] : [
+      { scale: 3.0, op: 0.28, speed:  0.06 },
+      { scale: 5.0, op: 0.18, speed: -0.04 },
+      { scale: 7.5, op: 0.10, speed:  0.025 },
+    ];
+    const clouds: CloudLayer[] = [];
+    const nodeIdx = simNodes.indexOf(n);
+    for (let li = 0; li < layerDefs.length; li++) {
+      const def = layerDefs[li];
+      const tex = cloudPool[(nodeIdx * 3 + li) % cloudPool.length];
+      const tint = li === 2 ? outerTint : new THREE.Color(n.emissive);
+      const cMat = new THREE.SpriteMaterial({
+        map:         tex,
+        color:       tint,
+        transparent: true,
+        opacity:     def.op,
+        blending:    THREE.AdditiveBlending,
+        depthWrite:  false,
+        rotation:    (nodeIdx + li) * 1.3,
+      });
+      const spr = new THREE.Sprite(cMat);
+      spr.scale.setScalar(radius * def.scale);
+      nodeGroup.add(spr);
+      clouds.push({ sprite: spr, baseScale: radius * def.scale, baseOp: def.op, rotSpeed: def.speed * (li % 2 === 0 ? 1 : -1) });
+    }
 
     // DOM label — projected manually each frame (central node has no label)
     const wrap = document.createElement("div");
@@ -729,28 +831,7 @@
 
     labelEl.appendChild(wrap);
 
-    // Pulse rings — central node only
-    const rings: THREE.Mesh[] = [];
-    if (isCentral) {
-      const ringGeo = new THREE.RingGeometry(1, 1.06, 64);
-      for (let i = 0; i < 3; i++) {
-        const ringMat = new THREE.MeshBasicMaterial({
-          color:       0xa855f7,
-          transparent: true,
-          opacity:     0.5,
-          blending:    THREE.AdditiveBlending,
-          depthWrite:  false,
-          side:        THREE.DoubleSide,
-        });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.scale.setScalar(radius);
-        ring.userData.phaseOffset = i * (1.2 / 3);
-        nodeGroup.add(ring);
-        rings.push(ring);
-      }
-    }
-
-    const obj: NodeObj = { sim: n, mesh, innerGlow, midGlow, glow, labelEl: wrap, rings };
+    const obj: NodeObj = { sim: n, mesh, clouds, labelEl: wrap };
     nodeObjs.push(obj);
     meshToNode.set(mesh, obj);
   }
@@ -762,12 +843,38 @@
   const edgeMat = new THREE.LineBasicMaterial({
     color:       0xa855f7,
     transparent: true,
-    opacity:     0.25,
+    opacity:     0.08,
     blending:    THREE.AdditiveBlending,
     depthWrite:  false,
   });
   const edgeMesh = new THREE.LineSegments(edgeGeo, edgeMat);
   edgeGroup.add(edgeMesh);
+
+  // ── diffuse background cloud ───────────────────────────────────
+  const bgCloudMat = new THREE.SpriteMaterial({
+    map:         cloudPool[0],
+    color:       0xa855f7,
+    transparent: true,
+    opacity:     0.06,
+    blending:    THREE.AdditiveBlending,
+    depthWrite:  false,
+  });
+  const bgCloud = new THREE.Sprite(bgCloudMat);
+  bgCloud.scale.setScalar(500);
+  bgCloud.position.set(0, 0, -20);
+  scene.add(bgCloud);
+
+  // ── bloom post-processing ──────────────────────────────────────
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(W, H),
+    0.35,
+    0.6,
+    0.55
+  );
+  composer.addPass(bloomPass);
+  composer.addPass(new OutputPass());
 
   // ── raycaster for hover ────────────────────────────────────────
   const raycaster = new THREE.Raycaster();
@@ -869,31 +976,22 @@
   });
 
   function hoverNode(obj: NodeObj) {
-    const isCentral = "central" in obj.sim && obj.sim.central;
-    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.55 : 0.38;
-    (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.22 : 0.15;
+    obj.mesh.userData.hoverTarget = 1;
   }
 
   function unhoverNode(obj: NodeObj) {
-    const isCentral = "central" in obj.sim && obj.sim.central;
-    (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = isCentral ? 0.35 : 0.22;
-    (obj.midGlow.material as THREE.MeshBasicMaterial).opacity   = isCentral ? 0.14 : 0.09;
+    obj.mesh.userData.hoverTarget = 0;
   }
 
   // ── tick: sync Three.js positions with D3 simulation ──────────
   sim.on("tick", () => {
     for (const obj of nodeObjs) {
-      const { sim: s, mesh, innerGlow, midGlow, glow } = obj;
+      const { sim: s, mesh, clouds } = obj;
       const x = (s.x ?? 0) * SCALE;
       const y = -(s.y ?? 0) * SCALE;
       const z = s.z;
       mesh.position.set(x, y, z);
-      innerGlow.position.set(x, y, z);
-      midGlow.position.set(x, y, z);
-      glow.position.set(x, y, z);
-      if (obj.rings) {
-        obj.rings.forEach(r => r.position.set(x, y, z));
-      }
+      for (const cl of clouds) cl.sprite.position.set(x, y, z);
     }
 
     // Update edge positions
@@ -910,6 +1008,7 @@
       edgePositions[base + 5] = tgt.z;
     });
     edgeGeo.attributes.position.needsUpdate = true;
+
   });
 
   // ── mouse parallax for CSS star layers ────────────────────────
@@ -955,36 +1054,33 @@
     controls.target.y = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, controls.target.y));
     controls.target.z = Math.max(-PAN_LIMIT, Math.min(PAN_LIMIT, controls.target.z));
 
-    // Pulsate halos on non-central nodes
+    // Shared nebula breathe phase — one organism
+    const breathe = Math.sin(animTime * 0.4) * 0.04;
+
+    // Node cloud drift and hover
     for (const obj of nodeObjs) {
       const isCentral = "central" in obj.sim && obj.sim.central;
-      if (isCentral) continue;
-      // Each node gets a unique phase offset based on its index so they don't all pulse together
-      const phaseOffset = simNodes.indexOf(obj.sim) * 0.55;
-      const pulse = Math.sin(animTime * 1.1 + phaseOffset) * 0.5 + 0.5; // 0→1
-      (obj.innerGlow.material as THREE.MeshBasicMaterial).opacity = 0.12 + pulse * 0.14;
-      (obj.midGlow.material   as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.07;
-      const baseR = 12;
-      obj.innerGlow.scale.setScalar(baseR * (1.4 + pulse * 0.18));
-      obj.midGlow.scale.setScalar(baseR   * (2.2 + pulse * 0.3));
+      const ht = obj.mesh.userData.hoverT += (obj.mesh.userData.hoverTarget - obj.mesh.userData.hoverT) * 0.12;
+      const nodeIdx = nodeObjs.indexOf(obj);
+
+      for (let ci = 0; ci < obj.clouds.length; ci++) {
+        const cl = obj.clouds[ci];
+        const mat = cl.sprite.material as THREE.SpriteMaterial;
+        const phase = animTime * cl.rotSpeed + nodeIdx * 0.4 + ci * 0.9;
+        mat.rotation = phase;
+        mat.opacity = Math.max(0, cl.baseOp + breathe) + ht * cl.baseOp * 0.8;
+        cl.sprite.scale.setScalar(cl.baseScale * (1 + ht * 0.25));
+      }
+
+      const meshMat = obj.mesh.material as THREE.MeshPhysicalMaterial;
+      meshMat.emissiveIntensity = (isCentral ? 0.55 : 0.45) + ht * 0.45;
     }
 
-    // Animate pulse rings
-    for (const obj of nodeObjs) {
-      if (!obj.rings) continue;
-      const isCentral = "central" in obj.sim && obj.sim.central;
-      const radius = isCentral ? 22 : 12;
-      obj.rings.forEach(ring => {
-        const phase = ((animTime * 0.28 + ring.userData.phaseOffset) % 1);
-        const s     = radius + phase * radius * 2.6;
-        ring.scale.setScalar(s);
-        (ring.material as THREE.MeshBasicMaterial).opacity = (1 - phase) * 0.45;
-        // Make rings always face camera
-        ring.lookAt(camera.position);
-      });
-    }
+    // Background cloud slow drift
+    (bgCloud.material as THREE.SpriteMaterial).rotation = animTime * 0.008;
+    (bgCloud.material as THREE.SpriteMaterial).opacity = Math.max(0, 0.06 + breathe * 0.3);
 
-    renderer.render(scene, camera);
+    composer.render();
 
     // Project each node's mesh position to screen and position its label div
     for (const obj of nodeObjs) {
@@ -1173,6 +1269,7 @@
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     renderer.setSize(W, H);
+    composer.setSize(W, H);
     if (is2D) draw2D();
   });
 
@@ -1241,9 +1338,72 @@
     fNode.appendChild(feN); fNode.appendChild(feM2);
     defs.appendChild(fNode);
 
+    // Nebula cloud filter for 2D halos
+    const fNebula = document.createElementNS(NS, "filter");
+    fNebula.setAttribute("id", "nebula-cloud");
+    fNebula.setAttribute("x", "-50%"); fNebula.setAttribute("y", "-50%");
+    fNebula.setAttribute("width", "200%"); fNebula.setAttribute("height", "200%");
+    const feTurb = document.createElementNS(NS, "feTurbulence");
+    feTurb.setAttribute("type", "fractalNoise");
+    feTurb.setAttribute("baseFrequency", "0.04");
+    feTurb.setAttribute("numOctaves", "4");
+    feTurb.setAttribute("seed", "2");
+    feTurb.setAttribute("result", "noise");
+    fNebula.appendChild(feTurb);
+    const feDisp = document.createElementNS(NS, "feDisplacementMap");
+    feDisp.setAttribute("in", "SourceGraphic");
+    feDisp.setAttribute("in2", "noise");
+    feDisp.setAttribute("scale", "18");
+    feDisp.setAttribute("xChannelSelector", "R");
+    feDisp.setAttribute("yChannelSelector", "G");
+    feDisp.setAttribute("result", "displaced");
+    fNebula.appendChild(feDisp);
+    const feBlurNeb = document.createElementNS(NS, "feGaussianBlur");
+    feBlurNeb.setAttribute("in", "displaced");
+    feBlurNeb.setAttribute("stdDeviation", "4");
+    fNebula.appendChild(feBlurNeb);
+    defs.appendChild(fNebula);
+
     svg2d.appendChild(defs);
 
-    // Draw edges first (behind nodes)
+    // Bridge gradient blobs along edges (drawn first, behind everything)
+    const emissiveMap2D = new Map<string, number>();
+    for (const n of simNodes) emissiveMap2D.set(n.id, n.emissive);
+
+    for (let li = 0; li < links.length; li++) {
+      const link = links[li];
+      const srcId = typeof link.source === "string" ? link.source : (link.source as any).id;
+      const tgtId = typeof link.target === "string" ? link.target : (link.target as any).id;
+      const s = pos[srcId], t = pos[tgtId];
+      if (!s || !t) continue;
+      const srcHex = "#" + (emissiveMap2D.get(srcId) ?? 0xa855f7).toString(16).padStart(6, "0");
+      const tgtHex = "#" + (emissiveMap2D.get(tgtId) ?? 0xa855f7).toString(16).padStart(6, "0");
+
+      const gradId = `bridge-grad-${li}`;
+      const grad = document.createElementNS(NS, "linearGradient");
+      grad.setAttribute("id", gradId);
+      grad.setAttribute("x1", String(s.x)); grad.setAttribute("y1", String(s.y));
+      grad.setAttribute("x2", String(t.x)); grad.setAttribute("y2", String(t.y));
+      grad.setAttribute("gradientUnits", "userSpaceOnUse");
+      const stop1 = document.createElementNS(NS, "stop");
+      stop1.setAttribute("offset", "0%"); stop1.setAttribute("stop-color", srcHex);
+      const stop2 = document.createElementNS(NS, "stop");
+      stop2.setAttribute("offset", "100%"); stop2.setAttribute("stop-color", tgtHex);
+      grad.appendChild(stop1); grad.appendChild(stop2);
+      defs.appendChild(grad);
+
+      const bridgeLine = document.createElementNS(NS, "line");
+      bridgeLine.setAttribute("x1", String(s.x)); bridgeLine.setAttribute("y1", String(s.y));
+      bridgeLine.setAttribute("x2", String(t.x)); bridgeLine.setAttribute("y2", String(t.y));
+      bridgeLine.setAttribute("stroke", `url(#${gradId})`);
+      bridgeLine.setAttribute("stroke-width", "28");
+      bridgeLine.setAttribute("stroke-linecap", "round");
+      bridgeLine.setAttribute("opacity", "0.08");
+      bridgeLine.setAttribute("filter", "url(#nebula-cloud)");
+      svg2d.appendChild(bridgeLine);
+    }
+
+    // Draw edges (faint, behind nodes)
     for (const link of links) {
       const srcId = typeof link.source === "string" ? link.source : (link.source as any).id;
       const tgtId = typeof link.target === "string" ? link.target : (link.target as any).id;
@@ -1252,7 +1412,7 @@
       const line = document.createElementNS(NS, "line");
       line.setAttribute("x1", String(s.x)); line.setAttribute("y1", String(s.y));
       line.setAttribute("x2", String(t.x)); line.setAttribute("y2", String(t.y));
-      line.setAttribute("stroke", "rgba(168,85,247,0.3)");
+      line.setAttribute("stroke", "rgba(168,85,247,0.1)");
       line.setAttribute("stroke-width", "1.5");
       svg2d.appendChild(line);
     }
@@ -1276,19 +1436,26 @@
         g.setAttribute("data-guides", String((n as any).guides ?? 0));
       }
 
-      // Outer glow halo
-      const halo = document.createElementNS(NS, "circle");
-      halo.setAttribute("r", String(r * 2.4));
-      halo.setAttribute("fill", hexEmit);
-      halo.setAttribute("opacity", isCentral ? "0.15" : "0.1");
-      g.appendChild(halo);
+      // Nebula cloud halo layers
+      const haloOuter = document.createElementNS(NS, "circle");
+      haloOuter.setAttribute("r", String(r * 3));
+      haloOuter.setAttribute("fill", hexEmit);
+      haloOuter.setAttribute("opacity", isCentral ? "0.1" : "0.07");
+      haloOuter.setAttribute("filter", "url(#nebula-cloud)");
+      g.appendChild(haloOuter);
 
-      // Inner glow
-      const innerH = document.createElementNS(NS, "circle");
-      innerH.setAttribute("r", String(r * 1.5));
-      innerH.setAttribute("fill", hexEmit);
-      innerH.setAttribute("opacity", isCentral ? "0.28" : "0.18");
-      g.appendChild(innerH);
+      const haloMid = document.createElementNS(NS, "circle");
+      haloMid.setAttribute("r", String(r * 2));
+      haloMid.setAttribute("fill", hexEmit);
+      haloMid.setAttribute("opacity", isCentral ? "0.16" : "0.12");
+      haloMid.setAttribute("filter", "url(#nebula-cloud)");
+      g.appendChild(haloMid);
+
+      const haloInner = document.createElementNS(NS, "circle");
+      haloInner.setAttribute("r", String(r * 1.3));
+      haloInner.setAttribute("fill", hexEmit);
+      haloInner.setAttribute("opacity", isCentral ? "0.24" : "0.16");
+      g.appendChild(haloInner);
 
       // Main sphere
       const circle = document.createElementNS(NS, "circle");

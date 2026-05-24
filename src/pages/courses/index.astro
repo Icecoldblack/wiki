@@ -1,50 +1,241 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import CourseCard from "../../components/CourseCard.astro";
+import CourseSearchBar from "../../components/CourseSearchBar.astro";
+import CoursesSubnav from "../../components/CoursesSubnav.astro";
+
+const courses = [
+  { code: "CSC 1010", title: "Computers and Applications", credits: 3, semesters: ["fall","spring","summer"] },
+  { code: "CSC 1301", title: "Principles of Computer Science I", credits: 4, semesters: ["fall","spring","summer"] },
+  { code: "CSC 1302", title: "Principles of Computer Science II", credits: 4, semesters: ["fall","spring"] },
+  { code: "CSC 2720", title: "Data Structures", credits: 4, semesters: ["fall","spring"] },
+  { code: "CSC 3210", title: "Computer Organization and Programming", credits: 4, semesters: ["fall","spring"] },
+  { code: "CSC 3320", title: "System-Level Programming", credits: 4, semesters: ["fall","spring"] },
+  { code: "CSC 4310", title: "Operating Systems", credits: 3, semesters: ["fall","spring"] },
+  { code: "CSC 4320", title: "Computer Networks", credits: 3, semesters: ["fall"] },
+  { code: "CSC 4330", title: "Programming Language Concepts", credits: 3, semesters: ["fall","spring"] },
+  { code: "CSC 4350", title: "Software Engineering", credits: 3, semesters: ["fall","spring"] },
+  { code: "CSC 4360", title: "Mobile Application Development", credits: 3, semesters: ["fall"] },
+  { code: "CSC 4720", title: "Human-Computer Interaction", credits: 3, semesters: ["fall","spring"] },
+  { code: "MATH 1111", title: "College Algebra", credits: 3, semesters: ["fall","spring","summer"] },
+  { code: "MATH 1113", title: "Precalculus", credits: 3, semesters: ["fall","spring","summer"] },
+  { code: "MATH 1220", title: "Survey of Calculus", credits: 3, semesters: ["fall","spring","summer"] },
+  { code: "MATH 1401", title: "Elementary Statistics", credits: 3, semesters: ["fall","spring","summer"] },
+  { code: "MATH 2211", title: "Calculus of One Variable I", credits: 4, semesters: ["fall","spring","summer"] },
+  { code: "MATH 2212", title: "Calculus of One Variable II", credits: 4, semesters: ["fall","spring"] },
+  { code: "MATH 2215", title: "Multivariate Calculus", credits: 4, semesters: ["fall","spring"] },
+  { code: "MATH 2420", title: "Discrete Mathematics", credits: 3, semesters: ["fall","spring"] },
+  { code: "MATH 2641", title: "Linear Algebra I", credits: 3, semesters: ["fall","spring"] },
+  { code: "MATH 2652", title: "Differential Equations", credits: 3, semesters: ["fall","spring"] },
+  { code: "MATH 3030", title: "Mathematical Models for Computer Science", credits: 3, semesters: ["fall"] },
+  { code: "MATH 3350", title: "Scientific Computing", credits: 3, semesters: ["fall","spring"] },
+];
+
+function deriveSubject(code: string) { return code.split(' ')[0]; }
+
+const SUBJECT_NAMES: Record<string, string> = {
+  CSC: "computer science",
+  MATH: "mathematics",
+};
+
+const subjectMap = new Map<string, typeof courses>();
+for (const c of courses) {
+  const subj = deriveSubject(c.code);
+  if (!subjectMap.has(subj)) subjectMap.set(subj, []);
+  subjectMap.get(subj)!.push(c);
+}
+const subjectOrder = ['CSC', ...Array.from(subjectMap.keys()).filter(k => k !== 'CSC').sort()];
 ---
 
 <Layout title="Courses">
-  <p class="page-eyebrow">COURSES</p>
-  <h1 class="page-headline">structured paths<br>to get there faster.</h1>
-  <p class="page-sub">
-    GSU coursework, self-paced study plans, and external courses curated by ProgSU members who've taken them.
-  </p>
-  <p class="coming-soon">courses coming soon.</p>
+  <CoursesSubnav active="browse" />
+
+  <PageHeader
+    eyebrow="Courses"
+    headline="find your next<br>semester."
+    subline="GSU courses with notes from members who've taken them."
+  />
+
+  <div class="browse-center">
+    <CourseSearchBar />
+
+    <div class="semester-bar" role="group" aria-label="Semester filter">
+      <button class="semester-chip active" data-semester="fall" aria-pressed="true">fall</button>
+      <button class="semester-chip active" data-semester="spring" aria-pressed="true">spring</button>
+      <button class="semester-chip active" data-semester="summer" aria-pressed="true">summer</button>
+    </div>
+
+    <div id="subject-list">
+      {subjectOrder.map(subj => {
+        const group = subjectMap.get(subj) ?? [];
+        return (
+          <div class="subject-section" data-subject-section={subj}>
+            <div class="subject-label">
+              <span class="subject-label__name">{SUBJECT_NAMES[subj] ?? subj.toLowerCase()}</span>
+              <span class="subject-label__code">{subj}</span>
+            </div>
+            <div class="code-grid">
+              {group.map(c => (
+                <div data-course-wrap data-semesters={c.semesters.join(',')}>
+                  <CourseCard code={c.code} title={c.title} credits={c.credits} variant="code-only" />
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <div class="filter-empty surface-glass" id="filter-empty" style="display:none">
+      <p class="filter-empty__text">no courses offered in the selected semesters.</p>
+    </div>
+  </div>
 </Layout>
 
 <style>
-  .page-eyebrow {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .52rem;
-    color: rgba(216,180,254,.75);
-    letter-spacing: .28em;
-    margin: 0 0 1rem;
+  .browse-center {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
   }
-  .page-headline {
-    font-family: Georgia, serif;
+
+  /* ── Semester chips ── */
+  .semester-bar {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .semester-chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    letter-spacing: var(--tracking-wider);
+    transition:
+      color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease);
+  }
+  .semester-chip:hover {
+    color: var(--color-text-secondary);
+    border-color: var(--glass-border-hi);
+  }
+  .semester-chip.active {
+    color: var(--accent-text);
+    border-color: var(--accent-border);
+  }
+
+  /* ── Subject sections ── */
+  .subject-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+  .subject-section:last-child { margin-bottom: 0; }
+
+  .subject-label {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .subject-label__name {
+    font-family: var(--font-heading);
     font-style: italic;
-    color: #fff;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    line-height: 1.05;
-    letter-spacing: -.01em;
-    text-shadow: 0 2px 24px rgba(0,0,0,.8), 0 0 40px rgba(76,29,149,.35);
-    margin: 0 0 .75rem;
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
   }
-  .page-sub {
-    font-family: Georgia, serif;
-    font-size: .72rem;
-    color: rgba(255,255,255,.45);
-    line-height: 1.6;
-    margin: 0 0 2.5rem;
-    max-width: 480px;
+
+  .subject-label__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
   }
-  .coming-soon {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .5rem;
-    color: rgba(168,85,247,.4);
-    letter-spacing: .2em;
-    border: 1px solid rgba(168,85,247,.15);
-    border-radius: .4rem;
-    padding: .6rem 1rem;
-    display: inline-block;
+
+  .code-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* ── Empty state ── */
+  .filter-empty {
+    text-align: center;
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+  }
+  .filter-empty__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    margin: 0;
   }
 </style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.semester-chip');
+  const wraps = document.querySelectorAll<HTMLElement>('[data-course-wrap]');
+  const sections = document.querySelectorAll<HTMLElement>('[data-subject-section]');
+  const filterEmpty = document.getElementById('filter-empty')!;
+
+  function getActiveSemesters(): Set<string> {
+    const active = new Set<string>();
+    chips.forEach(c => { if (c.classList.contains('active')) active.add(c.dataset.semester!); });
+    return active;
+  }
+
+  function applyFilter() {
+    const active = getActiveSemesters();
+    const showAll = active.size === 0;
+    let totalVisible = 0;
+
+    wraps.forEach(w => {
+      const sems = (w.dataset.semesters ?? '').split(',');
+      const match = showAll || sems.some(s => active.has(s));
+      w.style.display = match ? '' : 'none';
+      if (match) totalVisible++;
+    });
+
+    sections.forEach(sec => {
+      const tiles = sec.querySelectorAll<HTMLElement>('[data-course-wrap]');
+      let visible = 0;
+      tiles.forEach(t => { if (t.style.display !== 'none') visible++; });
+      sec.style.display = visible === 0 ? 'none' : '';
+    });
+
+    filterEmpty.style.display = totalVisible === 0 ? '' : 'none';
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
+      applyFilter();
+    });
+  });
+
+  // Tile clicks navigate to detail page
+  document.getElementById('subject-list')!.addEventListener('click', (e) => {
+    const tile = (e.target as HTMLElement).closest('[data-course-tile]') as HTMLElement | null;
+    if (!tile) return;
+    const code = tile.dataset.courseTile!;
+    window.location.href = `/courses/${code.toLowerCase().replace(' ', '-')}`;
+  });
+  document.getElementById('subject-list')!.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const tile = (e.target as HTMLElement).closest('[data-course-tile]') as HTMLElement | null;
+    if (!tile) return;
+    e.preventDefault();
+    window.location.href = `/courses/${tile.dataset.courseTile!.toLowerCase().replace(' ', '-')}`;
+  });
+</script>

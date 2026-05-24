@@ -1,0 +1,2102 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import CoursesSubnav from "../../components/CoursesSubnav.astro";
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const;
+const START_HOUR = 7;
+const END_HOUR = 21;
+const SLOTS = (END_HOUR - START_HOUR) * 2;
+
+function timeLabel(slot: number) {
+  const totalMin = START_HOUR * 60 + slot * 30;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  const suffix = h >= 12 ? 'p' : 'a';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return m === 0 ? `${h12}${suffix}` : '';
+}
+function isHourSlot(slot: number) { return slot % 2 === 0; }
+---
+
+<Layout title="Scheduler — Courses" wide>
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: "scheduler" },
+  ]} />
+
+  <CoursesSubnav active="scheduler" />
+
+  <!-- ── Top bar ── -->
+  <div class="sched-topbar">
+    <div class="topbar__left">
+      <div class="topbar__picker" id="schedule-picker">
+        <button class="topbar__active-schedule surface-glass" id="schedule-picker-btn" aria-haspopup="listbox">
+          <span class="topbar__sched-name" id="active-sched-name">Ideal</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="topbar__dropdown surface-glass surface-glass--strong" id="schedule-dropdown">
+          <div class="dropdown__list" id="dropdown-list"></div>
+          <button class="dropdown__new" id="new-schedule-btn">+ New schedule</button>
+          <a class="dropdown__compare" href="/courses/compare">Compare schedules</a>
+        </div>
+      </div>
+      <span class="topbar__name" contenteditable="true" spellcheck="false" id="sched-name">Fall 2026</span>
+      <select class="topbar__semester surface-glass" aria-label="Semester" id="semester-select">
+        <option>Fall 2026</option>
+        <option>Spring 2027</option>
+        <option>Summer 2027</option>
+      </select>
+    </div>
+    <div class="topbar__right">
+      <span class="topbar__save" id="sched-save-dot" title="Saved">
+        <span class="save-dot"></span>
+        <span class="save-label">saved</span>
+      </span>
+      <div class="topbar__export" id="export-wrap">
+        <button class="topbar__export-btn surface-glass" id="export-btn" aria-haspopup="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          <span>export</span>
+        </button>
+        <div class="export-menu surface-glass surface-glass--strong" id="export-menu">
+          <button class="export-menu__item" id="export-ics">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>download .ics</span>
+          </button>
+          <button class="export-menu__item" id="export-print">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span>print</span>
+          </button>
+          <button class="export-menu__item" id="export-share">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span>copy share link</span>
+          </button>
+        </div>
+      </div>
+      <button class="topbar__add surface-glass" id="add-course-btn">+ add course</button>
+    </div>
+  </div>
+
+  <!-- Slide-in panel backdrop -->
+  <div class="add-backdrop" id="add-backdrop"></div>
+
+  <!-- Slide-in panel -->
+  <aside class="add-panel surface-glass surface-glass--strong" id="add-panel">
+    <div class="add-panel__header">
+      <h3 class="add-panel__title">add a course</h3>
+      <button class="add-panel__close" id="add-panel-close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="add-panel__section" id="add-saved-section">
+      <h4 class="add-panel__label">saved</h4>
+      <div class="add-panel__list" id="add-saved-list">
+        <p class="add-panel__empty">no starred courses. <a href="/courses" class="add-panel__link">browse courses</a></p>
+      </div>
+    </div>
+
+    <div class="add-panel__section">
+      <h4 class="add-panel__label">all courses</h4>
+      <input class="add-panel__search" id="add-search" type="text" placeholder="search courses..." autocomplete="off" spellcheck="false" aria-label="Search courses to add" />
+      <div class="add-panel__list" id="add-browse-list"></div>
+    </div>
+  </aside>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ── Onboarding hint ── -->
+  <div class="onboarding-hint surface-glass" id="onboarding-hint" style="display:none">
+    <p class="onboarding-hint__text">
+      star courses while browsing, then add them here.
+    </p>
+    <button class="onboarding-hint__dismiss" id="onboarding-dismiss" aria-label="Dismiss">&times;</button>
+  </div>
+
+  <!-- ── Main layout ── -->
+  <div class="sched-layout">
+
+    <!-- Mobile day view (hidden on desktop) -->
+    <div class="mobile-day-view" id="mobile-day-view">
+      <div class="day-pills" id="day-pills" role="tablist" aria-label="Day selector">
+        <button class="day-pill active" data-day="Mon" role="tab" aria-selected="true" aria-label="Monday" tabindex="0">M</button>
+        <button class="day-pill" data-day="Tue" role="tab" aria-selected="false" aria-label="Tuesday" tabindex="-1">T</button>
+        <button class="day-pill" data-day="Wed" role="tab" aria-selected="false" aria-label="Wednesday" tabindex="-1">W</button>
+        <button class="day-pill" data-day="Thu" role="tab" aria-selected="false" aria-label="Thursday" tabindex="-1">R</button>
+        <button class="day-pill" data-day="Fri" role="tab" aria-selected="false" aria-label="Friday" tabindex="-1">F</button>
+      </div>
+      <div class="day-timeline" id="day-timeline" role="tabpanel" aria-label="Classes for selected day"></div>
+      <div class="day-empty" id="day-empty" style="display:none">
+        <p>no classes this day.</p>
+      </div>
+    </div>
+
+    <!-- Weekly grid -->
+    <div class="sched-grid-wrap">
+      <div class="sched-grid" style={`--rows: ${SLOTS}; --cols: ${DAYS.length}`}>
+        <!-- Day headers -->
+        <div class="grid-corner"></div>
+        {DAYS.map(d => (
+          <div class="grid-day-header">{d}</div>
+        ))}
+
+        <!-- Time rows + cells -->
+        {Array.from({ length: SLOTS }).map((_, slot) => (
+          <Fragment>
+            <div class:list={['grid-time', { 'grid-time--labeled': timeLabel(slot), 'grid-time--hour': isHourSlot(slot) }]}>
+              {timeLabel(slot) && <span>{timeLabel(slot)}</span>}
+            </div>
+            {DAYS.map(day => (
+              <div class:list={['grid-cell', { 'grid-cell--hour': isHourSlot(slot) }]} data-day={day} data-slot={slot}></div>
+            ))}
+          </Fragment>
+        ))}
+      </div>
+      <div class="block-overlay" id="block-overlay"></div>
+    </div>
+
+    <!-- Right panel -->
+    <aside class="sched-panel">
+      <!-- Skeleton (visible until JS hydrates) -->
+      <div class="skel-wrap panel-bubble surface-glass" id="panel-skel">
+        <div class="panel-section">
+          <h3 class="panel-label">courses</h3>
+          <div class="panel-courses" style="margin-top: var(--space-4)">
+            {Array.from({ length: 3 }).map(() => (
+              <div class="panel-skel-row">
+                <div class="skel" style="width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                  <div class="skel skel-line" style="width:60px;height:0.5rem"></div>
+                  <div class="skel skel-line skel-line--med" style="height:0.6rem"></div>
+                </div>
+                <div class="skel skel-line" style="width:24px;height:0.5rem"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="panel-summary">
+          <div class="skel skel-line" style="width:50px;height:1.2rem;margin-bottom:var(--space-3)"></div>
+          <div class="skel skel-line" style="width:100%;height:0.6rem"></div>
+        </div>
+      </div>
+
+      <!-- Real content (hidden until JS hydrates) -->
+      <div class="panel-bubble surface-glass" id="panel-live" style="display:none">
+        <div class="panel-section">
+          <h3 class="panel-label">courses</h3>
+          <div class="panel-courses" id="panel-courses"></div>
+
+          <!-- Empty schedule state -->
+          <div class="panel-empty" id="panel-empty" style="display:none">
+            <p class="panel-empty__text">nothing scheduled yet.</p>
+          </div>
+        </div>
+
+        <div class="panel-summary" id="panel-summary">
+          <div class="summary-hero" id="summary-hero"></div>
+          <div class="summary-meta" id="summary-meta"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</Layout>
+
+<style>
+  /* ── Top bar ── */
+  .sched-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .topbar__left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  /* ── Schedule picker dropdown ── */
+  .topbar__picker {
+    position: relative;
+  }
+
+  .topbar__active-schedule {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease);
+    white-space: nowrap;
+  }
+  .topbar__active-schedule:hover,
+  .topbar__active-schedule[aria-expanded="true"] {
+    border-color: var(--glass-border-hi);
+  }
+  .topbar__active-schedule svg {
+    color: var(--color-text-muted);
+    transition: transform var(--duration-fast) var(--ease);
+  }
+  .topbar__active-schedule[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  .topbar__dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    left: 0;
+    min-width: 220px;
+    border-radius: var(--radius-lg);
+    padding: var(--space-2);
+    display: none;
+    flex-direction: column;
+    gap: var(--space-1);
+    z-index: var(--z-overlay);
+    box-shadow: var(--glass-shadow);
+  }
+  .topbar__dropdown.open {
+    display: flex;
+  }
+
+  .dropdown__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  :global(.dropdown__item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease);
+  }
+  :global(.dropdown__item):hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  :global(.dropdown__item.active) {
+    background: var(--accent-subtle);
+  }
+
+  :global(.dropdown__item-name) {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.dropdown__item-meta) {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+  }
+
+  :global(.dropdown__item-delete) {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    padding: 0 var(--space-1);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
+    flex-shrink: 0;
+  }
+  :global(.dropdown__item):hover :global(.dropdown__item-delete) {
+    opacity: 1;
+  }
+  :global(.dropdown__item-delete):hover {
+    color: #f87171;
+  }
+
+  .dropdown__new,
+  .dropdown__compare {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease);
+    text-align: left;
+    background: none;
+    border: none;
+    text-decoration: none;
+    display: block;
+  }
+  .dropdown__new {
+    color: var(--accent-text);
+    border-top: 1px solid var(--glass-border);
+    margin-top: var(--space-1);
+    padding-top: var(--space-3);
+  }
+  .dropdown__compare {
+    color: var(--color-text-muted);
+  }
+  .dropdown__new:hover,
+  .dropdown__compare:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .topbar__name {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    outline: none;
+    border-bottom: 1px dashed transparent;
+    padding: var(--space-1) 0;
+    cursor: text;
+    transition: border-color var(--duration-fast) var(--ease);
+    display: none;
+  }
+
+  .topbar__semester {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    outline: none;
+  }
+  .topbar__semester option {
+    background: var(--color-bg-raised);
+    color: var(--color-text-secondary);
+  }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .topbar__save {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .save-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: #34d399;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+  }
+
+  .save-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* ── Onboarding hint ── */
+  .onboarding-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-6);
+    border-color: var(--accent-border);
+  }
+
+  .onboarding-hint__text {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+  .onboarding-hint__text em {
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: var(--accent-light);
+  }
+
+  .onboarding-hint__dismiss {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    padding: var(--space-1);
+    flex-shrink: 0;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .onboarding-hint__dismiss:hover {
+    color: var(--color-text-primary);
+  }
+
+  /* ── Empty schedule state ── */
+  .panel-empty {
+    margin-top: var(--space-4);
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .panel-empty__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-2);
+  }
+
+  .panel-empty__hint {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    line-height: var(--leading-normal);
+    margin: 0;
+  }
+
+  /* ── Panel skeleton ── */
+  .skel-wrap {
+    transition: opacity var(--duration-normal) var(--ease);
+  }
+  .skel-wrap.hidden {
+    display: none;
+  }
+
+  .panel-skel-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .panel-skel-row:last-child {
+    border-bottom: none;
+  }
+
+  /* ── Main layout ── */
+  .sched-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    grid-template-rows: auto;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  /* ── Weekly grid ── */
+  .sched-grid-wrap {
+    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+  }
+
+  .block-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+  .block-overlay :global(.sched-block) {
+    pointer-events: auto;
+  }
+
+  .sched-grid {
+    display: grid;
+    grid-template-columns: 40px repeat(var(--cols), 1fr);
+    grid-template-rows: 32px repeat(var(--rows), 20px);
+    position: relative;
+    min-width: 500px;
+  }
+
+  .grid-corner {
+    grid-column: 1;
+    grid-row: 1;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid var(--color-border-subtle);
+  }
+
+  .grid-day-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .grid-day-header:last-of-type {
+    border-right: none;
+  }
+
+  .grid-time {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-right: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    border-right: 1px solid var(--color-border-subtle);
+    position: relative;
+  }
+  .grid-time > span {
+    transform: translateY(-0.35em);
+  }
+  .grid-time--hour {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .grid-cell {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .grid-cell--hour {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  /* ── Course blocks (dynamically created — :global needed) ── */
+  :global(.sched-block) {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 0;
+    border: 1px solid;
+    padding: 2px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1px;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 2;
+    transition: box-shadow var(--duration-fast) var(--ease);
+  }
+  :global(.sched-block):hover {
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.15);
+  }
+
+  :global(.sched-block__code) {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--block-text);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  :global(.sched-block__room) {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  /* ── Block popover (dynamically created) ── */
+  :global(.block-popover) {
+    position: fixed;
+    z-index: var(--z-overlay);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  :global(.block-popover__code) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  :global(.block-popover__title) {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  :global(.block-popover__meta) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-normal);
+  }
+
+  :global(.block-popover__remove) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-1) 0;
+    text-align: left;
+    margin-top: var(--space-1);
+    transition: color var(--duration-fast) var(--ease);
+  }
+  :global(.block-popover__remove):hover {
+    color: #f87171;
+  }
+
+  /* ── Right panel ── */
+  .sched-panel {
+    position: sticky;
+    top: 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  .panel-bubble {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .panel-courses {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  :global(.panel-course) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    cursor: pointer;
+    border-bottom: 1px solid var(--glass-border);
+    transition: background var(--duration-fast) var(--ease);
+  }
+  :global(.panel-course):last-child {
+    border-bottom: none;
+  }
+  :global(.panel-course):hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  :global(.panel-course__dot) {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+  }
+
+  :global(.panel-course__info) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  :global(.panel-course__code) {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  :global(.panel-course__title) {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xs);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.panel-course__credits) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+  }
+
+  /* ── Summary footer ── */
+  .panel-summary {
+    border-top: 1px solid var(--glass-border);
+    padding-top: var(--space-4);
+    margin-top: var(--space-3);
+    transition: opacity var(--duration-normal) var(--ease);
+  }
+  .panel-summary.hidden {
+    display: none;
+  }
+
+  .summary-hero {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .summary-meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    line-height: var(--leading-normal);
+  }
+
+  /* ── Export menu ── */
+  .topbar__export {
+    position: relative;
+  }
+
+  .topbar__export-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+      color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease);
+  }
+  .topbar__export-btn:hover,
+  .topbar__export-btn[aria-expanded="true"] {
+    color: var(--color-text-secondary);
+    border-color: var(--glass-border-hi);
+  }
+
+  .export-menu {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    min-width: 180px;
+    border-radius: var(--radius-lg);
+    padding: var(--space-2);
+    display: none;
+    flex-direction: column;
+    gap: var(--space-1);
+    z-index: var(--z-overlay);
+    box-shadow: var(--glass-shadow);
+  }
+  .export-menu.open {
+    display: flex;
+  }
+
+  .export-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--tracking-wider);
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    transition: background var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
+  }
+  .export-menu__item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-text-primary);
+  }
+  .export-menu__item svg {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+  }
+  .export-menu__item:hover svg {
+    color: var(--accent-text);
+  }
+
+  /* ── Add course button ── */
+  .topbar__add {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: #fff;
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    transition: background var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
+  }
+  .topbar__add:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent-border-hover);
+  }
+
+  /* ── Add panel slide-in ── */
+  .add-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    background: rgba(2, 2, 10, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease);
+  }
+  .add-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  .add-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 360px;
+    max-width: 90vw;
+    z-index: calc(var(--z-overlay) + 1);
+    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    border-right: none;
+    padding: var(--space-6);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    transform: translateX(100%);
+    transition: transform 0.25s var(--ease-out);
+  }
+  .add-panel.open {
+    transform: translateX(0);
+  }
+
+  .add-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .add-panel__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .add-panel__close {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-xl);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .add-panel__close:hover { color: var(--color-text-primary); }
+
+  .add-panel__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .add-panel__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .add-panel__empty {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin: 0;
+    padding: var(--space-2) 0;
+    line-height: var(--leading-normal);
+  }
+
+  .add-panel__link {
+    color: var(--accent-text);
+    text-decoration: none;
+    font-style: normal;
+  }
+  .add-panel__link:hover {
+    text-decoration: underline;
+  }
+
+  :global(.add-panel__no-results) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin: 0;
+    padding: var(--space-4) 0;
+    text-align: center;
+  }
+
+  .add-panel__search {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-primary);
+    caret-color: var(--accent-text);
+    outline: none;
+    transition: border-color var(--duration-fast) var(--ease);
+  }
+  .add-panel__search::placeholder { color: var(--color-text-muted); }
+  .add-panel__search:focus { border-color: var(--glass-border-hi); }
+
+  .add-panel__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  :global(.add-item) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease);
+  }
+  :global(.add-item):hover { border-color: var(--glass-border-hi); }
+  :global(.add-item.in-schedule) { opacity: 0.45; pointer-events: none; }
+
+  :global(.add-item__code) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+    min-width: 72px;
+  }
+
+  :global(.add-item__title) {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xs);
+    color: var(--color-text-primary);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.add-item__chevron) {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    transition: transform var(--duration-fast) var(--ease);
+  }
+  :global(.add-item.expanded) :global(.add-item__chevron) { transform: rotate(180deg); }
+
+  :global(.add-sections) {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-left: var(--space-4);
+  }
+  :global(.add-sections.open) { display: flex; }
+
+  :global(.add-section-row) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--tracking-wider);
+    transition: border-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
+  }
+  :global(.add-section-row):hover {
+    border-color: var(--accent-border);
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Conflict highlight ── */
+  :global(.sched-block.conflict) {
+    outline: 2px solid rgba(251, 191, 36, 0.5);
+    outline-offset: -1px;
+    position: relative;
+  }
+  :global(.sched-block.conflict)::after {
+    content: '⚠ conflict';
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.45rem;
+    letter-spacing: var(--tracking-wide);
+    color: #fbbf24;
+    line-height: 1;
+  }
+
+  /* ── Toast ── */
+  .toast-container {
+    position: fixed;
+    bottom: var(--space-6);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-modal);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    pointer-events: none;
+  }
+
+  :global(.toast) {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--tracking-wide);
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    box-shadow: var(--glass-shadow);
+    animation: toastIn 0.25s var(--ease-out);
+    white-space: nowrap;
+  }
+  :global(.toast.leaving) {
+    animation: toastOut 0.2s var(--ease) forwards;
+  }
+
+  :global(.toast__undo) {
+    color: var(--accent-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    padding: 0;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  :global(.toast__undo):hover { color: var(--accent-light); }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(12px); }
+  }
+
+  /* ── Mobile day view (hidden on desktop) ── */
+  .mobile-day-view {
+    display: none;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .day-pills {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+    margin-bottom: var(--space-5);
+  }
+
+  .day-pill {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wider);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition:
+      background var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      color var(--duration-fast) var(--ease);
+  }
+  .day-pill:hover {
+    border-color: var(--glass-border-hi);
+    color: var(--color-text-secondary);
+  }
+  .day-pill.active {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent-text);
+  }
+  .day-pill.has-class::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--accent-dim);
+  }
+  .day-pill.active.has-class::after {
+    background: var(--accent-text);
+  }
+
+  .day-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  :global(.day-block) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    cursor: pointer;
+    transition: box-shadow var(--duration-fast) var(--ease);
+  }
+  :global(.day-block):hover {
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.12);
+  }
+
+  :global(.day-block__time) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+  }
+
+  :global(.day-block__body) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  :global(.day-block__code) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--block-text);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  :global(.day-block__title) {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+  }
+
+  :global(.day-block__meta) {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-1);
+  }
+
+  .day-empty {
+    text-align: center;
+    padding: var(--space-10) var(--space-4);
+  }
+  .day-empty p {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sched-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .sched-panel {
+      position: static;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+  }
+
+  @media (max-width: 767px) {
+    /* Show mobile day view, hide desktop grid */
+    .mobile-day-view {
+      display: block;
+      min-width: 0;
+    }
+    .sched-grid-wrap {
+      display: none;
+    }
+
+    /* Grid children must not overflow their track */
+    .sched-layout {
+      overflow: hidden;
+    }
+    .sched-layout > * {
+      min-width: 0;
+    }
+
+    /* Top bar compacts */
+    .sched-topbar {
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+    }
+    .topbar__active-schedule {
+      font-size: var(--text-base);
+    }
+    .topbar__semester {
+      display: none;
+    }
+    .save-label {
+      display: none;
+    }
+
+    /* Hide course list — day view already shows what's scheduled */
+    #panel-live > .panel-section {
+      display: none;
+    }
+    #panel-skel > .panel-section {
+      display: none;
+    }
+
+    /* Day blocks constrain text */
+    .day-block {
+      overflow: hidden;
+    }
+    .day-block__title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .day-block__meta {
+      flex-wrap: wrap;
+    }
+
+    /* Add panel becomes bottom sheet */
+    .add-panel {
+      top: auto;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      border-right: 1px solid var(--glass-border);
+      transform: translateY(100%);
+    }
+    .add-panel.open {
+      transform: translateY(0);
+    }
+
+    /* Popover positions better on mobile */
+    .block-popover {
+      left: var(--space-4) !important;
+      right: var(--space-4);
+      width: auto;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  import * as plan from "../../scripts/coursePlan";
+  import * as p from "../../scripts/persist";
+  import { catalog, DAYS, START_HOUR, subjectColors, courseColor, toSlot, fmtTime, type Course, type Section } from "../../scripts/courseCatalog";
+  import * as store from "../../scripts/scheduleStore";
+  import type { ResolvedEntry, ScheduleData } from "../../scripts/scheduleStore";
+
+  const grid = document.querySelector('.sched-grid') as HTMLElement;
+  const panelCourses = document.getElementById('panel-courses')!;
+  const panelSummary = document.getElementById('panel-summary')!;
+  const summaryHero = document.getElementById('summary-hero')!;
+  const summaryMeta = document.getElementById('summary-meta')!;
+  const toastContainer = document.getElementById('toast-container')!;
+  const addPanel = document.getElementById('add-panel')!;
+  const addBackdrop = document.getElementById('add-backdrop')!;
+  const addBtn = document.getElementById('add-course-btn')!;
+  const closeBtn = document.getElementById('add-panel-close')!;
+  const addSearch = document.getElementById('add-search') as HTMLInputElement;
+  const savedList = document.getElementById('add-saved-list')!;
+  const browseList = document.getElementById('add-browse-list')!;
+  const pickerBtn = document.getElementById('schedule-picker-btn')!;
+  const dropdown = document.getElementById('schedule-dropdown')!;
+  const dropdownList = document.getElementById('dropdown-list')!;
+  const newSchedBtn = document.getElementById('new-schedule-btn')!;
+  const activeSchedName = document.getElementById('active-sched-name')!;
+  const semesterSelect = document.getElementById('semester-select') as HTMLSelectElement;
+  const panelSkel = document.getElementById('panel-skel')!;
+  const panelLive = document.getElementById('panel-live')!;
+  const panelEmpty = document.getElementById('panel-empty')!;
+  const onboardingHint = document.getElementById('onboarding-hint')!;
+  const onboardingDismiss = document.getElementById('onboarding-dismiss')!;
+
+  let current: ScheduleData = store.getActive();
+  let scheduled: ResolvedEntry[] = store.resolve(current.courses);
+
+  // ── Skeleton → live swap ──
+  panelSkel.classList.add('hidden');
+  panelLive.style.display = '';
+
+  // ── Onboarding hint ──
+  if (!p.get<boolean>('onboarding.scheduler', false)) {
+    onboardingHint.style.display = '';
+  }
+  onboardingDismiss.addEventListener('click', () => {
+    p.set('onboarding.scheduler', true);
+    onboardingHint.style.display = 'none';
+  });
+
+  function persistSchedule() {
+    current.courses = scheduled.map(s => ({ code: s.code, sectionId: s.sectionId }));
+    store.updateSchedule(current);
+  }
+
+  function fmtT(h: number, m: number) { return fmtTime(h, m); }
+
+  // ── Schedule picker ──
+  function renderDropdown() {
+    const all = store.getAllSchedules();
+    dropdownList.innerHTML = '';
+    for (const s of all) {
+      const el = document.createElement('div');
+      el.className = 'dropdown__item' + (s.id === current.id ? ' active' : '');
+      const courseCount = store.resolve(s.courses).length;
+      el.innerHTML = `
+        <span class="dropdown__item-name">${s.name}</span>
+        <span class="dropdown__item-meta">${courseCount} courses</span>
+        ${all.length > 1 ? `<button class="dropdown__item-delete" data-delete-id="${s.id}" title="Delete schedule">&times;</button>` : ''}
+      `;
+      el.addEventListener('click', (ev) => {
+        if ((ev.target as HTMLElement).closest('[data-delete-id]')) return;
+        switchSchedule(s.id);
+        closeDropdown();
+      });
+      dropdownList.appendChild(el);
+    }
+
+    dropdownList.querySelectorAll('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = (btn as HTMLElement).dataset.deleteId!;
+        store.deleteSchedule(id);
+        if (id === current.id) {
+          current = store.getActive();
+          scheduled = store.resolve(current.courses);
+          refreshUI();
+        }
+        renderDropdown();
+      });
+    });
+  }
+
+  function switchSchedule(id: string) {
+    store.setActive(id);
+    current = store.getActive();
+    scheduled = store.resolve(current.courses);
+    refreshUI();
+  }
+
+  function refreshUI() {
+    activeSchedName.textContent = current.name;
+    semesterSelect.value = current.semester;
+    renderBlocks();
+    renderPanel();
+    renderDayTimeline();
+  }
+
+  function openDropdown() {
+    dropdown.classList.add('open');
+    pickerBtn.setAttribute('aria-expanded', 'true');
+    renderDropdown();
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    pickerBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  pickerBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (dropdown.classList.contains('open')) closeDropdown();
+    else openDropdown();
+  });
+
+  newSchedBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const all = store.getAllSchedules();
+    const names = new Set(all.map(s => s.name));
+    let name = `${current.name} copy`;
+    let i = 2;
+    while (names.has(name)) { name = `${current.name} copy ${i++}`; }
+    const dup = store.duplicateSchedule(current.id, name);
+    switchSchedule(dup.id);
+    closeDropdown();
+    showToast(`duplicated as "${name}"`);
+  });
+
+  activeSchedName.addEventListener('dblclick', () => {
+    const input = document.createElement('input');
+    input.className = 'topbar__sched-name';
+    input.value = current.name;
+    input.style.cssText = `
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: var(--text-xl);
+      color: var(--color-text-primary);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--glass-border-hi);
+      outline: none;
+      width: ${Math.max(80, current.name.length * 12)}px;
+      padding: var(--space-1) 0;
+    `;
+
+    const nameSpan = activeSchedName;
+    nameSpan.style.display = 'none';
+    nameSpan.parentElement!.insertBefore(input, nameSpan);
+    input.focus();
+    input.select();
+
+    function commit() {
+      const newName = input.value.trim() || current.name;
+      current.name = newName;
+      persistSchedule();
+      nameSpan.textContent = newName;
+      nameSpan.style.display = '';
+      input.remove();
+    }
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') { ev.preventDefault(); commit(); }
+      if (ev.key === 'Escape') { nameSpan.style.display = ''; input.remove(); }
+    });
+  });
+
+  semesterSelect.addEventListener('change', () => {
+    current.semester = semesterSelect.value;
+    persistSchedule();
+  });
+
+  // ── Render grid blocks ──
+  const GUTTER = 40;
+  const HEADER_H = 32;
+  const SLOT_H = 20;
+
+  const blockOverlay = document.getElementById('block-overlay')!;
+
+  function renderBlocks() {
+    blockOverlay.innerHTML = '';
+    const gridW = grid.offsetWidth;
+    const colW = (gridW - GUTTER) / DAYS.length;
+
+    interface BlockInfo {
+      entry: typeof scheduled[0];
+      day: string;
+      dayIdx: number;
+      startSlot: number;
+      endSlot: number;
+      color: ReturnType<typeof courseColor>;
+      overlapIdx: number;
+      overlapTotal: number;
+    }
+
+    const blocks: BlockInfo[] = [];
+    for (const s of scheduled) {
+      const c = courseColor(s.code);
+      const startSlot = toSlot(s.section.startH, s.section.startM);
+      const endSlot = toSlot(s.section.endH, s.section.endM);
+      for (const day of s.section.days) {
+        blocks.push({ entry: s, day, dayIdx: DAYS.indexOf(day as any), startSlot, endSlot, color: c, overlapIdx: 0, overlapTotal: 1 });
+      }
+    }
+
+    // Detect overlaps per day
+    for (let d = 0; d < DAYS.length; d++) {
+      const dayBlocks = blocks.filter(b => b.dayIdx === d).sort((a, b) => a.startSlot - b.startSlot);
+      for (let i = 0; i < dayBlocks.length; i++) {
+        const group = [dayBlocks[i]];
+        let groupEnd = dayBlocks[i].endSlot;
+        for (let j = i + 1; j < dayBlocks.length; j++) {
+          if (dayBlocks[j].startSlot < groupEnd) {
+            group.push(dayBlocks[j]);
+            groupEnd = Math.max(groupEnd, dayBlocks[j].endSlot);
+          }
+        }
+        if (group.length > 1) {
+          for (let k = 0; k < group.length; k++) {
+            group[k].overlapIdx = k;
+            group[k].overlapTotal = group.length;
+          }
+        }
+      }
+    }
+
+    for (const b of blocks) {
+      const s = b.entry;
+      const x = GUTTER + b.dayIdx * colW + (b.overlapIdx * colW / b.overlapTotal);
+      const w = colW / b.overlapTotal;
+      const y = HEADER_H + b.startSlot * SLOT_H;
+      const h = (b.endSlot - b.startSlot) * SLOT_H;
+
+      const el = document.createElement('div');
+      el.className = 'sched-block';
+      el.dataset.blockCode = s.code;
+      el.dataset.blockSection = s.sectionId;
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', `${s.code} — ${s.course.title}, ${b.day} ${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}`);
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.width = `${w}px`;
+      el.style.height = `${h}px`;
+      el.style.background = b.color.bg;
+      el.style.borderColor = b.color.border;
+      el.style.setProperty('--block-text', b.color.text);
+      el.innerHTML = `<span class="sched-block__code">${s.code}</span><span class="sched-block__room">${s.section.room}</span>`;
+      blockOverlay.appendChild(el);
+    }
+    detectConflicts();
+  }
+
+  // ── Render right-panel course list + summary ──
+  function renderPanel() {
+    panelCourses.innerHTML = '';
+    const empty = scheduled.length === 0;
+    panelEmpty.style.display = empty ? '' : 'none';
+    panelSummary.classList.toggle('hidden', empty);
+
+    for (const s of scheduled) {
+      const c = courseColor(s.code);
+      const el = document.createElement('div');
+      el.className = 'panel-course';
+      el.dataset.panelCode = s.code;
+      el.innerHTML = `
+        <span class="panel-course__dot" style="background:${c.text};box-shadow:0 0 6px ${c.border}"></span>
+        <div class="panel-course__info">
+          <span class="panel-course__code">${s.code}</span>
+          <span class="panel-course__title">${s.course.title}</span>
+        </div>
+        <span class="panel-course__credits">${s.course.credits} cr</span>
+      `;
+      panelCourses.appendChild(el);
+    }
+
+    if (empty) return;
+
+    const stats = store.computeStats(scheduled);
+    const earlyStr = fmtT(Math.floor(stats.earliestMin / 60), stats.earliestMin % 60);
+    const lateStr = fmtT(Math.floor(stats.latestMin / 60), stats.latestMin % 60);
+
+    summaryHero.textContent = `${stats.credits} credits`;
+
+    const parts: string[] = [];
+    parts.push(`${stats.contactHours}h/wk`);
+    parts.push(`${earlyStr}–${lateStr}`);
+    if (stats.daysOff.length) parts.push(`${stats.daysOff.join(', ')} off`);
+    summaryMeta.textContent = parts.join(' · ');
+  }
+
+  // ── Conflict detection ──
+  function detectConflicts() {
+    blockOverlay.querySelectorAll('.sched-block').forEach(b => b.classList.remove('conflict'));
+    for (let i = 0; i < scheduled.length; i++) {
+      for (let j = i + 1; j < scheduled.length; j++) {
+        const a = scheduled[i].section, b = scheduled[j].section;
+        const aStart = a.startH * 60 + a.startM, aEnd = a.endH * 60 + a.endM;
+        const bStart = b.startH * 60 + b.startM, bEnd = b.endH * 60 + b.endM;
+        if (aStart >= bEnd || bStart >= aEnd) continue;
+        const sharedDays = a.days.filter(d => b.days.includes(d));
+        if (sharedDays.length === 0) continue;
+        for (const d of sharedDays) {
+          blockOverlay.querySelectorAll(`.sched-block[data-block-code="${scheduled[i].code}"]`).forEach(el => {
+            const col = DAYS.indexOf(d as any) + 2;
+            if ((el as HTMLElement).style.gridColumn.startsWith(String(col))) el.classList.add('conflict');
+          });
+          blockOverlay.querySelectorAll(`.sched-block[data-block-code="${scheduled[j].code}"]`).forEach(el => {
+            const col = DAYS.indexOf(d as any) + 2;
+            if ((el as HTMLElement).style.gridColumn.startsWith(String(col))) el.classList.add('conflict');
+          });
+        }
+      }
+    }
+  }
+
+  // ── Toast system ──
+  function showToast(msg: string, undoFn?: () => void, duration = 5000) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<span>${msg}</span>`;
+    if (undoFn) {
+      const btn = document.createElement('button');
+      btn.className = 'toast__undo';
+      btn.textContent = 'undo';
+      btn.addEventListener('click', () => { undoFn(); dismissToast(el); });
+      el.appendChild(btn);
+    }
+    toastContainer.appendChild(el);
+    const timer = setTimeout(() => dismissToast(el), duration);
+    (el as any)._timer = timer;
+  }
+
+  function dismissToast(el: HTMLElement) {
+    clearTimeout((el as any)._timer);
+    el.classList.add('leaving');
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  // ── Add course to schedule ──
+  function addToSchedule(course: Course, section: Section) {
+    const existing = scheduled.find(s => s.code === course.code);
+    if (existing) return;
+
+    const entry: ResolvedEntry = { code: course.code, sectionId: section.id, course, section };
+    scheduled.push(entry);
+    persistSchedule();
+
+    const conflicts = findConflicts(entry);
+    renderBlocks();
+    renderPanel();
+
+    if (conflicts.length) {
+      showToast(
+        `overlaps with ${conflicts[0].code} — added anyway`,
+        () => { removeEntry(entry); }
+      );
+    }
+
+    renderAddPanel();
+  }
+
+  function findConflicts(entry: ResolvedEntry): ResolvedEntry[] {
+    const results: ResolvedEntry[] = [];
+    const a = entry.section;
+    const aStart = a.startH * 60 + a.startM, aEnd = a.endH * 60 + a.endM;
+    for (const s of scheduled) {
+      if (s === entry) continue;
+      const b = s.section;
+      const bStart = b.startH * 60 + b.startM, bEnd = b.endH * 60 + b.endM;
+      if (aStart >= bEnd || bStart >= aEnd) continue;
+      if (a.days.some(d => b.days.includes(d))) results.push(s);
+    }
+    return results;
+  }
+
+  // ── Remove course ──
+  function removeEntry(entry: ResolvedEntry) {
+    const idx = scheduled.indexOf(entry);
+    if (idx === -1) return;
+    scheduled.splice(idx, 1);
+    persistSchedule();
+    renderBlocks();
+    renderPanel();
+    renderAddPanel();
+  }
+
+  function removeCourse(code: string) {
+    const entry = scheduled.find(s => s.code === code);
+    if (!entry) return;
+    const snapshot = { ...entry };
+    removeEntry(entry);
+    showToast(
+      `removed ${code}`,
+      () => { scheduled.push(snapshot); persistSchedule(); renderBlocks(); renderPanel(); renderAddPanel(); }
+    );
+  }
+
+  // ── Block keyboard handling (Enter = open, Delete/Backspace = remove) ──
+  blockOverlay.addEventListener('keydown', (e) => {
+    const block = (e.target as HTMLElement).closest('.sched-block') as HTMLElement | null;
+    if (!block) return;
+    const code = block.dataset.blockCode!;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      block.click();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      removeCourse(code);
+    }
+  });
+
+  // ── Block popover ──
+  let popover: HTMLElement | null = null;
+  function closePopover() { if (popover) { popover.remove(); popover = null; } }
+
+  document.addEventListener('click', (e) => {
+    const block = (e.target as HTMLElement).closest('.sched-block') as HTMLElement | null;
+    const inPanel = (e.target as HTMLElement).closest('.add-panel');
+    const inDropdown = (e.target as HTMLElement).closest('.topbar__picker');
+    if (inPanel) return;
+
+    if (!inDropdown) closeDropdown();
+
+    if (!block) { closePopover(); return; }
+
+    const code = block.dataset.blockCode!;
+    const entry = scheduled.find(s => s.code === code);
+    if (!entry) return;
+
+    closePopover();
+
+    const rect = block.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'block-popover surface-glass surface-glass--strong';
+    const sec = entry.section;
+    el.innerHTML = `
+      <span class="block-popover__code">${entry.code} · ${entry.course.credits} cr</span>
+      <span class="block-popover__title">${entry.course.title}</span>
+      <span class="block-popover__meta">${sec.professor} · ${sec.days.join('/')} ${fmtT(sec.startH, sec.startM)}–${fmtT(sec.endH, sec.endM)}<br>${sec.room}</span>
+      <button class="block-popover__remove" data-remove-code="${code}">remove</button>
+    `;
+
+    const left = Math.min(rect.right + 8, window.innerWidth - 240);
+    const top = Math.max(rect.top, 8);
+    el.style.left = `${left}px`;
+    el.style.top = `${top}px`;
+    document.body.appendChild(el);
+    popover = el;
+    el.addEventListener('click', (ev) => {
+      const rmBtn = (ev.target as HTMLElement).closest('[data-remove-code]') as HTMLElement | null;
+      if (rmBtn) { removeCourse(rmBtn.dataset.removeCode!); closePopover(); }
+      ev.stopPropagation();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePopover();
+      closeDropdown();
+      closeExportMenu();
+      if (addPanel.classList.contains('open')) closeAddPanel();
+    }
+  });
+
+  // ── Add panel ──
+  function openAddPanel() {
+    addPanel.classList.add('open');
+    addBackdrop.classList.add('open');
+    renderAddPanel();
+    addSearch.value = '';
+    addSearch.focus();
+  }
+
+  function closeAddPanel() {
+    addPanel.classList.remove('open');
+    addBackdrop.classList.remove('open');
+  }
+
+  addBtn.addEventListener('click', openAddPanel);
+  closeBtn.addEventListener('click', closeAddPanel);
+  addBackdrop.addEventListener('click', closeAddPanel);
+
+  function renderAddPanel() {
+    const starred = plan.all();
+    if (starred.length) {
+      savedList.innerHTML = '';
+      for (const code of starred) {
+        const c = catalog.find(x => x.code === code);
+        if (!c) continue;
+        renderCourseItem(savedList, c);
+      }
+    } else {
+      savedList.innerHTML = '<p class="add-panel__empty">no starred courses. <a href="/courses" class="add-panel__link">browse courses</a></p>';
+    }
+
+    const q = (addSearch?.value ?? '').toLowerCase().trim();
+    browseList.innerHTML = '';
+    const filtered = q
+      ? catalog.filter(c => c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q))
+      : catalog;
+    if (q && filtered.length === 0) {
+      browseList.innerHTML = '<p class="add-panel__no-results">no courses match that search.</p>';
+    } else {
+      for (const c of filtered) {
+        renderCourseItem(browseList, c);
+      }
+    }
+  }
+
+  function renderCourseItem(container: HTMLElement, c: Course) {
+    const inSched = scheduled.some(s => s.code === c.code);
+    const wrapper = document.createElement('div');
+
+    const item = document.createElement('div');
+    item.className = 'add-item' + (inSched ? ' in-schedule' : '');
+    item.innerHTML = `
+      <span class="add-item__code">${c.code}</span>
+      <span class="add-item__title">${c.title}</span>
+      <svg class="add-item__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    `;
+
+    const sections = document.createElement('div');
+    sections.className = 'add-sections';
+    for (const sec of c.sections) {
+      const row = document.createElement('div');
+      row.className = 'add-section-row';
+      row.textContent = `${sec.id} · ${sec.professor} · ${sec.days.join('/')} ${fmtT(sec.startH, sec.startM)}–${fmtT(sec.endH, sec.endM)} · ${sec.seats}/${sec.cap}`;
+      row.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        addToSchedule(c, sec);
+        closeAddPanel();
+      });
+      sections.appendChild(row);
+    }
+
+    if (!inSched) {
+      item.addEventListener('click', () => {
+        item.classList.toggle('expanded');
+        sections.classList.toggle('open');
+      });
+    }
+
+    wrapper.appendChild(item);
+    wrapper.appendChild(sections);
+    container.appendChild(wrapper);
+  }
+
+  addSearch?.addEventListener('input', renderAddPanel);
+
+  // ── Export menu ──
+  const exportBtn = document.getElementById('export-btn')!;
+  const exportMenu = document.getElementById('export-menu')!;
+  const exportIcs = document.getElementById('export-ics')!;
+  const exportPrint = document.getElementById('export-print')!;
+  const exportShare = document.getElementById('export-share')!;
+
+  function openExportMenu() {
+    exportMenu.classList.add('open');
+    exportBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeExportMenu() {
+    exportMenu.classList.remove('open');
+    exportBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  exportBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (exportMenu.classList.contains('open')) closeExportMenu();
+    else openExportMenu();
+  });
+
+  exportIcs.addEventListener('click', () => {
+    closeExportMenu();
+    showToast('calendar export is coming soon');
+  });
+
+  exportPrint.addEventListener('click', () => {
+    closeExportMenu();
+    showToast('print view is coming soon');
+  });
+
+  exportShare.addEventListener('click', async () => {
+    closeExportMenu();
+    if (scheduled.length === 0) {
+      showToast('add courses before sharing');
+      return;
+    }
+    const encoded = scheduled
+      .map(s => `${s.code.replace(' ', '')}:${s.sectionId}`)
+      .join(',');
+    const url = `${location.origin}/courses/schedule?s=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('share link copied');
+    } catch {
+      showToast('could not copy — check browser permissions');
+    }
+  });
+
+  // Close export menu on outside clicks
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('#export-wrap')) closeExportMenu();
+  });
+
+  // ── Mobile day view ──
+  const dayPills = document.getElementById('day-pills')!;
+  const dayTimeline = document.getElementById('day-timeline')!;
+  const dayEmpty = document.getElementById('day-empty')!;
+  const dayMap: Record<string, string> = { Mon: 'M', Tue: 'T', Wed: 'W', Thu: 'R', Fri: 'F' };
+
+  let mobileDay = (() => {
+    const d = new Date().getDay();
+    return DAYS[Math.max(0, Math.min(d - 1, 4))];
+  })();
+
+  function selectDayPill(pill: HTMLElement) {
+    mobileDay = pill.dataset.day!;
+    dayPills.querySelectorAll('.day-pill').forEach(p => {
+      p.classList.remove('active');
+      p.setAttribute('aria-selected', 'false');
+      p.setAttribute('tabindex', '-1');
+    });
+    pill.classList.add('active');
+    pill.setAttribute('aria-selected', 'true');
+    pill.setAttribute('tabindex', '0');
+    pill.focus();
+    renderDayTimeline();
+  }
+
+  dayPills.addEventListener('click', (e) => {
+    const pill = (e.target as HTMLElement).closest('.day-pill') as HTMLElement | null;
+    if (!pill) return;
+    selectDayPill(pill);
+  });
+
+  dayPills.addEventListener('keydown', (e) => {
+    const pills = Array.from(dayPills.querySelectorAll<HTMLElement>('.day-pill'));
+    const current = pills.findIndex(p => p.classList.contains('active'));
+    if (current === -1) return;
+    let next = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { next = (current + 1) % pills.length; }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { next = (current - 1 + pills.length) % pills.length; }
+    if (next >= 0) { e.preventDefault(); selectDayPill(pills[next]); }
+  });
+
+  function renderDayTimeline() {
+    const dayEntries = scheduled
+      .filter(s => s.section.days.includes(mobileDay))
+      .sort((a, b) => {
+        const aMin = a.section.startH * 60 + a.section.startM;
+        const bMin = b.section.startH * 60 + b.section.startM;
+        return aMin - bMin;
+      });
+
+    // Update pill indicators
+    const daysWithClasses = new Set(scheduled.flatMap(s => s.section.days));
+    dayPills.querySelectorAll('.day-pill').forEach(pill => {
+      const day = (pill as HTMLElement).dataset.day!;
+      pill.classList.toggle('has-class', daysWithClasses.has(day));
+    });
+
+    dayTimeline.innerHTML = '';
+    dayEmpty.style.display = dayEntries.length === 0 ? '' : 'none';
+
+    for (const s of dayEntries) {
+      const c = subjectColors[s.course.subject] ?? subjectColors.CSC;
+      const el = document.createElement('div');
+      el.className = 'day-block';
+      el.dataset.blockCode = s.code;
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', `${s.code} — ${s.course.title}, ${fmtT(s.section.startH, s.section.startM)} to ${fmtT(s.section.endH, s.section.endM)}`);
+      el.style.cssText = `background:${c.bg};border-color:${c.border};--block-text:${c.text};display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-1);padding:var(--space-4) var(--space-5);border-radius:var(--radius-lg);border:1px solid ${c.border};cursor:pointer`;
+      el.innerHTML = `
+        <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text-muted);letter-spacing:var(--tracking-wider)">${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-1)">
+          <span style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:600;color:var(--block-text);letter-spacing:var(--tracking-wider)">${s.code}</span>
+          <span style="font-family:var(--font-heading);font-style:italic;font-size:var(--text-sm);color:var(--color-text-primary);line-height:var(--leading-snug)">${s.course.title}</span>
+          <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--color-text-muted);letter-spacing:var(--tracking-wider);display:flex;justify-content:center;gap:var(--space-3);margin-top:var(--space-1)">
+            <span>${s.section.professor}</span>
+            <span>${s.section.room}</span>
+          </div>
+        </div>
+      `;
+      el.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); removeCourse(s.code); }
+      });
+      dayTimeline.appendChild(el);
+    }
+  }
+
+  // Initial render
+  refreshUI();
+
+  window.addEventListener('resize', () => renderBlocks());
+</script>

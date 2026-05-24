@@ -30,8 +30,8 @@
       <a href="/" class="hero-nav__link">start</a>
       <a href="/guides" class="hero-nav__link">guides</a>
       <a href="/courses" class="hero-nav__link">courses</a>
-      <a href="https://github.com/progsu" class="hero-nav__link">contribute</a>
-      <span class="hero-nav__kbd">⌘K</span>
+      <a href="https://github.com/progsu-official" class="hero-nav__link">contribute</a>
+      <span class="hero-nav__kbd surface-glass">⌘K</span>
     </div>
   </nav>
 
@@ -88,10 +88,6 @@
 
       <!-- CENTRAL ANCHOR: glowing core -->
       <div class="orb-wrap">
-        <div class="orb-bloom"></div>
-        <div class="orb-ring orb-ring--1"></div>
-        <div class="orb-ring orb-ring--2"></div>
-        <div class="orb-ring orb-ring--3"></div>
         <div class="orb-core"></div>
       </div>
 
@@ -163,12 +159,12 @@
 
   <!-- SEARCH BAR: lower third -->
   <div class="hero-search-wrap">
-    <div class="hero-search">
+    <div class="hero-search surface-glass">
       <div class="hero-search__icon">
         <div class="hero-search__handle"></div>
       </div>
       <span class="hero-search__placeholder">search 40 guides, 120 courses</span>
-      <span class="hero-search__kbd">⌘K</span>
+      <span class="hero-search__kbd surface-glass">⌘K</span>
     </div>
     <div class="hero-proof">40 GUIDES &middot; 14 AUTHORS &middot; OPEN ON GITHUB</div>
   </div>
@@ -307,7 +303,6 @@
   .hero-nav__link:hover { color: rgba(255,255,255,.9); }
 
   .hero-nav__kbd {
-    border: 1px solid rgba(255,255,255,.18);
     padding: .2rem .4rem;
     border-radius: .25rem;
     color: rgba(255,255,255,.7);
@@ -326,6 +321,7 @@
     inset: 0;
     transform-style: preserve-3d;
     transform: rotateX(6deg) rotateY(-2deg);
+    opacity: 0.25;
   }
 
   .constellation-svg {
@@ -351,7 +347,7 @@
     position: absolute;
     inset: -60px;
     border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.2) 0%, rgba(168,85,247,.05) 30%, transparent 65%);
+    background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.1) 0%, rgba(168,85,247,.03) 30%, transparent 65%);
     filter: blur(20px);
   }
 
@@ -370,11 +366,7 @@
     inset: 30px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, rgba(255,255,255,1) 0%, rgba(216,180,254,.95) 15%, rgba(168,85,247,.9) 40%, rgba(76,29,149,1) 75%, #1a0a2e 100%);
-    box-shadow:
-      0 0 50px rgba(168,85,247,.6),
-      0 0 100px rgba(168,85,247,.3),
-      0 0 150px rgba(168,85,247,.15),
-      inset -10px -10px 20px rgba(0,0,0,.5);
+    box-shadow: inset -10px -10px 20px rgba(0,0,0,.5);
   }
 
   /* ── cluster nodes ───────────────────────────────────────── */
@@ -480,15 +472,8 @@
     display: flex;
     align-items: center;
     gap: .6rem;
-    background: rgba(8,8,18,.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(168,85,247,.35);
     border-radius: .55rem;
     padding: .65rem .9rem;
-    box-shadow:
-      0 0 32px rgba(168,85,247,.15),
-      0 8px 32px rgba(0,0,0,.5),
-      inset 0 1px 0 rgba(255,255,255,.06);
   }
 
   .hero-search__icon {
@@ -521,7 +506,6 @@
   .hero-search__kbd {
     font-size: .55rem;
     color: rgba(255,255,255,.5);
-    border: 1px solid rgba(255,255,255,.18);
     padding: .15rem .35rem;
     border-radius: .2rem;
     letter-spacing: .05em;

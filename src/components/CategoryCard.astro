@@ -1,0 +1,128 @@
+---
+interface Props {
+  title: string;
+  href: string;
+  description: string;
+  count: number;
+  variant?: 'featured' | 'default' | 'muted';
+  eyebrow?: string;
+}
+
+const { title, href, description, count, variant = 'default', eyebrow } = Astro.props;
+---
+
+<a href={href} class:list={['card', 'surface-glass', `card--${variant}`]}>
+  {eyebrow && <span class="card__eyebrow">{eyebrow}</span>}
+  <div class="card__head">
+    <span class="card__title">{title}</span>
+    <span class="card__count">{String(count).padStart(2, '0')} guides</span>
+  </div>
+  <p class="card__desc">{description}</p>
+  <span class="card__arrow" aria-hidden="true">&rarr;</span>
+</a>
+
+<style>
+  .card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease),
+      box-shadow var(--duration-normal) var(--ease);
+    align-items: start;
+    min-height: 44px;
+  }
+  .card:hover {
+    background: var(--accent-faint);
+    border-color: var(--glass-border-hi);
+    box-shadow: var(--glass-shadow), var(--shadow-glow);
+  }
+
+  .card__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .card__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+  }
+
+  .card__count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+    opacity: 0.6;
+  }
+
+  .card__desc {
+    grid-column: 1;
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-normal);
+    margin: 0;
+  }
+
+  .card__arrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    color: var(--accent-dim);
+    margin-top: var(--space-1);
+    transition:
+      color var(--duration-normal) var(--ease),
+      transform var(--duration-normal) var(--ease);
+  }
+  .card:hover .card__arrow {
+    color: var(--accent-text);
+    transform: translateX(4px);
+  }
+
+  /* ── Eyebrow ── */
+  .card__eyebrow {
+    grid-column: 1 / -1;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--accent-light);
+    opacity: 0.75;
+  }
+
+  /* ── Featured variant ── */
+  .card--featured {
+    padding: var(--space-8) var(--space-8);
+  }
+  .card--featured .card__title {
+    font-size: var(--text-2xl);
+  }
+  .card--featured .card__desc {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Muted variant ── */
+  .card--muted {
+    opacity: 0.55;
+  }
+  .card--muted:hover {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 480px) {
+    .card {
+      padding: var(--space-4) var(--space-5);
+    }
+    .card--featured {
+      padding: var(--space-6) var(--space-5);
+    }
+  }
+</style>

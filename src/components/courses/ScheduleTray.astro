@@ -1,0 +1,64 @@
+---
+import Zone from "./Zone.astro";
+---
+
+<div class="tray surface-glass" id="schedule-tray">
+  <div class="tray__bar">
+    <span class="tray__title">your schedule</span>
+    <span class="tray__meta">0 courses &middot; 0 credits</span>
+    <a href="/courses/schedule" class="tray__expand">expand &rarr;</a>
+  </div>
+  <div class="tray__body" style="display:none">
+    <Zone label="course pills &middot; drag to reorder" height="60px" />
+    <Zone label="conflict warnings" height="40px" />
+  </div>
+</div>
+
+<style>
+  .tray {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-bottom: none;
+    padding: var(--space-4) var(--space-6);
+  }
+
+  .tray__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .tray__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .tray__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .tray__expand {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-text);
+    text-decoration: none;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .tray__body {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+</style>

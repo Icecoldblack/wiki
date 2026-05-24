@@ -1,0 +1,188 @@
+---
+---
+
+<div class="csb surface-glass" id="course-search-wrap">
+  <div class="csb__icon" aria-hidden="true">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+  </div>
+  <input
+    class="csb__input"
+    type="text"
+    id="course-search"
+    autocomplete="off"
+    spellcheck="false"
+    aria-label="Search courses by name, code, or professor"
+    placeholder=""
+  />
+  <span class="csb__placeholder" id="csb-placeholder" aria-hidden="true"></span>
+  <kbd class="csb__kbd surface-glass" id="csb-kbd">/</kbd>
+</div>
+
+<style>
+  .csb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-lg);
+    position: relative;
+  }
+
+  .csb__icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    display: flex;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .csb:focus-within .csb__icon {
+    color: var(--accent-text);
+  }
+
+  .csb__input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    caret-color: var(--accent-text);
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .csb__placeholder {
+    position: absolute;
+    left: calc(var(--space-5) + 14px + var(--space-3));
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+  }
+
+  .csb__kbd {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    letter-spacing: var(--tracking-wide);
+    flex-shrink: 0;
+    transition: opacity var(--duration-fast) var(--ease);
+  }
+  .csb__kbd.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const input = document.getElementById('course-search') as HTMLInputElement;
+  const placeholder = document.getElementById('csb-placeholder')!;
+  const kbd = document.getElementById('csb-kbd')!;
+
+  const hints = [
+    'try CSC 2720',
+    'try a professor name',
+    'try discrete math',
+  ];
+  let hintIndex = 0;
+  let hintTimer: ReturnType<typeof setInterval> | null = null;
+
+  function showHint() {
+    placeholder.style.opacity = '0';
+    setTimeout(() => {
+      placeholder.textContent = hints[hintIndex];
+      placeholder.style.opacity = '1';
+      hintIndex = (hintIndex + 1) % hints.length;
+    }, 400);
+  }
+
+  function startHints() {
+    if (hintTimer) return;
+    showHint();
+    hintTimer = setInterval(showHint, 3500);
+  }
+
+  function stopHints() {
+    if (hintTimer) { clearInterval(hintTimer); hintTimer = null; }
+    placeholder.style.opacity = '0';
+  }
+
+  function updatePlaceholder() {
+    if (input.value.length > 0 || document.activeElement === input) {
+      stopHints();
+    } else {
+      startHints();
+    }
+  }
+
+  startHints();
+
+  input.addEventListener('focus', () => {
+    kbd.classList.add('hidden');
+    stopHints();
+  });
+
+  input.addEventListener('blur', () => {
+    kbd.classList.remove('hidden');
+    updatePlaceholder();
+  });
+
+  input.addEventListener('input', () => {
+    updatePlaceholder();
+    applySearch();
+  });
+
+  // / to focus
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    const tag = (document.activeElement as HTMLElement)?.tagName;
+    if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      e.preventDefault();
+      input.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === input) {
+      input.value = '';
+      input.blur();
+      applySearch();
+    }
+  });
+
+  // Fuzzy match: every word in the query must appear somewhere in the target
+  function fuzzyMatch(query: string, ...targets: string[]): boolean {
+    const combined = targets.join(' ').toLowerCase();
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    return words.every(w => combined.includes(w));
+  }
+
+  function applySearch() {
+    const q = input.value.trim();
+    const cards = document.querySelectorAll<HTMLElement>('[data-course]');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const code = card.dataset.code ?? '';
+      const title = card.dataset.title ?? '';
+      const prof = card.dataset.professor ?? '';
+      const matchesSearch = !q || fuzzyMatch(q, code, title, prof);
+
+      if (!matchesSearch) {
+        card.style.display = 'none';
+      } else if (card.style.display === 'none' && !card.dataset.filteredOut) {
+        card.style.display = '';
+      }
+      if (card.style.display !== 'none') visible++;
+    });
+
+    const metaCount = document.querySelector('.meta-count');
+    if (metaCount) metaCount.textContent = `${visible} course${visible !== 1 ? 's' : ''}`;
+  }
+</script>

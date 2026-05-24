@@ -1,0 +1,57 @@
+---
+interface Props {
+  active: 'browse' | 'scheduler' | 'plans' | 'compare';
+}
+
+const { active } = Astro.props;
+
+const tabs = [
+  { key: 'browse',    label: 'browse',    href: '/courses' },
+  { key: 'scheduler', label: 'scheduler', href: '/courses/scheduler' },
+  { key: 'plans',     label: 'plans',     href: '/courses/plans' },
+  { key: 'compare',   label: 'compare',   href: '/courses/compare' },
+] as const;
+---
+
+<nav class="csub" aria-label="Courses sections">
+  {tabs.map(t => (
+    <a
+      href={t.href}
+      class:list={['csub__link', { 'is-active': t.key === active }]}
+      aria-current={t.key === active ? 'page' : undefined}
+    >
+      {t.label}
+    </a>
+  ))}
+</nav>
+
+<style>
+  .csub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-bottom: var(--space-8);
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: var(--space-2);
+  }
+
+  .csub__link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition:
+      color var(--duration-fast) var(--ease),
+      background var(--duration-fast) var(--ease);
+  }
+  .csub__link:hover {
+    color: var(--color-text-secondary);
+  }
+  .csub__link.is-active {
+    color: var(--accent-text);
+    background: var(--accent-subtle);
+  }
+</style>

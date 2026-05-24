@@ -1,0 +1,118 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import Zone from "../../components/courses/Zone.astro";
+import ScheduleTray from "../../components/courses/ScheduleTray.astro";
+import CourseDetailOverlay from "../../components/courses/CourseDetailOverlay.astro";
+---
+
+<Layout title="CS Core — Courses">
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: "CS core" },
+  ]} />
+
+  <PageHeader
+    eyebrow="CS Core"
+    headline="the classes that<br>define the degree."
+    subline="Required computer science courses at Georgia State. Tap any card to see details and student notes."
+  />
+
+  <!-- Filter rail -->
+  <section class="area-filters">
+    <Zone label="filter rail &middot; semester · prereqs met · credit hours · sort" height="44px" />
+  </section>
+
+  <!-- Course grid -->
+  <section class="area-grid">
+    <div class="course-cards">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div class="course-card surface-glass">
+          <div class="course-card__head">
+            <span class="course-card__number">CSC {String(1010 + i * 400).slice(0, 4)}</span>
+            <span class="course-card__credits">3 cr</span>
+          </div>
+          <span class="course-card__title">Course title placeholder</span>
+          <span class="course-card__take">student take goes here</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div class="tray-spacer"></div>
+  <ScheduleTray />
+  <CourseDetailOverlay />
+</Layout>
+
+<style>
+  .area-filters {
+    margin-bottom: var(--space-8);
+  }
+
+  .course-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-24);
+  }
+
+  .course-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition:
+      background var(--duration-normal) var(--ease),
+      border-color var(--duration-normal) var(--ease);
+  }
+  .course-card:hover {
+    background: var(--accent-faint);
+    border-color: var(--glass-border-hi);
+  }
+
+  .course-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .course-card__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .course-card__credits {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .course-card__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+  }
+
+  .course-card__take {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-normal);
+  }
+
+  .tray-spacer {
+    height: 80px;
+  }
+
+  @media (max-width: 640px) {
+    .course-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+import Layout from "./Layout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  accent?: 'purple' | 'cyan';
+  breadcrumbs?: BreadcrumbItem[];
+  headings?: Heading[];
+}
+
+const { title, description, accent, breadcrumbs, headings = [] } = Astro.props;
+const hasHeadings = headings.length > 0;
+---
+
+<Layout title={title} description={description} accent={accent}>
+  <div class="content-layout">
+    {breadcrumbs && <Breadcrumb items={breadcrumbs} />}
+
+    {hasHeadings && (
+      <div class="content-layout__toc">
+        <TableOfContents headings={headings} />
+      </div>
+    )}
+
+    <article class="content-layout__main">
+      <slot />
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .content-layout {
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
+
+  .content-layout__main {
+    min-width: 0;
+  }
+</style>

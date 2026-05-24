@@ -1,0 +1,304 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import CoursesSubnav from "../../components/CoursesSubnav.astro";
+import PlanWiring from "../../components/courses/PlanWiring.astro";
+---
+
+<Layout title="Your Plan — Courses">
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: "your plan" },
+  ]} />
+
+  <CoursesSubnav active="plans" />
+
+  <PageHeader
+    eyebrow="Your Plan"
+    headline="courses you're<br>thinking about."
+  />
+
+  <!-- Empty state (hidden when courses exist) -->
+  <div class="plan-empty surface-glass" id="plan-empty">
+    <p class="plan-empty__text">nothing here yet.</p>
+    <p class="plan-empty__hint">star courses while browsing and they'll appear here.</p>
+    <a href="/courses" class="plan-empty__link">browse courses &rarr;</a>
+  </div>
+
+  <!-- Skeleton (visible until JS hydrates) -->
+  <div class="plan-skel skel-wrap" id="plan-skel">
+    <div class="plan-skel__group">
+      <div class="skel skel-line" style="width: 40px; height: 0.6rem; margin-bottom: var(--space-4)"></div>
+      <div class="plan-skel__row surface-glass">
+        <div class="skel skel-line" style="width: 70px"></div>
+        <div class="skel skel-line skel-line--med" style="flex:1"></div>
+        <div class="skel skel-line" style="width: 32px"></div>
+      </div>
+      <div class="plan-skel__row surface-glass">
+        <div class="skel skel-line" style="width: 70px"></div>
+        <div class="skel skel-line" style="flex:1; width: 55%"></div>
+        <div class="skel skel-line" style="width: 32px"></div>
+      </div>
+      <div class="plan-skel__row surface-glass">
+        <div class="skel skel-line" style="width: 70px"></div>
+        <div class="skel skel-line skel-line--short" style="flex:1"></div>
+        <div class="skel skel-line" style="width: 32px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Starred courses grouped by subject (populated by client JS) -->
+  <div class="plan-groups" id="plan-groups"></div>
+
+  <PlanWiring />
+</Layout>
+
+<style>
+  .plan-empty {
+    padding: var(--space-12) var(--space-8);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .plan-empty__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-xl);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-3);
+  }
+
+  .plan-empty__hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0 0 var(--space-6);
+    line-height: var(--leading-normal);
+  }
+
+  .plan-empty__link {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--accent-text);
+    text-decoration: none;
+    letter-spacing: var(--tracking-wider);
+    transition: color var(--duration-normal) var(--ease);
+  }
+  .plan-empty__link:hover {
+    color: var(--accent-light);
+  }
+
+  /* ── Skeleton ── */
+  .plan-skel__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .plan-skel__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ── Groups ── */
+  .plan-groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+</style>
+
+<style is:global>
+  .plan-group__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-4);
+  }
+
+  .plan-group__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .plan-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+  .plan-row__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+    min-width: 80px;
+  }
+
+  .plan-row__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .plan-row__credits {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+  }
+
+  .plan-row__actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  .plan-row__btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    background: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    transition:
+      color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      background var(--duration-fast) var(--ease);
+  }
+
+  .plan-row__btn--remove {
+    color: var(--color-text-muted);
+  }
+  .plan-row__btn--remove:hover {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+  }
+
+  .plan-row__btn--add {
+    color: var(--accent-text);
+    border-color: var(--accent-border);
+  }
+  .plan-row__btn--add:hover {
+    background: var(--accent-faint);
+    border-color: var(--accent-border-hover);
+  }
+
+  @media (max-width: 640px) {
+    .plan-row {
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-3);
+    }
+    .plan-row__title {
+      width: 100%;
+      order: -1;
+    }
+  }
+</style>
+
+<script>
+  import * as plan from "../../scripts/coursePlan";
+
+  const courseData: Record<string, { code: string; title: string; credits: number; subject: string }> = {
+    "CSC 1301":  { code: "CSC 1301",  title: "Principles of Computer Science I",   credits: 4, subject: "CSC" },
+    "CSC 1302":  { code: "CSC 1302",  title: "Principles of Computer Science II",  credits: 4, subject: "CSC" },
+    "CSC 2010":  { code: "CSC 2010",  title: "Principles of Computer Science III", credits: 4, subject: "CSC" },
+    "CSC 2720":  { code: "CSC 2720",  title: "Data Structures",                    credits: 4, subject: "CSC" },
+    "CSC 3210":  { code: "CSC 3210",  title: "Computer Organization & Programming",credits: 4, subject: "CSC" },
+    "CSC 3320":  { code: "CSC 3320",  title: "System Level Programming",           credits: 4, subject: "CSC" },
+    "CSC 4210":  { code: "CSC 4210",  title: "Computer Architecture",              credits: 3, subject: "CSC" },
+    "CSC 4310":  { code: "CSC 4310",  title: "Operating Systems",                  credits: 3, subject: "CSC" },
+    "CSC 4320":  { code: "CSC 4320",  title: "Computer Networks",                  credits: 3, subject: "CSC" },
+    "MATH 2211": { code: "MATH 2211", title: "Calculus I",                         credits: 4, subject: "MATH" },
+    "MATH 2212": { code: "MATH 2212", title: "Calculus II",                        credits: 4, subject: "MATH" },
+    "MATH 2420": { code: "MATH 2420", title: "Discrete Mathematics",               credits: 3, subject: "MATH" },
+  };
+
+  const emptyEl = document.getElementById('plan-empty')!;
+  const groupsEl = document.getElementById('plan-groups')!;
+  const skelEl = document.getElementById('plan-skel')!;
+
+  function render() {
+    skelEl.classList.add('hidden');
+    const starred = plan.all();
+
+    if (starred.length === 0) {
+      emptyEl.style.display = '';
+      groupsEl.innerHTML = '';
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+
+    const bySubject: Record<string, typeof courseData[string][]> = {};
+    for (const code of starred) {
+      const c = courseData[code];
+      if (!c) continue;
+      (bySubject[c.subject] ??= []).push(c);
+    }
+
+    groupsEl.innerHTML = '';
+
+    for (const [subject, courses] of Object.entries(bySubject).sort((a, b) => a[0].localeCompare(b[0]))) {
+      const group = document.createElement('div');
+
+      const label = document.createElement('h2');
+      label.className = 'plan-group__label';
+      label.textContent = subject;
+      group.appendChild(label);
+
+      const list = document.createElement('div');
+      list.className = 'plan-group__list';
+
+      for (const c of courses.sort((a, b) => a.code.localeCompare(b.code))) {
+        const row = document.createElement('div');
+        row.className = 'plan-row surface-glass';
+
+        row.innerHTML = `
+          <span class="plan-row__code">${c.code}</span>
+          <span class="plan-row__title">${c.title}</span>
+          <span class="plan-row__credits">${c.credits} cr</span>
+          <div class="plan-row__actions">
+            <button class="plan-row__btn plan-row__btn--remove" data-remove="${c.code}">remove</button>
+          </div>
+        `;
+
+        list.appendChild(row);
+      }
+
+      group.appendChild(list);
+      groupsEl.appendChild(group);
+    }
+
+    groupsEl.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-remove]') as HTMLElement | null;
+      if (!btn) return;
+      plan.toggle(btn.dataset.remove!);
+    });
+  }
+
+  plan.onChange(render);
+  render();
+</script>

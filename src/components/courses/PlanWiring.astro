@@ -1,0 +1,72 @@
+<!-- Include this on any page that has star buttons or a plan counter -->
+<script>
+  import * as plan from "../../scripts/coursePlan";
+
+  function syncStarButtons() {
+    document.querySelectorAll<HTMLButtonElement>('[data-star-code]').forEach(btn => {
+      const code = btn.dataset.starCode!;
+      const starred = plan.has(code);
+      btn.classList.toggle('starred', starred);
+      btn.setAttribute('aria-pressed', String(starred));
+    });
+  }
+
+  function updatePlanCounters() {
+    const n = plan.count();
+    document.querySelectorAll('.plan-card__count').forEach(el => {
+      el.textContent = `${n} course${n !== 1 ? 's' : ''}`;
+    });
+  }
+
+  function floatPlus(originEl: HTMLElement, added: boolean) {
+    const rect = originEl.getBoundingClientRect();
+    const el = document.createElement('span');
+    el.className = 'plan-float';
+    el.textContent = added ? '+1' : '−1';
+    el.style.left = `${rect.right + 6}px`;
+    el.style.top = `${rect.top}px`;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-star-code]') as HTMLButtonElement | null;
+    if (!btn) return;
+    e.stopPropagation();
+
+    const code = btn.dataset.starCode!;
+    const added = plan.toggle(code);
+
+    btn.classList.toggle('starred', added);
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+
+    floatPlus(btn, added);
+    updatePlanCounters();
+  });
+
+  // Also handle the detail-page save button
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-save-code]') as HTMLButtonElement | null;
+    if (!btn) return;
+
+    const code = btn.dataset.saveCode!;
+    const added = plan.toggle(code);
+
+    btn.classList.toggle('saved', added);
+    btn.setAttribute('aria-pressed', String(added));
+    btn.textContent = added ? '★ Saved' : '★ Save for later';
+
+    floatPlus(btn, added);
+    updatePlanCounters();
+  });
+
+  plan.onChange(() => {
+    syncStarButtons();
+    updatePlanCounters();
+  });
+
+  syncStarButtons();
+  updatePlanCounters();
+</script>

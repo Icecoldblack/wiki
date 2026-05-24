@@ -1,0 +1,466 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const;
+const START_HOUR = 7;
+const END_HOUR = 21;
+const SLOTS = (END_HOUR - START_HOUR) * 2;
+
+function timeLabel(slot: number) {
+  const totalMin = START_HOUR * 60 + slot * 30;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  const suffix = h >= 12 ? 'p' : 'a';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return m === 0 ? `${h12}${suffix}` : '';
+}
+---
+
+<Layout title="Shared Schedule — Courses">
+  <Breadcrumb items={[
+    { label: "courses", href: "/courses" },
+    { label: "shared schedule" },
+  ]} />
+
+  <div class="share-header">
+    <h1 class="share-title">shared schedule</h1>
+    <p class="share-subtitle" id="share-subtitle">loading...</p>
+  </div>
+
+  <!-- Empty state: no ?s= param or invalid -->
+  <div class="share-empty surface-glass" id="share-empty" style="display:none">
+    <p class="share-empty__text">no schedule found.</p>
+    <p class="share-empty__hint">open the <a href="/courses/scheduler">scheduler</a> to build one.</p>
+  </div>
+
+  <!-- Schedule content -->
+  <div id="share-content" style="display:none">
+    <!-- Grid -->
+    <div class="share-grid-wrap">
+      <div class="share-grid" id="share-grid" style={`--rows: ${SLOTS}; --cols: ${DAYS.length}`}>
+        <div class="grid-corner"></div>
+        {DAYS.map(d => <div class="grid-day-header">{d}</div>)}
+        {Array.from({ length: SLOTS }).map((_, slot) => (
+          <Fragment>
+            <div class:list={['grid-time', { 'grid-time--labeled': timeLabel(slot) }]}>
+              {timeLabel(slot) && <span>{timeLabel(slot)}</span>}
+            </div>
+            {DAYS.map(day => (
+              <div class="grid-cell" data-day={day} data-slot={slot}></div>
+            ))}
+          </Fragment>
+        ))}
+      </div>
+    </div>
+
+    <!-- Course list -->
+    <div class="share-courses" id="share-courses"></div>
+
+    <!-- Summary -->
+    <div class="share-summary surface-glass" id="share-summary"></div>
+
+    <!-- Action -->
+    <div class="share-actions">
+      <button class="share-cta surface-glass" id="copy-to-plans">copy to my schedules</button>
+      <a class="share-link" href="/courses/scheduler">open scheduler</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .share-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .share-title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-1);
+  }
+
+  .share-subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+
+  /* ── Empty ── */
+  .share-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-8);
+    border-radius: var(--radius-lg);
+  }
+  .share-empty__text {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-2);
+  }
+  .share-empty__hint {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+    line-height: var(--leading-normal);
+  }
+  .share-empty__hint a {
+    color: var(--accent-text);
+    text-decoration: none;
+  }
+  .share-empty__hint a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Grid ── */
+  .share-grid-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    margin-bottom: var(--space-8);
+  }
+
+  .share-grid {
+    display: grid;
+    grid-template-columns: 40px repeat(var(--cols), 1fr);
+    grid-template-rows: 32px repeat(var(--rows), 20px);
+    position: relative;
+    min-width: 500px;
+  }
+
+  .grid-corner {
+    grid-column: 1;
+    grid-row: 1;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid var(--color-border-subtle);
+  }
+
+  .grid-day-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    background: var(--glass-bg-strong);
+    border-bottom: 1px solid var(--color-border-subtle);
+    border-right: 1px solid rgba(255, 255, 255, 0.02);
+  }
+  .grid-day-header:last-of-type { border-right: none; }
+
+  .grid-time {
+    display: flex;
+    align-items: start;
+    justify-content: flex-end;
+    padding: 0 var(--space-2) 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    border-right: 1px solid var(--color-border-subtle);
+    position: relative;
+  }
+  .grid-time--labeled { border-top: 1px solid rgba(255, 255, 255, 0.03); }
+  .grid-time span { position: relative; top: -0.4em; }
+
+  .grid-cell {
+    border-right: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  /* ── Shared course blocks ── */
+  .share-block {
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    padding: var(--space-1) var(--space-2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    overflow: hidden;
+    z-index: 2;
+    margin: 1px;
+  }
+  .share-block__code {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--block-text);
+    letter-spacing: var(--tracking-wider);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .share-block__room {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Course list ── */
+  .share-courses {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+
+  .share-course {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+  .share-course__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+  }
+
+  .share-course__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .share-course__code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent-light);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .share-course__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .share-course__meta {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-1);
+  }
+
+  .share-course__credits {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+  }
+
+  /* ── Summary ── */
+  .share-summary {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+    display: flex;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .share-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .share-stat__val {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+  }
+
+  .share-stat__key {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* ── Actions ── */
+  .share-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-12);
+  }
+
+  .share-cta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: #fff;
+    letter-spacing: var(--tracking-wider);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    transition:
+      background var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease);
+  }
+  .share-cta:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent-border-hover);
+  }
+  .share-cta:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .share-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease);
+  }
+  .share-link:hover {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 640px) {
+    .share-summary {
+      gap: var(--space-4);
+    }
+  }
+</style>
+
+<script>
+  import { catalog, DAYS, subjectColors, toSlot, fmtTime } from "../../scripts/courseCatalog";
+  import * as store from "../../scripts/scheduleStore";
+  import type { ResolvedEntry } from "../../scripts/scheduleStore";
+
+  const shareGrid = document.getElementById('share-grid')!;
+  const shareCourses = document.getElementById('share-courses')!;
+  const shareSummary = document.getElementById('share-summary')!;
+  const shareContent = document.getElementById('share-content')!;
+  const shareEmpty = document.getElementById('share-empty')!;
+  const shareSubtitle = document.getElementById('share-subtitle')!;
+  const copyBtn = document.getElementById('copy-to-plans') as HTMLButtonElement;
+
+  function fmtT(h: number, m: number) { return fmtTime(h, m); }
+
+  function parseShareParam(): { code: string; sectionId: string }[] {
+    const params = new URLSearchParams(location.search);
+    const raw = params.get('s');
+    if (!raw) return [];
+    return raw.split(',').map(pair => {
+      const [codePart, sectionId] = pair.split(':');
+      if (!codePart || !sectionId) return null;
+      const code = codePart.replace(/^([A-Z]+)(\d)/, '$1 $2');
+      return { code, sectionId };
+    }).filter(Boolean) as { code: string; sectionId: string }[];
+  }
+
+  const entries = parseShareParam();
+  const resolved = store.resolve(entries);
+
+  if (resolved.length === 0) {
+    shareEmpty.style.display = '';
+    shareContent.style.display = 'none';
+    shareSubtitle.textContent = 'invalid or empty link.';
+  } else {
+    shareEmpty.style.display = 'none';
+    shareContent.style.display = '';
+    shareSubtitle.textContent = `${resolved.length} course${resolved.length !== 1 ? 's' : ''}`;
+
+    // Render grid blocks
+    for (const s of resolved) {
+      const c = subjectColors[s.course.subject] ?? subjectColors.CSC;
+      const startSlot = toSlot(s.section.startH, s.section.startM);
+      const endSlot = toSlot(s.section.endH, s.section.endM);
+      const span = Math.round(endSlot - startSlot);
+      for (const day of s.section.days) {
+        const col = DAYS.indexOf(day as any) + 2;
+        const row = Math.round(startSlot) + 2;
+        const el = document.createElement('div');
+        el.className = 'share-block';
+        el.style.cssText = `grid-column:${col};grid-row:${row}/span ${span};background:${c.bg};border-color:${c.border};--block-text:${c.text}`;
+        el.innerHTML = `<span class="share-block__code">${s.code}</span><span class="share-block__room">${s.section.room}</span>`;
+        shareGrid.appendChild(el);
+      }
+    }
+
+    // Render course list
+    for (const s of resolved) {
+      const c = subjectColors[s.course.subject] ?? subjectColors.CSC;
+      const el = document.createElement('div');
+      el.className = 'share-course surface-glass';
+      el.innerHTML = `
+        <span class="share-course__dot" style="background:${c.text};box-shadow:0 0 6px ${c.border}"></span>
+        <div class="share-course__info">
+          <span class="share-course__code">${s.code}</span>
+          <span class="share-course__title">${s.course.title}</span>
+          <div class="share-course__meta">
+            <span>${s.section.professor}</span>
+            <span>${s.section.days.join('/')} ${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}</span>
+            <span>${s.section.room}</span>
+          </div>
+        </div>
+        <span class="share-course__credits">${s.course.credits} cr</span>
+      `;
+      shareCourses.appendChild(el);
+    }
+
+    // Render summary
+    const stats = store.computeStats(resolved);
+    const earlyStr = fmtT(Math.floor(stats.earliestMin / 60), stats.earliestMin % 60);
+    const lateStr = fmtT(Math.floor(stats.latestMin / 60), stats.latestMin % 60);
+
+    shareSummary.innerHTML = `
+      <div class="share-stat"><span class="share-stat__val">${stats.credits}</span><span class="share-stat__key">credits</span></div>
+      <div class="share-stat"><span class="share-stat__val">${stats.contactHours}h</span><span class="share-stat__key">contact/wk</span></div>
+      <div class="share-stat"><span class="share-stat__val">${earlyStr}</span><span class="share-stat__key">earliest</span></div>
+      <div class="share-stat"><span class="share-stat__val">${lateStr}</span><span class="share-stat__key">latest</span></div>
+      <div class="share-stat"><span class="share-stat__val">${stats.daysOff.length > 0 ? stats.daysOff.join(', ') : 'none'}</span><span class="share-stat__key">days off</span></div>
+    `;
+  }
+
+  // Copy to my schedules
+  copyBtn.addEventListener('click', () => {
+    if (resolved.length === 0) return;
+    const all = store.getAllSchedules();
+    const names = new Set(all.map(s => s.name));
+    let name = 'Shared';
+    let i = 2;
+    while (names.has(name)) { name = `Shared ${i++}`; }
+
+    const newSched = store.duplicateSchedule(all[0].id, name);
+    newSched.courses = resolved.map(r => ({ code: r.code, sectionId: r.sectionId }));
+    store.updateSchedule(newSched);
+    store.setActive(newSched.id);
+
+    copyBtn.textContent = 'copied — opening scheduler...';
+    copyBtn.disabled = true;
+    setTimeout(() => { location.href = '/courses/scheduler'; }, 800);
+  });
+</script>

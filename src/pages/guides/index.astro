@@ -1,122 +1,78 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-
-const categories = [
-  { title: "foundations",  href: "/guides/foundations", description: "CS theory, math, and first principles every student should have solid footing in.", guides: 8 },
-  { title: "career",       href: "/guides/career",       description: "Recruiting, resumes, offer strategy, and how to navigate the hiring process.", guides: 12 },
-  { title: "technical",    href: "/guides/technical",    description: "LC, system design, take-homes, and how to actually prep for coding interviews.", guides: 9 },
-  { title: "networking",   href: "/guides/networking",   description: "Cold outreach, LinkedIn, warm intros, and building real relationships.", guides: 6 },
-  { title: "misc",         href: "/guides/misc",         description: "Tools, productivity, and everything else that doesn't fit a clean category.", guides: 4 },
-];
+import PageHeader from "../../components/PageHeader.astro";
+import CategoryCard from "../../components/CategoryCard.astro";
 ---
 
 <Layout title="Guides">
-  <p class="page-eyebrow">GUIDES</p>
-  <h1 class="page-headline">everything you need<br>to break in.</h1>
-  <p class="page-sub">signed, dated, and written by people who've been through it.</p>
+  <PageHeader
+    eyebrow="Guides"
+    headline="everything you need<br>to break in."
+    subline="Signed, dated, and written by people who've been through it."
+  />
 
-  <div class="category-grid">
-    {categories.map((cat) => (
-      <a href={cat.href} class="category-card">
-        <div class="category-card__body">
-          <span class="category-card__title">{cat.title}</span>
-          <span class="category-card__count">{String(cat.guides).padStart(2,"0")} guides</span>
-        </div>
-        <p class="category-card__desc">{cat.description}</p>
-        <span class="category-card__arrow">→</span>
-      </a>
-    ))}
-  </div>
+  <section class="guide-journey">
+    <!-- Featured entry point -->
+    <div class="journey__featured">
+      <CategoryCard
+        title="foundations"
+        href="/guides/foundations"
+        description="Start here. CS fundamentals, math intuition, and the first principles that make everything else click."
+        count={8}
+        variant="featured"
+        eyebrow="Start here"
+      />
+    </div>
+
+    <!-- Middle tier — two columns on desktop -->
+    <div class="journey__mid">
+      <CategoryCard
+        title="technical"
+        href="/guides/technical"
+        description="Leetcode, system design, and take-homes — how to actually prep for coding interviews."
+        count={9}
+      />
+      <CategoryCard
+        title="career"
+        href="/guides/career"
+        description="Resumes, timelines, offer negotiation, and how to navigate the hiring process."
+        count={12}
+      />
+    </div>
+
+    <div class="journey__mid">
+      <CategoryCard
+        title="networking"
+        href="/guides/networking"
+        description="Cold outreach, LinkedIn, warm intros, and building real relationships that lead somewhere."
+        count={6}
+      />
+      <CategoryCard
+        title="misc"
+        href="/guides/misc"
+        description="Tools, productivity, and everything else worth knowing."
+        count={4}
+      />
+    </div>
+  </section>
 </Layout>
 
 <style>
-  .page-eyebrow {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .52rem;
-    color: rgba(216,180,254,.75);
-    letter-spacing: .28em;
-    margin: 0 0 1rem;
-  }
-  .page-headline {
-    font-family: Georgia, serif;
-    font-style: italic;
-    color: #fff;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    line-height: 1.05;
-    letter-spacing: -.01em;
-    text-shadow: 0 2px 24px rgba(0,0,0,.8), 0 0 40px rgba(76,29,149,.35);
-    margin: 0 0 .75rem;
-  }
-  .page-sub {
-    font-family: Georgia, serif;
-    font-size: .72rem;
-    color: rgba(255,255,255,.45);
-    line-height: 1.6;
-    margin: 0 0 3rem;
-  }
-
-  .category-grid {
+  .guide-journey {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
+    gap: var(--space-6);
   }
 
-  .category-card {
+  .journey__mid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    gap: .3rem .75rem;
-    padding: 1rem 1.2rem;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(168,85,247,.15);
-    border-radius: .55rem;
-    text-decoration: none;
-    transition: background .2s, border-color .2s;
-    align-items: start;
-  }
-  .category-card:hover {
-    background: rgba(168,85,247,.08);
-    border-color: rgba(168,85,247,.4);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
   }
 
-.category-card__body {
-    display: flex;
-    align-items: baseline;
-    gap: .75rem;
-  }
-
-  .category-card__title {
-    font-family: Georgia, serif;
-    font-style: italic;
-    font-size: .95rem;
-    color: rgba(255,255,255,.9);
-  }
-
-  .category-card__count {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .45rem;
-    color: rgba(216,180,254,.55);
-    letter-spacing: .12em;
-  }
-
-  .category-card__desc {
-    grid-column: 1;
-    font-family: Georgia, serif;
-    font-size: .68rem;
-    color: rgba(255,255,255,.38);
-    line-height: 1.55;
-    margin: 0;
-  }
-
-  .category-card__arrow {
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .65rem;
-    color: rgba(168,85,247,.5);
-    margin-top: .25rem;
-    transition: color .2s, transform .2s;
-  }
-  .category-card:hover .category-card__arrow {
-    color: rgba(168,85,247,.9);
-    transform: translateX(3px);
+  @media (max-width: 640px) {
+    .journey__mid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
