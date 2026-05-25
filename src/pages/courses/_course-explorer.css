@@ -1,0 +1,237 @@
+/* ─── Design tokens ──────────────────────────────────────────────────────────
+   All colors and fonts live here. Update a token and it ripples everywhere.
+   bg/surface = background layers (darkest → lightest)
+   line       = border/divider colors
+   text       = foreground hierarchy (full opacity → faded)
+   accent     = purple brand color, soft/dim/border are lower-opacity variants
+   gold/green/red/orange = rating and prereq highlight colors
+────────────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:            #000000;
+  --bg-2:          #050505;
+  --surface:       #0d0d0d;
+  --surface-2:     #141414;
+  --line:          #1c1c1c;
+  --line-2:        #282828;
+  --text:          #ffffff;
+  --text-2:        rgba(255,255,255,.65);
+  --text-3:        rgba(255,255,255,.3);
+  --accent:        #a855f7;
+  --accent-soft:   rgba(168,85,247,.12);
+  --accent-dim:    rgba(216,180,254,.75);
+  --accent-border: rgba(168,85,247,.2);
+  --gold:          #f5c542;
+  --green:         #5cd684;
+  --red:           #ff6363;
+  --orange:        #ff9a3c;
+  --font-mono:     'SF Mono', Menlo, Monaco, 'Courier New', monospace;
+  --font-serif:    Georgia, 'Times New Roman', serif;
+}
+
+/* ─── Reset / base ───────────────────────────────────────────────────────────
+   Minimal reset so the page starts from a clean slate.
+────────────────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { min-height: 100vh; font-size: 15px; line-height: 1.5; }
+
+/* ─── Page shell ─────────────────────────────────────────────────────────────
+   .shell caps the content width and adds horizontal padding.
+────────────────────────────────────────────────────────────────────────────── */
+.shell { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
+@media (max-width: 640px) { .shell { padding: 18px 16px 60px; } }
+
+/* ─── Top nav bar ────────────────────────────────────────────────────────────
+   .brand = "ProGSU / Courses" breadcrumb on the left
+   .top-meta = "back to home" link on the right
+   On mobile (<640px) the full link text is swapped for a shorter version.
+────────────────────────────────────────────────────────────────────────────── */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand-name { font-family: var(--font-mono); font-size: 11px; color: var(--accent-dim); letter-spacing: .08em; }
+.brand-slash { font-family: var(--font-mono); color: var(--text-3); }
+.brand-page { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+.top-meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); }
+.top-meta a { color: var(--text-3); text-decoration: none; transition: color .12s; }
+.top-meta a:hover { color: var(--accent-dim); }
+.top-meta-full { display: inline; }
+.top-meta-short { display: none; }
+@media (max-width: 640px) {
+  .top-meta-full { display: none; }
+  .top-meta-short { display: inline; }
+}
+
+/* ─── Page hero (title block) ────────────────────────────────────────────────
+   .page-eyebrow = small uppercase label above the headline
+   .h1           = italic serif headline
+   .lede         = subtitle / description paragraph
+────────────────────────────────────────────────────────────────────────────── */
+.page-head { padding: 52px 0 20px; }
+.page-eyebrow { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-dim); letter-spacing: .18em; margin: 0 0 1rem; text-transform: uppercase; }
+.h1 { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.7rem, 4vw, 2.8rem); line-height: 1.05; letter-spacing: -.01em; font-weight: normal; color: #fff; text-shadow: 0 2px 24px rgba(0,0,0,.8), 0 0 48px rgba(76,29,149,.4); margin: 0 0 .9rem; }
+.lede { font-family: var(--font-serif); font-size: .8rem; color: rgba(255,255,255,.45); line-height: 1.65; margin: 0; max-width: 520px; }
+
+/* ─── Search + toolbar ───────────────────────────────────────────────────────
+   .toolbar   = flex row holding the search box, toggle group, and action button
+   .search    = text input with icon; glows purple on focus
+   .kbd       = "/" shortcut hint shown when the input is empty
+   .tb-group  = segmented button group (Codes / Names toggle)
+   .tb-btn    = individual button inside a group; .is-on = active/selected
+   .tb-action = standalone toggle button (Prereq Lens)
+   .tb-counter = course count label on the far right of the toolbar
+────────────────────────────────────────────────────────────────────────────── */
+.toolbar { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; margin-top: 36px; }
+.search { flex: 1 1 280px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: .4rem; transition: border-color .15s, box-shadow .15s; }
+.search:focus-within { border-color: var(--accent-border); box-shadow: 0 0 0 1px var(--accent-border); }
+.search svg { color: var(--text-3); flex-shrink: 0; }
+.search input { flex: 1; background: transparent; border: 0; color: var(--text); font-family: inherit; font-size: 13px; outline: none; }
+.search input::placeholder { color: var(--text-3); }
+.search .kbd { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); border: 1px solid var(--line-2); padding: 2px 6px; border-radius: .3rem; }
+.search .clear { background: transparent; border: 0; color: var(--text-3); cursor: pointer; font: inherit; font-size: 13px; padding: 2px 6px; }
+.search .clear:hover { color: var(--text); }
+
+.tb-group { display: flex; align-items: stretch; background: var(--bg); border: 1px solid var(--line); border-radius: .4rem; overflow: hidden; }
+.tb-btn { appearance: none; border: 0; background: transparent; color: var(--text-3); padding: 10px 14px; font: inherit; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .12s, color .12s; border-right: 1px solid var(--line); }
+.tb-group .tb-btn:last-child { border-right: 0; }
+.tb-btn:hover { color: var(--text); background: var(--surface); }
+.tb-btn.is-on { background: var(--accent); color: #fff; }
+.tb-btn.is-on:hover { background: var(--accent); color: #fff; }
+
+.tb-action { appearance: none; border: 1px solid var(--line); background: var(--bg); color: var(--text-3); padding: 10px 14px; border-radius: .4rem; font: inherit; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: border-color .12s, color .12s, background .12s; }
+.tb-action:hover { border-color: var(--accent-border); color: var(--text); background: var(--surface); }
+.tb-action.is-on { border-color: var(--accent); color: var(--accent-dim); background: var(--accent-soft); }
+
+.tb-counter { margin-left: auto; padding: 0 4px; font-family: var(--font-mono); font-size: 10px; color: var(--text-3); align-self: center; letter-spacing: .04em; }
+
+/* ─── Two-column layout ──────────────────────────────────────────────────────
+   Left column = category groups + pills (fluid width)
+   Right column = sticky detail card (fixed 400px)
+   Below 1080px both columns stack; the detail card is hidden (mobile sheet takes over).
+────────────────────────────────────────────────────────────────────────────── */
+.grid { display: grid; grid-template-columns: minmax(0,1fr) 400px; gap: 40px; margin-top: 44px; align-items: start; }
+@media (max-width: 1080px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 1079px) { .detail-wrap { display: none; } }
+
+/* ─── Category groups ────────────────────────────────────────────────────────
+   Each category (Core, Foundations, etc.) is a .cat block with a header row
+   and a wrapping row of pill buttons below it.
+────────────────────────────────────────────────────────────────────────────── */
+.cats { display: flex; flex-direction: column; gap: 36px; }
+.cat-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.cat-title { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-dim); letter-spacing: .12em; text-transform: uppercase; }
+.cat-count { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ─── Course pills ───────────────────────────────────────────────────────────
+   Each course is a clickable .pill button.
+   .is-active     = currently selected course (purple glow)
+   .is-dim        = faded out during a search that doesn't match this course
+   .pill-num      = secondary label (credit hours or course code in name mode)
+   .unlock-badge  = gold counter badge shown in Prereq Lens mode; counts how
+                    many courses this pill unlocks
+   .is-prereq-of-active   = orange — this course is required by the selected one
+   .is-unlocked-by-active = gold  — the selected course unlocks this one
+────────────────────────────────────────────────────────────────────────────── */
+.pill { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); font: inherit; font-size: 12.5px; padding: 7px 14px; border-radius: .4rem; cursor: pointer; transition: border-color .12s, color .12s, background .12s, box-shadow .12s; display: inline-flex; align-items: center; gap: 8px; position: relative; text-align: left; }
+.pill:hover { border-color: var(--accent-border); color: var(--text); }
+.pill.is-active { background: var(--accent-soft); color: var(--text); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 16px rgba(168,85,247,.15); }
+.pill.is-dim { opacity: 0.2; }
+.pill.is-dim:hover { opacity: 0.5; }
+.pill .pill-num { font-family: var(--font-mono); color: var(--text-3); font-size: 10px; }
+.pill.is-active .pill-num { color: rgba(216,180,254,.5); }
+
+.pill .unlock-badge { position: absolute; top: -7px; right: -7px; background: var(--gold); color: #1a1500; font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 999px; box-shadow: 0 0 0 2px var(--bg); }
+.pill.is-prereq-of-active { border-color: var(--orange); color: var(--orange); }
+.pill.is-unlocked-by-active { border-color: var(--gold); color: var(--gold); }
+
+/* ─── Right-side detail card ─────────────────────────────────────────────────
+   .detail-wrap  = sticky container so the card stays in view while scrolling
+   .detail       = the card itself
+   .detail-empty = placeholder state when no course is selected
+   .d-code-row   = course code + credit hours on one line
+   .d-title      = italic serif course name
+   .d-desc       = course description paragraph
+   .d-section    = generic section block (Professors / Requires / Unlocks)
+   .d-section-h  = small uppercase label above each section
+────────────────────────────────────────────────────────────────────────────── */
+.detail-wrap { position: sticky; top: 20px; }
+.detail { background: var(--surface); border: 1px solid var(--line); border-radius: .6rem; padding: 22px 22px 20px; overflow: hidden; }
+.detail-empty { padding: 56px 24px; text-align: center; color: var(--text-3); font-size: 13px; border: 1px dashed var(--line); border-radius: .6rem; line-height: 1.6; }
+.detail-empty .ic { font-size: 20px; color: var(--text-2); margin-bottom: 14px; }
+.d-code-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.d-code { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-dim); letter-spacing: .1em; text-transform: uppercase; }
+.d-ch { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); padding: 2px 7px; border: 1px solid var(--accent-border); border-radius: .3rem; }
+.d-title { font-family: var(--font-serif); font-style: italic; font-size: 1.55rem; line-height: 1.1; font-weight: normal; margin: 6px 0 14px; color: #fff; text-shadow: 0 0 32px rgba(76,29,149,.3); }
+.d-desc { font-family: var(--font-serif); font-size: .78rem; line-height: 1.65; color: rgba(255,255,255,.45); margin: 0 0 4px; }
+
+.d-section { margin-top: 22px; }
+.d-section-h { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .12em; }
+
+/* ─── Professor rows ─────────────────────────────────────────────────────────
+   Each professor is a row (.prof) showing name, review count, and RMP rating.
+   The rating badge is color-coded: green ≥4.0, gold ≥3.0, red <3.0, grey = no rating.
+   .prof-count = number of RMP reviews in parentheses
+────────────────────────────────────────────────────────────────────────────── */
+.prof-list { display: flex; flex-direction: column; gap: 4px; }
+.prof { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: .4rem; background: var(--bg); border: 1px solid var(--line); text-decoration: none !important; color: inherit; transition: border-color .12s; }
+.prof * { text-decoration: none !important; }
+.prof:hover { border-color: var(--accent-border); }
+.prof-name { flex: 1; font-size: 12.5px; color: var(--text-2); }
+.prof-rating { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: .3rem; }
+.prof-rating.r-hi  { background: rgba(92,214,132,0.10); color: var(--green); }
+.prof-rating.r-mid { background: rgba(245,197,66,0.10); color: var(--gold); }
+.prof-rating.r-lo  { background: rgba(255,99,99,0.10); color: var(--red); }
+.prof-rating.r-nr  { background: rgba(255,255,255,0.04); color: var(--text-3); }
+.prof-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); min-width: 28px; text-align: right; }
+
+/* ─── Prereq / unlock chips ──────────────────────────────────────────────────
+   Small clickable tags inside the detail card.
+   Default = a CSC prereq you can click to jump to that course.
+   .is-math    = orange, MATH course (not clickable, just a label)
+   .is-unlock  = gold, a course that the selected one unlocks
+   .req-empty  = shown when there are no prereqs or unlocks
+   .pr-note    = raw prerequisite text from the catalog (fallback detail)
+────────────────────────────────────────────────────────────────────────────── */
+.req-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.req-chip { font-family: var(--font-mono); font-size: 10.5px; padding: 4px 9px; border-radius: .3rem; border: 1px solid var(--line); background: var(--bg); color: var(--text-3); cursor: pointer; transition: border-color .12s, color .12s; letter-spacing: .02em; }
+.req-chip:hover { border-color: var(--accent-border); color: var(--accent-dim); }
+.req-chip.is-math { color: var(--orange); border-color: rgba(255,154,60,.25); }
+.req-chip.is-math:hover { border-color: var(--orange); }
+.req-chip.is-unlock { color: var(--gold); border-color: rgba(245,197,66,.25); }
+.req-chip.is-unlock:hover { border-color: var(--gold); }
+.req-empty { font-family: var(--font-mono); font-size: .48rem; color: var(--text-3); letter-spacing: .05em; }
+.pr-note { font-family: var(--font-serif); font-size: .74rem; color: rgba(255,255,255,.35); line-height: 1.6; margin-top: 10px; }
+
+/* ─── Mobile slide-up sheet ──────────────────────────────────────────────────
+   On narrow viewports the detail card is hidden and replaced by a bottom sheet
+   that slides up when you tap a pill.
+   .mobile-sheet-backdrop = darkened overlay behind the sheet
+   .mobile-sheet          = the sheet panel itself (slides up via animation)
+   .mobile-sheet-handle   = sticky top bar with course code + close button
+   .detail--flat          = strips the card border/bg when rendered inside the sheet
+────────────────────────────────────────────────────────────────────────────── */
+@keyframes fade { from { opacity: 0; } }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.mobile-sheet-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); animation: fade .18s ease-out; }
+.mobile-sheet { position: fixed; bottom: 0; left: 0; right: 0; z-index: 41; background: var(--bg); border-top: 1px solid var(--accent-border); border-radius: 16px 16px 0 0; max-height: 94vh; overflow-y: auto; animation: sheet-up .22s ease-out; }
+.mobile-sheet-handle { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.mobile-sheet-label { font-family: var(--font-mono); font-size: .48rem; color: var(--accent-dim); letter-spacing: .18em; text-transform: uppercase; }
+.mobile-sheet-close { appearance: none; border: 1px solid var(--line); background: transparent; color: var(--text-3); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: color .12s, border-color .12s; }
+.mobile-sheet-close:hover { color: var(--text); border-color: var(--accent-border); }
+.mobile-sheet-body { padding: 0; }
+.detail--flat { background: none; border: none; border-radius: 0; padding: 16px 18px 28px; }
+
+/* ─── Footer ─────────────────────────────────────────────────────────────────
+   Simple two-column row at the bottom of the page.
+────────────────────────────────────────────────────────────────────────────── */
+.footer { display: flex; justify-content: space-between; gap: 14px; margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: .72rem; color: var(--text-3); letter-spacing: .04em; }
+.footer a { color: var(--text-3); text-decoration: none; }
+.footer a:hover { color: var(--accent-dim); }
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────
+   Thin dark scrollbar that glows purple on hover (Webkit only).
+────────────────────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(168,85,247,.3); }
