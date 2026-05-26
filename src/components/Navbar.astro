@@ -33,21 +33,18 @@ function isActive(href: string): boolean {
 
     <div id="nav-menu" class="nav__menu surface-glass surface-glass--strong">
       <a href="/" class:list={['nav__link', { 'is-active': isActive('/') }]}>start</a>
-      {NAV_LINKS.map((l) => (
-        <a
-          href={l.href}
-          class:list={['nav__link', { 'is-active': isActive(l.href) }]}
-        >
-          {l.label.toLowerCase()}
-        </a>
-      ))}
-      <a
-        href="https://github.com/progsu-official"
-        class="nav__link"
-        rel="noopener noreferrer"
-      >
-        contribute
-      </a>
+      {NAV_LINKS.map((l) => {
+        const isExternal = l.href.startsWith('http');
+        return (
+          <a
+            href={l.href}
+            class:list={['nav__link', { 'is-active': !isExternal && isActive(l.href) }]}
+            {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            {l.label.toLowerCase()}
+          </a>
+        );
+      })}
       <kbd class="nav__kbd surface-glass" aria-label="Press / to search">/</kbd>
     </div>
   </nav>

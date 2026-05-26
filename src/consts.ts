@@ -5,4 +5,6 @@ export const SITE_DESCRIPTION =
 export const NAV_LINKS = [
   { label: "Guides", href: "/guides" },
   { label: "Courses", href: "/courses" },
+  { label: "progsu.com", href: "https://progsu.com" },
+  { label: "Blog", href: "/blog" },
 ] as const;

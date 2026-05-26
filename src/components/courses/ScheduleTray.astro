@@ -24,6 +24,7 @@ import Zone from "./Zone.astro";
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     border-bottom: none;
     padding: var(--space-4) var(--space-6);
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   }
 
   .tray__bar {

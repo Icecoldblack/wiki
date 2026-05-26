@@ -507,6 +507,8 @@
   @media (max-width: 900px) {
     .cf-trigger {
       display: flex;
+      bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+      min-height: 44px;
     }
 
     .cf {
@@ -521,6 +523,7 @@
       max-height: 70vh;
       overflow-y: auto;
       padding: var(--space-6);
+      padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
       background: var(--glass-bg-strong);
     }
     .cf.sheet-open {
@@ -528,6 +531,17 @@
     }
     .cf__done {
       display: block;
+      min-height: 44px;
+    }
+
+    .cf__option {
+      min-height: 44px;
+    }
+    .cf__toggle {
+      min-height: 44px;
+    }
+    .cf__dropdown-header {
+      min-height: 44px;
     }
   }
 </style>

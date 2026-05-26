@@ -215,6 +215,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     display: flex;
     align-items: center;
     gap: var(--space-4);
+    min-width: 0;
   }
 
   /* ── Schedule picker dropdown ── */
@@ -234,8 +235,14 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: border-color var(--duration-fast) var(--ease);
+    min-width: 0;
+  }
+  .topbar__sched-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
+
   .topbar__active-schedule:hover,
   .topbar__active-schedule[aria-expanded="true"] {
     border-color: var(--glass-border-hi);
@@ -252,7 +259,8 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     position: absolute;
     top: calc(100% + var(--space-2));
     left: 0;
-    min-width: 220px;
+    width: max(220px, 100%);
+    max-width: calc(100vw - var(--space-8));
     border-radius: var(--radius-lg);
     padding: var(--space-2);
     display: none;
@@ -386,7 +394,8 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
   .topbar__right {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
+    flex-shrink: 0;
   }
 
   .topbar__save {
@@ -781,6 +790,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     border-top: 1px solid var(--glass-border);
     padding-top: var(--space-4);
     margin-top: var(--space-3);
+    text-align: center;
     transition: opacity var(--duration-normal) var(--ease);
   }
   .panel-summary.hidden {
@@ -794,6 +804,10 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     color: var(--color-text-primary);
     line-height: 1;
     margin-bottom: var(--space-2);
+  }
+
+  :global(.summary-meta__times) {
+    display: none;
   }
 
   .summary-meta {
@@ -835,6 +849,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     top: calc(100% + var(--space-2));
     right: 0;
     min-width: 180px;
+    max-width: calc(100vw - var(--space-8));
     border-radius: var(--radius-lg);
     padding: var(--space-2);
     display: none;
@@ -948,8 +963,8 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     color: var(--color-text-muted);
     font-size: var(--text-xl);
     cursor: pointer;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1075,9 +1090,9 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
 
   :global(.add-section-row) {
     display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-3) var(--space-3);
     border-radius: var(--radius-sm);
     background: rgba(255,255,255,0.02);
     border: 1px solid transparent;
@@ -1086,6 +1101,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     font-size: 0.6rem;
     color: var(--color-text-tertiary);
     letter-spacing: var(--tracking-wider);
+    line-height: var(--leading-normal);
     transition: border-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
   }
   :global(.add-section-row):hover {
@@ -1114,7 +1130,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
   /* ── Toast ── */
   .toast-container {
     position: fixed;
-    bottom: var(--space-6);
+    bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: var(--z-modal);
@@ -1122,6 +1138,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     flex-direction: column;
     gap: var(--space-2);
     pointer-events: none;
+    max-width: calc(100vw - var(--space-8));
   }
 
   :global(.toast) {
@@ -1141,7 +1158,6 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     gap: var(--space-3);
     box-shadow: var(--glass-shadow);
     animation: toastIn 0.25s var(--ease-out);
-    white-space: nowrap;
   }
   :global(.toast.leaving) {
     animation: toastOut 0.2s var(--ease) forwards;
@@ -1310,6 +1326,8 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
 
     .sched-panel {
       position: static;
+      grid-column: 1;
+      grid-row: auto;
       flex-direction: column;
       gap: var(--space-4);
     }
@@ -1347,6 +1365,9 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     .save-label {
       display: none;
     }
+    .topbar__export-btn span {
+      display: none;
+    }
 
     /* Hide course list — day view already shows what's scheduled */
     #panel-live > .panel-section {
@@ -1356,17 +1377,19 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       display: none;
     }
 
-    /* Day blocks constrain text */
-    .day-block {
-      overflow: hidden;
+    /* Day blocks — let text wrap on mobile */
+    :global(.day-block) {
+      padding: var(--space-3) var(--space-4);
     }
-    .day-block__title {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    :global(.day-block__title) {
+      white-space: normal;
+      word-break: break-word;
+      font-size: var(--text-xs);
     }
-    .day-block__meta {
+    :global(.day-block__meta) {
       flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-2);
     }
 
     /* Add panel becomes bottom sheet */
@@ -1381,9 +1404,31 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       border-radius: var(--radius-xl) var(--radius-xl) 0 0;
       border-right: 1px solid var(--glass-border);
       transform: translateY(100%);
+      padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
     }
     .add-panel.open {
       transform: translateY(0);
+    }
+
+    .add-panel__search {
+      font-size: var(--text-base);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    /* Day pills: ensure 44px tap target */
+    .day-pill {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* Top bar buttons */
+    .topbar__add {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .topbar__export-btn {
+      min-height: 44px;
     }
 
     /* Popover positions better on mobile */
@@ -1647,7 +1692,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       el.style.top = `${y}px`;
       el.style.width = `${w}px`;
       el.style.height = `${h}px`;
-      el.style.background = b.color.bg;
+      el.style.background = `linear-gradient(${b.color.bg}, ${b.color.bg}), #0e0e24`;
       el.style.borderColor = b.color.border;
       el.style.setProperty('--block-text', b.color.text);
       el.innerHTML = `<span class="sched-block__code">${s.code}</span><span class="sched-block__room">${s.section.room}</span>`;
@@ -1687,11 +1732,11 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
 
     summaryHero.textContent = `${stats.credits} credits`;
 
-    const parts: string[] = [];
-    parts.push(`${stats.contactHours}h/wk`);
-    parts.push(`${earlyStr}–${lateStr}`);
-    if (stats.daysOff.length) parts.push(`${stats.daysOff.join(', ')} off`);
-    summaryMeta.textContent = parts.join(' · ');
+    const coreParts: string[] = [];
+    coreParts.push(`${stats.contactHours}h/wk`);
+    if (stats.daysOff.length) coreParts.push(`${stats.daysOff.join(', ')} off`);
+
+    summaryMeta.innerHTML = `<span>${coreParts.join(' · ')}</span><span class="summary-meta__times"> · ${earlyStr}–${lateStr}</span>`;
   }
 
   // ── Conflict detection ──
@@ -1930,7 +1975,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
     for (const sec of c.sections) {
       const row = document.createElement('div');
       row.className = 'add-section-row';
-      row.textContent = `${sec.id} · ${sec.professor} · ${sec.days.join('/')} ${fmtT(sec.startH, sec.startM)}–${fmtT(sec.endH, sec.endM)} · ${sec.seats}/${sec.cap}`;
+      row.innerHTML = `<span>${sec.id} · ${sec.professor}</span><span style="display:block;opacity:0.7">${sec.days.join('/')} ${fmtT(sec.startH, sec.startM)}–${fmtT(sec.endH, sec.endM)} · ${sec.seats}/${sec.cap} seats</span>`;
       row.addEventListener('click', (ev) => {
         ev.stopPropagation();
         addToSchedule(c, sec);
@@ -2076,13 +2121,13 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       el.setAttribute('tabindex', '0');
       el.setAttribute('role', 'button');
       el.setAttribute('aria-label', `${s.code} — ${s.course.title}, ${fmtT(s.section.startH, s.section.startM)} to ${fmtT(s.section.endH, s.section.endM)}`);
-      el.style.cssText = `background:${c.bg};border-color:${c.border};--block-text:${c.text};display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-1);padding:var(--space-4) var(--space-5);border-radius:var(--radius-lg);border:1px solid ${c.border};cursor:pointer`;
+      el.style.cssText = `background:${c.bg};border-color:${c.border};--block-text:${c.text}`;
       el.innerHTML = `
-        <div style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text-muted);letter-spacing:var(--tracking-wider)">${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}</div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-1)">
-          <span style="font-family:var(--font-mono);font-size:var(--text-xs);font-weight:600;color:var(--block-text);letter-spacing:var(--tracking-wider)">${s.code}</span>
-          <span style="font-family:var(--font-heading);font-style:italic;font-size:var(--text-sm);color:var(--color-text-primary);line-height:var(--leading-snug)">${s.course.title}</span>
-          <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--color-text-muted);letter-spacing:var(--tracking-wider);display:flex;justify-content:center;gap:var(--space-3);margin-top:var(--space-1)">
+        <span class="day-block__time">${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}</span>
+        <div class="day-block__body">
+          <span class="day-block__code">${s.code}</span>
+          <span class="day-block__title">${s.course.title}</span>
+          <div class="day-block__meta">
             <span>${s.section.professor}</span>
             <span>${s.section.room}</span>
           </div>

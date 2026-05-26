@@ -1,16 +1,20 @@
 ---
 import { SITE_TITLE } from "../consts";
+import SocialRow from "./SocialRow.astro";
 ---
 
 <footer class="site-footer" role="contentinfo">
   <div class="site-footer__inner">
-    <div class="site-footer__orb" aria-hidden="true"></div>
-    <p class="site-footer__text">
-      &copy; {new Date().getFullYear()} {SITE_TITLE} &middot; built by progsu &middot;
+    <SocialRow />
+    <div class="site-footer__content">
+      <p class="site-footer__text">
+        &copy; {new Date().getFullYear()} {SITE_TITLE} &middot; built by progsu
+      </p>
+      <span class="site-footer__sep" aria-hidden="true">&middot;</span>
       <a href="https://github.com/progsu-official" class="site-footer__link" rel="noopener noreferrer">
         open on github
       </a>
-    </p>
+    </div>
   </div>
 </footer>
 
@@ -27,23 +31,21 @@ import { SITE_TITLE } from "../consts";
     max-width: var(--page-width-wide);
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
-  .site-footer__orb {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle at 30% 30%,
-      var(--color-purple-300),
-      var(--color-purple-500) 60%,
-      var(--color-purple-900)
-    );
-    box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
-    flex-shrink: 0;
+  .site-footer__content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .site-footer__sep {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
   }
 
   .site-footer__text {
@@ -52,14 +54,30 @@ import { SITE_TITLE } from "../consts";
     color: var(--color-text-muted);
     letter-spacing: var(--tracking-wider);
     margin: 0;
+    text-align: center;
   }
 
   .site-footer__link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wider);
     text-decoration: none;
+    white-space: nowrap;
     transition: color var(--duration-normal) var(--ease);
   }
   .site-footer__link:hover {
     color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 480px) {
+    .site-footer__content {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .site-footer__sep {
+      display: none;
+    }
   }
 </style>

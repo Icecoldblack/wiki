@@ -798,6 +798,9 @@ const relatedCourses = (course.related ?? [])
     padding: var(--space-2) var(--space-5);
     border-radius: var(--radius-lg);
     text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
     transition:
       background var(--duration-normal) var(--ease),
       border-color var(--duration-normal) var(--ease);
@@ -845,6 +848,7 @@ const relatedCourses = (course.related ?? [])
     align-items: center;
     gap: var(--space-2);
     cursor: pointer;
+    min-height: 44px;
   }
   .sec-filter-toggle input { accent-color: var(--accent-text); }
   .sec-filter-toggle__label {
@@ -1099,6 +1103,70 @@ const relatedCourses = (course.related ?? [])
     }
     .hero__cta {
       text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sec-filter-chip {
+      padding: var(--space-2) var(--space-4);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .add-btn {
+      padding: var(--space-2) var(--space-4);
+      min-height: 44px;
+    }
+
+    .sections-table-wrap {
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+    }
+
+    .sections-table thead {
+      display: none;
+    }
+
+    .sections-table,
+    .sections-table tbody {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .sections-table tr {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-4);
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      border-radius: var(--radius-lg);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+    }
+
+    .sections-table td {
+      padding: 0;
+      border-bottom: none;
+      white-space: normal;
+    }
+
+    .sections-table td:last-child {
+      margin-left: auto;
+    }
+
+    .course-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+
+    .note-card {
+      padding: var(--space-4) var(--space-5);
     }
   }
 </style>

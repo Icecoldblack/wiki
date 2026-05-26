@@ -5,6 +5,7 @@
 <div id="constellation-root">
   <!-- Parallax star layers (CSS, behind WebGL canvas) -->
   <div class="layer-nebula" id="layer-nebula"></div>
+  <div class="layer-nebula--deep" id="layer-nebula-deep"></div>
   <div class="layer-stars layer-stars--far"  id="stars-far"></div>
   <div class="layer-stars layer-stars--mid"  id="stars-mid"></div>
   <div class="layer-stars layer-stars--near" id="stars-near"></div>
@@ -47,13 +48,6 @@
     <p class="search-proof">GROWING WIKI &middot; BY PROGSU &middot; OPEN ON GITHUB</p>
   </div>
 
-  <div class="controls-hint" id="controls-hint-3d">
-    drag · rotate &nbsp;|&nbsp; right-drag · pan &nbsp;|&nbsp; scroll · zoom &nbsp;|&nbsp; dbl-click · reset
-  </div>
-  <div class="controls-hint" id="controls-hint-2d" style="display:none">
-    click a node to explore &nbsp;|&nbsp; hover for details
-  </div>
-
   <!-- 2D fallback view -->
   <div id="graph-2d" style="display:none">
     <svg id="graph-2d-svg" width="100%" height="100%"></svg>
@@ -69,10 +63,17 @@
   #constellation-root {
     position: relative;
     width: 100%;
+    max-width: 100vw;
     height: 100vh;
     min-height: 600px;
     overflow: hidden;
     background: #06060f;
+  }
+
+  @media (max-width: 640px) {
+    #constellation-root {
+      min-height: 100svh;
+    }
   }
 
   .layer-nebula {
@@ -84,6 +85,26 @@
       radial-gradient(ellipse 50% 40% at 80% 20%, rgba(13,42,90,.4),   transparent 65%),
       linear-gradient(180deg, #02020a 0%, #050516 50%, #02020a 100%);
     will-change: transform;
+  }
+
+  .layer-nebula--deep {
+    position: absolute;
+    inset: -15%;
+    background:
+      radial-gradient(ellipse 80% 60% at 45% 40%, rgba(76,29,149,.30), transparent 70%),
+      radial-gradient(ellipse 60% 55% at 75% 65%, rgba(124,58,237,.22), transparent 65%),
+      radial-gradient(ellipse 70% 50% at 25% 70%, rgba(139,92,246,.20), transparent 60%),
+      radial-gradient(ellipse 90% 70% at 55% 50%, rgba(30,27,75,.40), transparent 75%),
+      radial-gradient(ellipse 50% 45% at 80% 30%, rgba(76,29,149,.18), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 15% 35%, rgba(168,85,247,.14), transparent 55%),
+      radial-gradient(ellipse 100% 80% at 50% 55%, rgba(76,29,149,.12), transparent 80%);
+    will-change: transform;
+    animation: driftNebula 200s linear infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .layer-nebula--deep { animation: none; }
   }
 
   .layer-stars { position: absolute; inset: 0; will-change: transform; }
@@ -237,7 +258,7 @@
 
   .hero-headline-wrap {
     position: absolute;
-    bottom: 17%;
+    bottom: 22%;
     left: 0;
     right: 0;
     text-align: center;
@@ -270,7 +291,7 @@
 
   .hero-search-wrap {
     position: absolute;
-    bottom: 5%;
+    bottom: 3%;
     left: 50%;
     transform: translateX(-50%);
     width: 88%;
@@ -316,7 +337,7 @@
     border: none;
     outline: none;
     font-family: 'SF Mono', Menlo, monospace;
-    font-size: .7rem;
+    font-size: 1rem;
     color: rgba(255,255,255,.9);
     caret-color: rgba(168,85,247,.9);
     min-width: 0;
@@ -362,25 +383,23 @@
     letter-spacing: .12em;
     margin: .7rem 0 0;
     text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
-  .controls-hint {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: .38rem;
-    color: rgba(255,255,255,.15);
-    letter-spacing: .2em;
-    z-index: 20;
-    white-space: nowrap;
-    pointer-events: none;
+  @media (max-width: 640px) {
+    .view-toggle { display: none; }
+    .hero-headline { font-size: clamp(1.3rem, 5.5vw, 1.8rem); }
+    .hero-sub { font-size: .65rem; }
+    .hero-headline-wrap { bottom: 20%; }
+    .hero-search-wrap { bottom: 2%; }
+    .search-proof { margin-top: .4rem; }
   }
 
-  @keyframes driftFar  { from { transform: translate(0,0) }   to { transform: translate(60px,40px) } }
-  @keyframes driftMid  { from { transform: translate(0,0) }   to { transform: translate(-80px,50px) } }
-  @keyframes driftNear { from { transform: translate(0,0) }   to { transform: translate(100px,-60px) } }
+  @keyframes driftFar    { from { transform: translate(0,0) }   to { transform: translate(60px,40px) } }
+  @keyframes driftMid    { from { transform: translate(0,0) }   to { transform: translate(-80px,50px) } }
+  @keyframes driftNear   { from { transform: translate(0,0) }   to { transform: translate(100px,-60px) } }
+  @keyframes driftNebula { from { transform: translate(0,0) }   to { transform: translate(40px,25px) } }
 
   /* ── 2D fallback ──────────────────────────────────────────────── */
   #graph-2d {
@@ -498,7 +517,7 @@
   // ── node data ──────────────────────────────────────────────────
   const NODE_DEFS = [
     { id: "wiki",        label: "progsu / wiki", desc: "",                                          central: true,  guides: 0,  color: 0xd8b4fe, emissive: 0xa855f7 },
-    { id: "foundations", label: "foundations",   desc: "CS theory, math, and first principles",     guides: 0,  route: "/guides/foundations", color: 0xbae6fd, emissive: 0x22d3ee },
+    { id: "zero-to-hero", label: "zero to hero",   desc: "CS theory, math, and first principles",     guides: 0,  route: "/guides/zero-to-hero", color: 0xbae6fd, emissive: 0x22d3ee },
     { id: "career",      label: "career",         desc: "Recruiting, resumes, and offer strategy",  guides: 0,  route: "/guides/career",       color: 0xbbf7d0, emissive: 0x34d399 },
     { id: "networking",  label: "networking",     desc: "Cold outreach, LinkedIn, and warm intros", guides: 0,  route: "/guides/networking",   color: 0xfecdd3, emissive: 0xfb7185 },
     { id: "technical",   label: "technical",      desc: "LC, system design, and take-homes",        guides: 0,  route: "/guides/technical",    color: 0xfde68a, emissive: 0xfbbf24 },
@@ -510,12 +529,12 @@
   type LinkDatum = { source: string; target: string };
 
   const links: LinkDatum[] = [
-    { source: "wiki", target: "foundations" },
+    { source: "wiki", target: "zero-to-hero" },
     { source: "wiki", target: "career" },
     { source: "wiki", target: "networking" },
     { source: "wiki", target: "technical" },
     { source: "wiki", target: "misc" },
-    { source: "foundations", target: "technical" },
+    { source: "zero-to-hero", target: "technical" },
     { source: "career",      target: "networking" },
   ];
 
@@ -542,8 +561,11 @@
 
   // Scene & camera
   const scene  = new THREE.Scene();
+  const isMobile = W < 640;
+  const defaultZ = isMobile ? 560 : 420;
+  const defaultY = isMobile ? -40 : 0;
   const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 2000);
-  camera.position.set(0, 0, 420);
+  camera.position.set(0, defaultY, defaultZ);
 
   const ambient = new THREE.AmbientLight(0x0a0618, 0.3);
   scene.add(ambient);
@@ -599,10 +621,12 @@
     TWO: THREE.TOUCH.DOLLY_PAN,
   };
 
+  controls.target.set(0, defaultY, 0);
+
   // Double-click resets camera
   canvas.addEventListener("dblclick", () => {
-    camera.position.set(0, 0, 420);
-    controls.target.set(0, 0, 0);
+    camera.position.set(0, defaultY, defaultZ);
+    controls.target.set(0, defaultY, 0);
     controls.update();
   });
 
@@ -616,10 +640,10 @@
   })) as NodeSim[];
 
   const sim = d3.forceSimulation<NodeSim>(simNodes)
-    .force("link",    d3.forceLink<NodeSim, LinkDatum>(links).id(d => d.id).distance(200).strength(0.5))
-    .force("charge",  d3.forceManyBody().strength(-700))
+    .force("link",    d3.forceLink<NodeSim, LinkDatum>(links).id(d => d.id).distance(isMobile ? 130 : 200).strength(0.5))
+    .force("charge",  d3.forceManyBody().strength(isMobile ? -400 : -700))
     .force("center",  d3.forceCenter(0, 0))
-    .force("collide", d3.forceCollide<NodeSim>().radius(d => (d.id === "wiki" ? 40 : 25)))
+    .force("collide", d3.forceCollide<NodeSim>().radius(d => (d.id === "wiki" ? (isMobile ? 28 : 40) : (isMobile ? 18 : 25))))
     .alphaDecay(0.025);
 
   const centerSim = simNodes.find(n => n.id === "wiki")!;
@@ -747,7 +771,7 @@
 
   for (const n of simNodes) {
     const isCentral = n.id === "wiki";
-    const radius    = isCentral ? 22 : 12;
+    const radius    = isCentral ? (isMobile ? 16 : 22) : (isMobile ? 9 : 12);
 
     const mat = new THREE.MeshPhysicalMaterial({
       color:              new THREE.Color(n.color).multiplyScalar(0.45),
@@ -792,17 +816,19 @@
       { scale: 2.8, op: 0.22, speed:  0.06 },
       { scale: 4.2, op: 0.14, speed: -0.04 },
       { scale: 6.0, op: 0.08, speed:  0.025 },
+      { scale: 10.0, op: 0.04, speed:  0.012 },
     ] : [
       { scale: 3.0, op: 0.28, speed:  0.06 },
       { scale: 5.0, op: 0.18, speed: -0.04 },
       { scale: 7.5, op: 0.10, speed:  0.025 },
+      { scale: 11.0, op: 0.05, speed:  0.012 },
     ];
     const clouds: CloudLayer[] = [];
     const nodeIdx = simNodes.indexOf(n);
     for (let li = 0; li < layerDefs.length; li++) {
       const def = layerDefs[li];
-      const tex = cloudPool[(nodeIdx * 3 + li) % cloudPool.length];
-      const tint = li === 2 ? outerTint : new THREE.Color(n.emissive);
+      const tex = cloudPool[(nodeIdx * 4 + li) % cloudPool.length];
+      const tint = li >= 2 ? outerTint : new THREE.Color(n.emissive);
       const cMat = new THREE.SpriteMaterial({
         map:         tex,
         color:       tint,
@@ -849,20 +875,6 @@
   });
   const edgeMesh = new THREE.LineSegments(edgeGeo, edgeMat);
   edgeGroup.add(edgeMesh);
-
-  // ── diffuse background cloud ───────────────────────────────────
-  const bgCloudMat = new THREE.SpriteMaterial({
-    map:         cloudPool[0],
-    color:       0xa855f7,
-    transparent: true,
-    opacity:     0.06,
-    blending:    THREE.AdditiveBlending,
-    depthWrite:  false,
-  });
-  const bgCloud = new THREE.Sprite(bgCloudMat);
-  bgCloud.scale.setScalar(500);
-  bgCloud.position.set(0, 0, -20);
-  scene.add(bgCloud);
 
   // ── bloom post-processing ──────────────────────────────────────
   const composer = new EffectComposer(renderer);
@@ -1013,6 +1025,7 @@
 
   // ── mouse parallax for CSS star layers ────────────────────────
   const starsNebula = document.getElementById("layer-nebula")!;
+  const nebulaDeep  = document.getElementById("layer-nebula-deep")!;
   const starsFar    = document.getElementById("stars-far")!;
   const starsMid    = document.getElementById("stars-mid")!;
   const starsNear   = document.getElementById("stars-near")!;
@@ -1026,6 +1039,7 @@
   function applyParallax() {
     rafPending = false;
     starsNebula.style.transform = `translate(${mx * 3}px, ${my * 2}px)`;
+    nebulaDeep.style.transform  = `translate(${mx * 5}px, ${my * 3}px)`;
     starsFar.style.transform    = `translate(${mx * 6}px, ${my * 4}px)`;
     starsMid.style.transform    = `translate(${mx * 12}px, ${my * 8}px)`;
     starsNear.style.transform   = `translate(${mx * 20}px, ${my * 14}px)`;
@@ -1075,10 +1089,6 @@
       const meshMat = obj.mesh.material as THREE.MeshPhysicalMaterial;
       meshMat.emissiveIntensity = (isCentral ? 0.55 : 0.45) + ht * 0.45;
     }
-
-    // Background cloud slow drift
-    (bgCloud.material as THREE.SpriteMaterial).rotation = animTime * 0.008;
-    (bgCloud.material as THREE.SpriteMaterial).opacity = Math.max(0, 0.06 + breathe * 0.3);
 
     composer.render();
 
@@ -1276,8 +1286,6 @@
   // ── 2D fallback view ──────────────────────────────────────────
   const graph2dEl    = document.getElementById("graph-2d")!;
   const svg2d        = document.getElementById("graph-2d-svg") as unknown as SVGSVGElement;
-  const hint3d       = document.getElementById("controls-hint-3d")!;
-  const hint2d       = document.getElementById("controls-hint-2d")!;
   const toggleBtn    = document.getElementById("view-toggle")!;
   const toggleLabel  = document.getElementById("view-toggle-label")!;
   let   is2D         = false;
@@ -1522,8 +1530,6 @@
     is2D = true;
     canvas.style.display    = "none";
     labelEl.style.display   = "none";
-    hint3d.style.display    = "none";
-    hint2d.style.display    = "";
     graph2dEl.style.display = "";
     // Ensure graph-focused class (which hides headline/eyebrow) is cleared
     root.classList.remove("graph-focused");
@@ -1537,8 +1543,6 @@
     is2D = false;
     canvas.style.display    = "";
     labelEl.style.display   = "";
-    hint3d.style.display    = "";
-    hint2d.style.display    = "none";
     graph2dEl.style.display = "none";
     tip.classList.remove("visible");
     toggleLabel.textContent = "2D";
