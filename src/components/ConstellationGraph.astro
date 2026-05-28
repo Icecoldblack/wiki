@@ -343,6 +343,11 @@
     min-width: 0;
   }
   .search-bar__input::placeholder { color: rgba(255,255,255,.38); }
+  .search-bar__input:focus,
+  .search-bar__input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 
   .search-kbd {
     font-size: .55rem;

@@ -1,7 +1,9 @@
 import * as persist from './persist';
 
 const KEY = 'starred';
-const starred = new Set<string>(persist.get<string[]>(KEY, []));
+const raw = persist.get<unknown>(KEY, []);
+const initial = Array.isArray(raw) ? raw.filter((v): v is string => typeof v === 'string') : [];
+const starred = new Set<string>(initial);
 const listeners = new Set<() => void>();
 
 function save() {

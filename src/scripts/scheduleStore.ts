@@ -49,7 +49,7 @@ function loadAll(): ScheduleData[] {
     id: genId(),
     name: 'Ideal',
     semester: 'Fall 2026',
-    courses: [...defaultSeeds],
+    courses: defaultSeeds.map(e => ({ ...e })),
   };
   saveAll([initial]);
   setActiveId(initial.id);
@@ -101,7 +101,7 @@ export function duplicateSchedule(sourceId: string, newName: string): ScheduleDa
     id: genId(),
     name: newName,
     semester: source?.semester ?? 'Fall 2026',
-    courses: source ? [...source.courses] : [],
+    courses: source ? source.courses.map(e => ({ ...e })) : [],
   };
   all.push(dup);
   saveAll(all);

@@ -8,9 +8,17 @@ export function get<T>(key: string, fallback: T): T {
 }
 
 export function set<T>(key: string, value: T): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // best-effort: quota, disabled storage, etc.
+  }
 }
 
 export function remove(key: string): void {
-  localStorage.removeItem(key);
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // best-effort
+  }
 }

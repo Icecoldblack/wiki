@@ -53,6 +53,11 @@
     position: relative;
     z-index: 1;
   }
+  .csb__input:focus,
+  .csb__input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 
   .csb__placeholder {
     position: absolute;
@@ -137,9 +142,15 @@
     updatePlaceholder();
   });
 
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  function emitSearch() {
+    window.dispatchEvent(new CustomEvent('course-search', { detail: { query: input.value } }));
+  }
+
   input.addEventListener('input', () => {
     updatePlaceholder();
-    applySearch();
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(emitSearch, 150);
   });
 
   // / to focus
@@ -152,37 +163,8 @@
     if (e.key === 'Escape' && document.activeElement === input) {
       input.value = '';
       input.blur();
-      applySearch();
+      if (debounceTimer) clearTimeout(debounceTimer);
+      emitSearch();
     }
   });
-
-  // Fuzzy match: every word in the query must appear somewhere in the target
-  function fuzzyMatch(query: string, ...targets: string[]): boolean {
-    const combined = targets.join(' ').toLowerCase();
-    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-    return words.every(w => combined.includes(w));
-  }
-
-  function applySearch() {
-    const q = input.value.trim();
-    const cards = document.querySelectorAll<HTMLElement>('[data-course]');
-    let visible = 0;
-
-    cards.forEach(card => {
-      const code = card.dataset.code ?? '';
-      const title = card.dataset.title ?? '';
-      const prof = card.dataset.professor ?? '';
-      const matchesSearch = !q || fuzzyMatch(q, code, title, prof);
-
-      if (!matchesSearch) {
-        card.style.display = 'none';
-      } else if (card.style.display === 'none' && !card.dataset.filteredOut) {
-        card.style.display = '';
-      }
-      if (card.style.display !== 'none') visible++;
-    });
-
-    const metaCount = document.querySelector('.meta-count');
-    if (metaCount) metaCount.textContent = `${visible} course${visible !== 1 ? 's' : ''}`;
-  }
 </script>

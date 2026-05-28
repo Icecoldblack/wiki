@@ -462,7 +462,9 @@ const { course, courses: all } = Astro.props as any;
 function deriveTimeOfDay(time: string): string {
   const match = time.match(/(\d{1,2}):/);
   if (!match) return 'morning';
-  const hour = Number(match[1]);
+  let hour = Number(match[1]);
+  // Catalog times omit AM/PM; hours 1–7 are PM in this dataset.
+  if (hour >= 1 && hour <= 7) hour += 12;
   if (hour < 12) return 'morning';
   if (hour < 17) return 'afternoon';
   return 'evening';

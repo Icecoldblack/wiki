@@ -679,6 +679,11 @@
       if (onlyOpen && Number(card.dataset.seats ?? '0') <= 0) show = false;
       if (onlyPick && card.dataset.pick !== 'true') show = false;
 
+      if (show) {
+        delete card.dataset.filteredOut;
+      } else {
+        card.dataset.filteredOut = 'true';
+      }
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });

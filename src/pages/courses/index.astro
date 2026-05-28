@@ -77,7 +77,12 @@ const subjectOrder = ['CSC', ...Array.from(subjectMap.keys()).filter(k => k !== 
             </div>
             <div class="code-grid">
               {group.map(c => (
-                <div data-course-wrap data-semesters={c.semesters.join(',')}>
+                <div
+                  data-course-wrap
+                  data-semesters={c.semesters.join(',')}
+                  data-code={c.code}
+                  data-title={c.title}
+                >
                   <CourseCard code={c.code} title={c.title} credits={c.credits} variant="code-only" />
                 </div>
               ))}
@@ -88,7 +93,7 @@ const subjectOrder = ['CSC', ...Array.from(subjectMap.keys()).filter(k => k !== 
     </div>
 
     <div class="filter-empty surface-glass" id="filter-empty" style="display:none">
-      <p class="filter-empty__text">no courses offered in the selected semesters.</p>
+      <p class="filter-empty__text" id="filter-empty-text">no courses offered in the selected semesters.</p>
     </div>
   </div>
 </Layout>
@@ -201,10 +206,119 @@ const subjectOrder = ['CSC', ...Array.from(subjectMap.keys()).filter(k => k !== 
 </style>
 
 <script>
+  const list = document.getElementById('subject-list')!;
   const chips = document.querySelectorAll<HTMLButtonElement>('.semester-chip');
-  const wraps = document.querySelectorAll<HTMLElement>('[data-course-wrap]');
-  const sections = document.querySelectorAll<HTMLElement>('[data-subject-section]');
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-subject-section]'));
   const filterEmpty = document.getElementById('filter-empty')!;
+  const filterEmptyText = document.getElementById('filter-empty-text')!;
+
+  // ── Searchable index ────────────────────────────────────────────
+  interface Item {
+    el: HTMLElement;
+    section: HTMLElement;
+    grid: HTMLElement;
+    code: string;
+    codeNorm: string;          // lowercased, alphanumeric only
+    titleLower: string;
+    titleWords: string[];
+    semesters: string[];
+    originalIndex: number;
+  }
+
+  function normalize(s: string): string {
+    return s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  const items: Item[] = Array.from(document.querySelectorAll<HTMLElement>('[data-course-wrap]')).map((el, i) => {
+    const section = el.closest('[data-subject-section]') as HTMLElement;
+    const code = el.dataset.code ?? '';
+    const title = el.dataset.title ?? '';
+    const titleLower = title.toLowerCase();
+    return {
+      el,
+      section,
+      grid: section.querySelector('.code-grid') as HTMLElement,
+      code,
+      codeNorm: normalize(code),
+      titleLower,
+      titleWords: titleLower.split(/\s+/).filter(Boolean),
+      semesters: (el.dataset.semesters ?? '').split(','),
+      originalIndex: i,
+    };
+  });
+
+  const originalSectionOrder = [...sections];
+
+  // ── Fuzzy scoring ───────────────────────────────────────────────
+  function levenshtein(a: string, b: string): number {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    let curr = new Array(b.length + 1).fill(0);
+    for (let i = 1; i <= a.length; i++) {
+      curr[0] = i;
+      for (let j = 1; j <= b.length; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+      }
+      [prev, curr] = [curr, prev];
+    }
+    return prev[b.length];
+  }
+
+  function scoreToken(token: string, c: Item): number {
+    const t = token.toLowerCase();
+    const tNorm = normalize(t);
+    if (!tNorm) return 0;
+    const isDigits = /^\d+$/.test(tNorm);
+
+    if (c.codeNorm === tNorm) return 1000;
+    if (!isDigits && c.titleLower === t) return 950;
+    if (!isDigits && c.titleWords.includes(t)) return 800;
+    if (c.codeNorm.startsWith(tNorm)) return 700;
+    if (!isDigits && t.length >= 2 && c.titleWords.some(w => w.startsWith(t))) return 600;
+    if (!isDigits && t.length >= 3 && c.titleLower.includes(t)) return 400;
+    if (c.codeNorm.includes(tNorm)) return 350;
+
+    if (!isDigits && t.length >= 4) {
+      const threshold = t.length >= 7 ? 2 : 1;
+      let best = Infinity;
+      for (const w of c.titleWords) {
+        if (Math.abs(w.length - t.length) > threshold) continue;
+        const d = levenshtein(t, w);
+        if (d < best) best = d;
+      }
+      if (best <= threshold) return 200 - best * 30;
+    }
+    return 0;
+  }
+
+  function scoreCourse(query: string, c: Item): number {
+    const q = query.trim();
+    if (!q) return 1;
+
+    // Whole-query code match handles "csc2510", "CSC 2510", "csc-2510"
+    const qNorm = normalize(q);
+    if (qNorm.length >= 4 && c.codeNorm === qNorm) return 10000;
+    if (qNorm.length >= 3 && c.codeNorm.startsWith(qNorm)) return 5000;
+
+    const qLower = q.toLowerCase();
+    if (c.titleLower === qLower) return 9000;
+    if (qLower.length >= 3 && c.titleLower.startsWith(qLower)) return 4000;
+
+    const tokens = qLower.split(/\s+/).filter(Boolean);
+    let total = 0;
+    for (const t of tokens) {
+      const s = scoreToken(t, c);
+      if (s === 0) return 0;
+      total += s;
+    }
+    return total;
+  }
+
+  // ── State + apply ───────────────────────────────────────────────
+  let currentQuery = '';
 
   function getActiveSemesters(): Set<string> {
     const active = new Set<string>();
@@ -212,34 +326,81 @@ const subjectOrder = ['CSC', ...Array.from(subjectMap.keys()).filter(k => k !== 
     return active;
   }
 
-  function applyFilter() {
+  function applyFilters() {
     const active = getActiveSemesters();
-    const showAll = active.size === 0;
-    let totalVisible = 0;
+    const semesterShowAll = active.size === 0;
+    const q = currentQuery.trim();
+    const hasQuery = q.length > 0;
 
-    wraps.forEach(w => {
-      const sems = (w.dataset.semesters ?? '').split(',');
-      const match = showAll || sems.some(s => active.has(s));
-      w.style.display = match ? '' : 'none';
-      if (match) totalVisible++;
+    const scored = items.map(it => {
+      const passesSem = semesterShowAll || it.semesters.some(s => active.has(s));
+      const score = hasQuery ? scoreCourse(q, it) : 1;
+      return { it, passesSem, score };
     });
 
+    let totalVisible = 0;
+    for (const s of scored) {
+      const visible = s.passesSem && s.score > 0;
+      s.it.el.style.display = visible ? '' : 'none';
+      if (visible) totalVisible++;
+    }
+
+    if (hasQuery) {
+      // Sort tiles within each section by score desc, original index asc
+      const bySection = new Map<HTMLElement, typeof scored>();
+      for (const s of scored) {
+        if (!s.passesSem || s.score === 0) continue;
+        const arr = bySection.get(s.it.section) ?? [];
+        arr.push(s);
+        bySection.set(s.it.section, arr);
+      }
+      bySection.forEach((arr, sec) => {
+        arr.sort((a, b) => b.score - a.score || a.it.originalIndex - b.it.originalIndex);
+        const grid = sec.querySelector('.code-grid')!;
+        for (const s of arr) grid.appendChild(s.it.el);
+      });
+
+      // Sort sections by their best match
+      const orderedSections = Array.from(bySection.entries())
+        .sort((a, b) => Math.max(...b[1].map(s => s.score)) - Math.max(...a[1].map(s => s.score)))
+        .map(([sec]) => sec);
+      for (const sec of orderedSections) list.appendChild(sec);
+    } else {
+      // Restore original order
+      for (const sec of originalSectionOrder) list.appendChild(sec);
+      const byOriginal = [...items].sort((a, b) => a.originalIndex - b.originalIndex);
+      for (const it of byOriginal) it.grid.appendChild(it.el);
+    }
+
+    // Section visibility (any visible tile within)
     sections.forEach(sec => {
       const tiles = sec.querySelectorAll<HTMLElement>('[data-course-wrap]');
-      let visible = 0;
-      tiles.forEach(t => { if (t.style.display !== 'none') visible++; });
-      sec.style.display = visible === 0 ? 'none' : '';
+      let anyVisible = false;
+      tiles.forEach(t => { if (t.style.display !== 'none') anyVisible = true; });
+      sec.style.display = anyVisible ? '' : 'none';
     });
 
-    filterEmpty.style.display = totalVisible === 0 ? '' : 'none';
+    if (totalVisible === 0) {
+      filterEmpty.style.display = '';
+      filterEmptyText.textContent = hasQuery
+        ? 'nothing matches that search yet.'
+        : 'no courses offered in the selected semesters.';
+    } else {
+      filterEmpty.style.display = 'none';
+    }
   }
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       chip.classList.toggle('active');
       chip.setAttribute('aria-pressed', String(chip.classList.contains('active')));
-      applyFilter();
+      applyFilters();
     });
+  });
+
+  window.addEventListener('course-search', (e: Event) => {
+    currentQuery = (e as CustomEvent<{ query: string }>).detail.query ?? '';
+    applyFilters();
   });
 
   // Tile clicks navigate to detail page

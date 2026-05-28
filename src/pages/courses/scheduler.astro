@@ -1504,11 +1504,26 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       const el = document.createElement('div');
       el.className = 'dropdown__item' + (s.id === current.id ? ' active' : '');
       const courseCount = store.resolve(s.courses).length;
-      el.innerHTML = `
-        <span class="dropdown__item-name">${s.name}</span>
-        <span class="dropdown__item-meta">${courseCount} courses</span>
-        ${all.length > 1 ? `<button class="dropdown__item-delete" data-delete-id="${s.id}" title="Delete schedule">&times;</button>` : ''}
-      `;
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'dropdown__item-name';
+      nameEl.textContent = s.name;
+
+      const metaEl = document.createElement('span');
+      metaEl.className = 'dropdown__item-meta';
+      metaEl.textContent = `${courseCount} courses`;
+
+      el.append(nameEl, metaEl);
+
+      if (all.length > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'dropdown__item-delete';
+        delBtn.dataset.deleteId = s.id;
+        delBtn.title = 'Delete schedule';
+        delBtn.textContent = '×';
+        el.appendChild(delBtn);
+      }
       el.addEventListener('click', (ev) => {
         if ((ev.target as HTMLElement).closest('[data-delete-id]')) return;
         switchSchedule(s.id);
@@ -1685,6 +1700,7 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
       el.className = 'sched-block';
       el.dataset.blockCode = s.code;
       el.dataset.blockSection = s.sectionId;
+      el.dataset.day = b.day;
       el.setAttribute('tabindex', '0');
       el.setAttribute('role', 'button');
       el.setAttribute('aria-label', `${s.code} — ${s.course.title}, ${b.day} ${fmtT(s.section.startH, s.section.startM)}–${fmtT(s.section.endH, s.section.endM)}`);
@@ -1751,14 +1767,12 @@ function isHourSlot(slot: number) { return slot % 2 === 0; }
         const sharedDays = a.days.filter(d => b.days.includes(d));
         if (sharedDays.length === 0) continue;
         for (const d of sharedDays) {
-          blockOverlay.querySelectorAll(`.sched-block[data-block-code="${scheduled[i].code}"]`).forEach(el => {
-            const col = DAYS.indexOf(d as any) + 2;
-            if ((el as HTMLElement).style.gridColumn.startsWith(String(col))) el.classList.add('conflict');
-          });
-          blockOverlay.querySelectorAll(`.sched-block[data-block-code="${scheduled[j].code}"]`).forEach(el => {
-            const col = DAYS.indexOf(d as any) + 2;
-            if ((el as HTMLElement).style.gridColumn.startsWith(String(col))) el.classList.add('conflict');
-          });
+          blockOverlay
+            .querySelectorAll(`.sched-block[data-block-code="${scheduled[i].code}"][data-day="${d}"]`)
+            .forEach(el => el.classList.add('conflict'));
+          blockOverlay
+            .querySelectorAll(`.sched-block[data-block-code="${scheduled[j].code}"][data-day="${d}"]`)
+            .forEach(el => el.classList.add('conflict'));
         }
       }
     }
